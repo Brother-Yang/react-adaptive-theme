@@ -1,0 +1,44 @@
+// 全局变量定义
+@primary-color: #1890ff;
+@primary-hover-color: #40a9ff;
+@font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@line-height-base: 1.5;
+@font-weight-base: 400;
+@transition-duration: 0.3s;
+
+// 全局重置
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: @font-family-base;
+  line-height: @line-height-base;
+  font-weight: @font-weight-base;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+// 链接样式
+a {
+  color: @primary-color;
+  text-decoration: none;
+  transition: color @transition-duration;
+  
+  &:hover {
+    color: @primary-hover-color;
+  }
+}

@@ -1,0 +1,121 @@
+@primary-color: #1890ff;
+@border-radius: 8px;
+@box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+.app-layout {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  .app-header {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .app-content {
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    max-width: 800px;
+    margin: 0 auto;
+
+    .logo-container {
+      .logo {
+        height: 6em;
+        padding: 1.5em;
+        will-change: filter;
+        transition: filter 300ms;
+        
+        &:hover {
+          filter: drop-shadow(0 0 2em #646cffaa);
+        }
+        
+        &.react:hover {
+          filter: drop-shadow(0 0 2em #61dafbaa);
+        }
+      }
+    }
+
+    .demo-card {
+      width: 100%;
+      max-width: 400px;
+      border-radius: @border-radius;
+      box-shadow: @box-shadow;
+      border: none;
+      
+      .ant-card-head {
+        background: linear-gradient(90deg, @primary-color, #40a9ff);
+        border-radius: @border-radius @border-radius 0 0;
+        
+        .ant-card-head-title {
+          color: white;
+          font-weight: 600;
+        }
+      }
+
+      .ant-btn-primary {
+        background: linear-gradient(90deg, @primary-color, #40a9ff);
+        border: none;
+        border-radius: @border-radius;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
+        }
+      }
+    }
+
+    .footer-text {
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .app-layout {
+    .app-content {
+      padding: 20px 16px;
+      gap: 24px;
+      
+      .logo-container .logo {
+        height: 4em;
+        padding: 1em;
+      }
+      
+      .demo-card {
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.logo {
+  animation: fadeIn 0.8s ease-out;
+}
