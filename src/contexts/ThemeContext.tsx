@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
-import { THEME_STORAGE_KEY, type ThemeMode } from '../config/theme'
+import { THEME_STORAGE_KEY, type ThemeMode, themeConfigs, applyBaseTheme } from '../config/theme'
 import { ThemeContext, type ThemeContextType } from './ThemeContextDefinition'
 
 // 主题提供者组件Props
@@ -52,9 +52,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
-  // 更新HTML根元素的data-theme属性
+  // 更新HTML根元素的data-theme属性并应用base主题
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', themeMode)
+    // 应用当前主题的base属性到CSS变量
+    applyBaseTheme(themeConfigs[themeMode])
   }, [themeMode])
 
   const contextValue: ThemeContextType = {
