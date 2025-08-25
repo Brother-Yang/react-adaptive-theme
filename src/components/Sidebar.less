@@ -16,16 +16,24 @@
     width: 80px;
   }
   
-  // 移动端样式
-  &.mobile {
+  // Extra Small - 手机竖屏
+  &.xs {
     position: relative;
     width: 100%;
     height: 100%;
     border-right: none;
   }
   
-  // 平板端样式
-  &.pad {
+  // Small - 手机横屏
+  &.sm {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+  }
+  
+  // Medium - 平板设备
+  &.md {
     width: 240px;
     
     &.collapsed {
@@ -33,9 +41,18 @@
     }
   }
   
-  // 桌面端样式
-  &.pc {
+  // Large - 桌面设备
+  &.lg {
     width: 256px;
+    
+    &.collapsed {
+      width: 80px;
+    }
+  }
+  
+  // Extra Large - 大屏设备
+  &.xl {
+    width: 280px;
     
     &.collapsed {
       width: 80px;
@@ -147,15 +164,17 @@
   }
 }
 
-// 响应式断点适配
+// 响应式断点适配 - 国际标准
+// Extra Small & Small (0-767px) - 移动设备
 @media (max-width: 767px) {
-  .sidebar:not(.mobile) {
+  .sidebar:not(.xs):not(.sm) {
     transform: translateX(-100%);
   }
 }
 
-@media (min-width: 768px) and (max-width: 1199px) {
-  .sidebar.pad {
+// Medium (768-991px) - 平板设备
+@media (min-width: 768px) and (max-width: 991px) {
+  .sidebar.md {
     width: 240px;
     
     .sidebar-logo {
@@ -178,8 +197,16 @@
   }
 }
 
-@media (min-width: 1200px) {
-  .sidebar.pc {
+// Large (992-1199px) - 桌面设备
+@media (min-width: 992px) and (max-width: 1199px) {
+  .sidebar.lg {
     width: 256px;
+  }
+}
+
+// Extra Large (1200px+) - 大屏设备
+@media (min-width: 1200px) {
+  .sidebar.xl {
+    width: 280px;
   }
 }

@@ -12,8 +12,8 @@
       margin-left: 80px;
     }
     
-    // 移动端样式
-    &.mobile {
+    // Extra Small - 手机竖屏
+    &.xs {
       margin-left: 0;
       
       &.collapsed {
@@ -21,8 +21,17 @@
       }
     }
     
-    // 平板端样式
-    &.pad {
+    // Small - 手机横屏
+    &.sm {
+      margin-left: 0;
+      
+      &.collapsed {
+        margin-left: 0;
+      }
+    }
+    
+    // Medium - 平板设备
+    &.md {
       margin-left: 240px;
       
       &.collapsed {
@@ -30,9 +39,18 @@
       }
     }
     
-    // 桌面端样式
-    &.pc {
+    // Large - 桌面设备
+    &.lg {
       margin-left: 256px;
+      
+      &.collapsed {
+        margin-left: 80px;
+      }
+    }
+    
+    // Extra Large - 大屏设备
+    &.xl {
+      margin-left: 280px;
       
       &.collapsed {
         margin-left: 80px;
@@ -108,7 +126,8 @@
   }
 }
 
-// 响应式设计
+// 响应式设计 - 国际标准
+// Extra Small & Small (0-767px) - 移动设备
 @media (max-width: 767px) {
   .app {
     .main-layout {
@@ -156,7 +175,8 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 1199px) {
+// Medium (768-991px) - 平板设备
+@media (min-width: 768px) and (max-width: 991px) {
   .app {
     .main-layout {
       margin-left: 240px;
@@ -181,7 +201,8 @@
   }
 }
 
-@media (min-width: 1200px) {
+// Large (992-1199px) - 桌面设备
+@media (min-width: 992px) and (max-width: 1199px) {
   .app {
     .main-layout {
       margin-left: 256px;
@@ -196,6 +217,32 @@
         
         .demo-container {
           max-width: 1200px;
+          
+          .demo-card {
+            margin-bottom: 24px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Extra Large (1200px+) - 大屏设备
+@media (min-width: 1200px) {
+  .app {
+    .main-layout {
+      margin-left: 280px;
+      
+      &.collapsed {
+        margin-left: 80px;
+      }
+      
+      .app-content {
+        margin-top: 64px;
+        padding: 32px;
+        
+        .demo-container {
+          max-width: 1400px;
           
           .demo-card {
             margin-bottom: 24px;

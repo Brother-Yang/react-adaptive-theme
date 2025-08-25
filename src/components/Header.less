@@ -14,24 +14,38 @@
   transition: left 0.3s ease;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   
-  // 移动端样式
-  &.mobile {
+  // Extra Small - 手机竖屏
+  &.xs {
     left: 0;
     padding: 0 16px;
     height: 56px;
   }
   
-  // 平板端样式
-  &.pad {
+  // Small - 手机横屏
+  &.sm {
+    left: 0;
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  // Medium - 平板设备
+  &.md {
     left: 240px;
     padding: 0 20px;
     height: 60px;
   }
   
-  // 桌面端样式
-  &.pc {
+  // Large - 桌面设备
+  &.lg {
     left: 256px;
     padding: 0 24px;
+    height: 64px;
+  }
+  
+  // Extra Large - 大屏设备
+  &.xl {
+    left: 280px;
+    padding: 0 32px;
     height: 64px;
   }
 
@@ -128,20 +142,29 @@
 
 // 基础折叠状态样式
 .app-header.collapsed {
-  &.mobile {
-    left: 0; // 移动端始终占满宽度
+  &.xs {
+    left: 0; // 手机竖屏始终占满宽度
   }
   
-  &.pad {
-    left: 70px;
+  &.sm {
+    left: 0; // 手机横屏始终占满宽度
   }
   
-  &.pc {
-    left: 80px;
+  &.md {
+    left: 70px; // 平板设备折叠宽度
+  }
+  
+  &.lg {
+    left: 80px; // 桌面设备折叠宽度
+  }
+  
+  &.xl {
+    left: 80px; // 大屏设备折叠宽度
   }
 }
 
-// 响应式断点适配
+// 响应式断点适配 - 国际标准
+// Extra Small & Small (0-767px) - 移动设备
 @media (max-width: 767px) {
   .app-header {
     left: 0 !important;
@@ -172,7 +195,8 @@
   }
 }
 
-@media (min-width: 768px) and (max-width: 1199px) {
+// Medium (768-991px) - 平板设备
+@media (min-width: 768px) and (max-width: 991px) {
   .app-header {
     left: 240px;
     padding: 0 16px;
@@ -194,10 +218,20 @@
   }
 }
 
-@media (min-width: 1200px) {
+// Large (992-1199px) - 桌面设备
+@media (min-width: 992px) and (max-width: 1199px) {
   .app-header {
     left: 256px;
     padding: 0 24px;
+    height: 64px;
+  }
+}
+
+// Extra Large (1200px+) - 大屏设备
+@media (min-width: 1200px) {
+  .app-header {
+    left: 280px;
+    padding: 0 32px;
     height: 64px;
   }
 }

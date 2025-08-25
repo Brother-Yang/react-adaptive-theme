@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 
-// 定义断点类型
-export type BreakpointType = 'mobile' | 'pad' | 'pc';
+// 定义断点类型（按照前端国际标准）
+export type BreakpointType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-// 定义断点配置
+// 定义断点配置（符合Bootstrap 5、Material Design等国际标准）
 export const BREAKPOINTS = {
-  mobile: { min: 0, max: 767 },
-  pad: { min: 768, max: 1199 },
-  pc: { min: 1200, max: Infinity }
+  xs: { min: 0, max: 575 },      // Extra small devices (portrait phones)
+  sm: { min: 576, max: 767 },   // Small devices (landscape phones)
+  md: { min: 768, max: 991 },   // Medium devices (tablets)
+  lg: { min: 992, max: 1199 },  // Large devices (desktops)
+  xl: { min: 1200, max: Infinity } // Extra large devices (large desktops)
+} as const;
+
+// 兼容性别名（保持向后兼容）
+export const BREAKPOINT_ALIASES = {
+  mobile: ['xs', 'sm'] as const,
+  pad: ['md'] as const,
+  pc: ['lg', 'xl'] as const
 } as const;
 
 // 断点信息接口
@@ -15,9 +24,15 @@ export interface BreakpointInfo {
   current: BreakpointType;
   width: number;
   height: number;
-  isMobile: boolean;
-  isPad: boolean;
-  isPc: boolean;
+  isXs: boolean;
+  isSm: boolean;
+  isMd: boolean;
+  isLg: boolean;
+  isXl: boolean;
+  // 兼容性属性
+  isMobile: boolean; // xs + sm
+  isPad: boolean;    // md
+  isPc: boolean;     // lg + xl
 }
 
 /**
@@ -26,13 +41,41 @@ export interface BreakpointInfo {
  * @returns 断点类型
  */
 function getBreakpointType(width: number): BreakpointType {
-  if (width <= BREAKPOINTS.mobile.max) {
-    return 'mobile';
-  } else if (width >= BREAKPOINTS.pad.min && width <= BREAKPOINTS.pad.max) {
-    return 'pad';
+  if (width <= BREAKPOINTS.xs.max) {
+    return 'xs';
+  } else if (width >= BREAKPOINTS.sm.min && width <= BREAKPOINTS.sm.max) {
+    return 'sm';
+  } else if (width >= BREAKPOINTS.md.min && width <= BREAKPOINTS.md.max) {
+    return 'md';
+  } else if (width >= BREAKPOINTS.lg.min && width <= BREAKPOINTS.lg.max) {
+    return 'lg';
   } else {
-    return 'pc';
+    return 'xl';
   }
+}
+
+/**
+ * 创建断点信息对象
+ * @param current 当前断点类型
+ * @param width 屏幕宽度
+ * @param height 屏幕高度
+ * @returns 断点信息
+ */
+function createBreakpointInfo(current: BreakpointType, width: number, height: number): BreakpointInfo {
+  return {
+    current,
+    width,
+    height,
+    isXs: current === 'xs',
+    isSm: current === 'sm',
+    isMd: current === 'md',
+    isLg: current === 'lg',
+    isXl: current === 'xl',
+    // 兼容性属性
+    isMobile: current === 'xs' || current === 'sm',
+    isPad: current === 'md',
+    isPc: current === 'lg' || current === 'xl'
+  };
 }
 
 /**
@@ -46,14 +89,7 @@ export function useBreakpoint(): BreakpointInfo {
     const height = typeof window !== 'undefined' ? window.innerHeight : 800;
     const current = getBreakpointType(width);
     
-    return {
-      current,
-      width,
-      height,
-      isMobile: current === 'mobile',
-      isPad: current === 'pad',
-      isPc: current === 'pc'
-    };
+    return createBreakpointInfo(current, width, height);
   });
 
   useEffect(() => {
@@ -67,14 +103,7 @@ export function useBreakpoint(): BreakpointInfo {
         const height = window.innerHeight;
         const current = getBreakpointType(width);
         
-        setBreakpointInfo({
-          current,
-          width,
-          height,
-          isMobile: current === 'mobile',
-          isPad: current === 'pad',
-          isPc: current === 'pc'
-        });
+        setBreakpointInfo(createBreakpointInfo(current, width, height));
       }, 100); // 100ms 防抖
     };
 

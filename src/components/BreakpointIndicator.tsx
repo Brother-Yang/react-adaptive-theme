@@ -3,25 +3,40 @@ import { Tag } from 'antd';
 import { useBreakpoint, type BreakpointType } from '../hooks/useBreakpoint';
 import './BreakpointIndicator.less';
 
-// 断点颜色映射
+// 断点颜色映射（按照国际标准）
 const BREAKPOINT_COLORS: Record<BreakpointType, string> = {
-  mobile: 'green',
-  pad: 'orange', 
-  pc: 'blue'
+  xs: 'red',      // Extra Small - 红色
+  sm: 'orange',   // Small - 橙色
+  md: 'gold',     // Medium - 金色
+  lg: 'blue',     // Large - 蓝色
+  xl: 'purple'    // Extra Large - 紫色
 };
 
 // 断点图标映射
 const BREAKPOINT_ICONS: Record<BreakpointType, string> = {
-  mobile: '📱',
-  pad: '📱',
-  pc: '💻'
+  xs: '📱',  // 手机竖屏
+  sm: '📱',  // 手机横屏
+  md: '📱',  // 平板
+  lg: '💻',  // 桌面
+  xl: '🖥️'   // 大屏桌面
 };
 
 // 断点名称映射
 const BREAKPOINT_NAMES: Record<BreakpointType, string> = {
-  mobile: 'Mobile',
-  pad: 'Tablet',
-  pc: 'Desktop'
+  xs: 'Extra Small',  // 0-575px
+  sm: 'Small',        // 576-767px
+  md: 'Medium',       // 768-991px
+  lg: 'Large',        // 992-1199px
+  xl: 'Extra Large'   // 1200px+
+};
+
+// 断点描述映射
+const BREAKPOINT_DESCRIPTIONS: Record<BreakpointType, string> = {
+  xs: '手机竖屏 (0-575px)',
+  sm: '手机横屏 (576-767px)',
+  md: '平板设备 (768-991px)',
+  lg: '桌面设备 (992-1199px)',
+  xl: '大屏设备 (1200px+)'
 };
 
 interface BreakpointIndicatorProps {
@@ -73,7 +88,11 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
         <div className="breakpoint-details">
           <div className="detail-item">
             <span className="detail-label">断点:</span>
-            <span className="detail-value">{breakpoint.current}</span>
+            <span className="detail-value">{breakpoint.current.toUpperCase()}</span>
+          </div>
+          <div className="detail-item">
+            <span className="detail-label">描述:</span>
+            <span className="detail-value">{BREAKPOINT_DESCRIPTIONS[breakpoint.current]}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">宽度:</span>

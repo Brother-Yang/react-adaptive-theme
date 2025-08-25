@@ -97,11 +97,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
         closable={false}
         onClose={() => onCollapse?.(true)}
         open={!collapsed}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
         width={256}
         className="sidebar-drawer"
       >
-        <div className="sidebar mobile">
+        <div className={`sidebar ${breakpoint.current}`}>
           {sidebarContent}
         </div>
       </Drawer>
