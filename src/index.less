@@ -6,6 +6,30 @@
 @font-weight-base: 400;
 @transition-duration: 0.3s;
 
+// CSS 变量支持主题切换
+:root {
+  --ant-color-primary: #1890ff;
+  --ant-color-success: #52c41a;
+  --ant-color-warning: #faad14;
+  --ant-color-error: #ff4d4f;
+  --ant-color-text: #262626;
+  --ant-color-text-secondary: #8c8c8c;
+  --ant-border-color-base: #d9d9d9;
+  --ant-background-color-base: #f0f2f5;
+  --ant-component-background: #ffffff;
+  --ant-table-header-bg: #fafafa;
+}
+
+// 暗色主题变量
+[data-theme='dark'] {
+  --ant-color-text: #ffffff;
+  --ant-color-text-secondary: #a6a6a6;
+  --ant-border-color-base: #434343;
+  --ant-background-color-base: #141414;
+  --ant-component-background: #1f1f1f;
+  --ant-table-header-bg: #262626;
+}
+
 // 全局重置
 * {
   box-sizing: border-box;
@@ -25,6 +49,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -40,5 +65,33 @@ a {
   
   &:hover {
     color: @primary-hover-color;
+  }
+}
+
+// 主题切换动画
+.ant-layout,
+.ant-card,
+.ant-button,
+.ant-input,
+.ant-select {
+  transition: all 0.3s ease;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ant-background-color-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ant-border-color-base);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--ant-color-text-secondary);
   }
 }
