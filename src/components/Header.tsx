@@ -59,7 +59,7 @@ const AppHeader: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   };
 
   return (
-    <AntHeader className={`app-header ${breakpoint.current}`}>
+    <AntHeader className={`app-header ${breakpoint.current} ${collapsed ? 'collapsed' : ''}`}>
       <div className="header-left">
         <Button
           type="text"
