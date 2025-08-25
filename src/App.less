@@ -1,168 +1,134 @@
-// 主题变量 - 这些将被 Ant Design tokens 覆盖
-@primary-color: #1890ff;
-@success-color: #52c41a;
-@warning-color: #faad14;
-@error-color: #ff4d4f;
-@text-color: #262626;
-@text-color-secondary: #8c8c8c;
-@border-color: #d9d9d9;
-@background-color: #f0f2f5;
-@component-background: #ffffff;
-@bg-color-secondary: #fafafa;
-@bg-color-hover: #f5f5f5;
-@primary-color-hover: #40a9ff;
-@border-radius: 8px;
-@box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-.app-layout {
+// 管理后台布局样式
+.app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-  .app-header {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--ant-background-color-base);
+  
+  .main-layout {
+    margin-left: 256px;
+    min-height: 100vh;
+    transition: all 0.3s ease;
     
-    .ant-typography {
-      color: white !important;
+    &.collapsed {
+      margin-left: 80px;
     }
-  }
-
-  .app-content {
+    
+    .app-content {
+      margin-top: 64px;
       padding: 24px;
+      background: var(--ant-background-color-base);
       min-height: calc(100vh - 64px);
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-
-    .logo-container {
-      .logo {
-        height: 6em;
-        padding: 1.5em;
-        will-change: filter;
-        transition: filter 300ms;
+      
+      .demo-container {
+        max-width: 1200px;
+        margin: 0 auto;
         
-        &:hover {
-          filter: drop-shadow(0 0 2em #646cffaa);
-        }
-        
-        &.react:hover {
-          filter: drop-shadow(0 0 2em #61dafbaa);
-        }
-      }
-    }
-
-    .demo-card {
-      width: 100%;
-      box-shadow: @box-shadow;
-      border-radius: @border-radius;
-      margin-bottom: 16px;
-      
-      .ant-card-body {
-        padding: 24px;
-      }
-      
-      &:hover {
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        transform: translateY(-2px);
-      }
-      
-      .ant-table {
-        .ant-table-thead > tr > th {
-          background-color: var(--ant-table-header-bg) !important;
-          border-bottom: 1px solid var(--ant-border-color-base);
-          color: var(--ant-color-text);
-        }
-      }
-      
-      .ant-progress {
-        margin-bottom: 8px;
-      }
-      
-      .ant-alert {
-        margin-bottom: 8px;
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-      
-      .ant-steps {
-        margin-bottom: 24px;
-      }
-      
-      .ant-card-head {
-        background: linear-gradient(90deg, @primary-color, #40a9ff);
-        border-radius: @border-radius @border-radius 0 0;
-        
-        .ant-card-head-title {
-          color: white;
-          font-weight: 600;
+        .demo-card {
+          margin-bottom: 24px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          background: var(--ant-component-background);
+          border: 1px solid var(--ant-border-color-base);
+          
+          .ant-card-head {
+            border-bottom: 1px solid var(--ant-border-color-base);
+            background: var(--ant-component-background);
+            
+            .ant-card-head-title {
+              color: var(--ant-color-text);
+              font-weight: 600;
+            }
+          }
+          
+          .ant-card-body {
+            background: var(--ant-component-background);
+          }
+          
+          // 表格样式优化
+          .ant-table {
+            .ant-table-thead > tr > th {
+              background-color: var(--ant-table-header-bg) !important;
+              border-bottom: 1px solid var(--ant-border-color-base);
+              color: var(--ant-color-text);
+            }
+            
+            .ant-table-tbody > tr > td {
+              border-bottom: 1px solid var(--ant-border-color-base);
+            }
+            
+            .ant-table-tbody > tr:hover > td {
+              background-color: var(--ant-color-primary-bg-hover, rgba(24, 144, 255, 0.06)) !important;
+            }
+          }
+          
+          .ant-progress {
+            margin-bottom: 8px;
+          }
+          
+          .ant-alert {
+            margin-bottom: 8px;
+            
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+          
+          .ant-steps {
+            margin-bottom: 24px;
+          }
         }
       }
-
-      .ant-btn-primary {
-        background: linear-gradient(90deg, @primary-color, #40a9ff);
-        border: none;
-        border-radius: @border-radius;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
-        }
-      }
-    }
-
-    .footer-text {
-      color: rgba(255, 255, 255, 0.8);
-      text-align: center;
-      margin: 0;
-      font-size: 16px;
     }
   }
 }
 
 // 响应式设计
-@media (max-width: 768px) {
-  .app-layout {
-    .app-content {
-      padding: 20px 16px;
-      gap: 24px;
-      
-      .logo-container .logo {
-        height: 4em;
-        padding: 1em;
-      }
-      
-      .demo-card {
-        max-width: 100%;
+@media (max-width: 1200px) {
+  .app {
+    .main-layout {
+      .app-content {
+        padding: 16px;
+        
+        .demo-container {
+          max-width: 100%;
+        }
       }
     }
   }
 }
 
-// 动画效果
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 768px) {
+  .app {
+    .main-layout {
+      margin-left: 0;
+      
+      &.collapsed {
+        margin-left: 0;
+      }
+      
+      .app-content {
+        padding: 12px;
+      }
+    }
   }
 }
 
-.demo-card {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.logo {
-  animation: fadeIn 0.8s ease-out;
+// 暗色主题适配
+[data-theme='dark'] {
+  .app {
+    .main-layout {
+      .app-content {
+        .demo-container {
+          .demo-card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            
+            .ant-table {
+              .ant-table-tbody > tr:hover > td {
+                background-color: rgba(255, 255, 255, 0.08) !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

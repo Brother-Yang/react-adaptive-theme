@@ -1,0 +1,105 @@
+.app-header {
+  background: var(--ant-component-background) !important;
+  border-bottom: 1px solid var(--ant-border-color-base);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 99;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    .trigger {
+      font-size: 18px;
+      color: var(--ant-color-text);
+      
+      &:hover {
+        color: var(--ant-color-primary);
+        background-color: var(--ant-color-primary-bg-hover, rgba(24, 144, 255, 0.06));
+      }
+    }
+
+    .breadcrumb {
+      margin-left: 16px;
+      
+      .ant-breadcrumb-link {
+        color: var(--ant-color-text-secondary);
+        
+        &:hover {
+          color: var(--ant-color-primary);
+        }
+      }
+      
+      .ant-breadcrumb-separator {
+        color: var(--ant-color-text-tertiary);
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+
+    .notification-btn {
+      font-size: 16px;
+      color: var(--ant-color-text-secondary);
+      
+      &:hover {
+        color: var(--ant-color-primary);
+        background-color: var(--ant-color-primary-bg-hover, rgba(24, 144, 255, 0.06));
+      }
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: var(--ant-color-primary-bg-hover, rgba(24, 144, 255, 0.06));
+      }
+
+      .username {
+        margin-left: 8px;
+        color: var(--ant-color-text);
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .app-header {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    
+    .header-left {
+      .trigger:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+    }
+    
+    .header-right {
+      .notification-btn:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+      
+      .user-info:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+    }
+  }
+}

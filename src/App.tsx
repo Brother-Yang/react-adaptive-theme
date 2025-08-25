@@ -1,9 +1,7 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { 
   Button, 
   Card, 
-  Typography, 
-  Space, 
   Layout, 
   Input, 
   Select, 
@@ -20,221 +18,225 @@ import {
   Badge,
   Avatar,
   Timeline,
-  Steps
+  Steps,
+  Row,
+  Col
 } from 'antd'
 import { 
-  UserOutlined, 
-  SettingOutlined, 
-  HeartOutlined, 
-  StarOutlined
+  SearchOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined
 } from '@ant-design/icons'
-import ThemeToggle from './components/ThemeToggle'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import Sidebar from './components/Sidebar'
+import AppHeader from './components/Header'
 import './App.less'
 
-const { Header, Content } = Layout
-const { Title, Paragraph } = Typography
+const { Content } = Layout
+const { Option } = Select
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [inputValue, setInputValue] = useState('')
-  const [selectValue, setSelectValue] = useState('option1')
-  const [sliderValue, setSliderValue] = useState(30)
-  const [switchValue, setSwitchValue] = useState(false)
-  const [radioValue, setRadioValue] = useState('a')
-  const [checkedValue, setCheckedValue] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed)
+  }
 
   const tableData = [
-    { key: '1', name: '张三', age: 32, address: '北京市朝阳区' },
-    { key: '2', name: '李四', age: 28, address: '上海市浦东新区' },
-    { key: '3', name: '王五', age: 35, address: '广州市天河区' }
+    { key: '1', name: '张三', age: 32, address: '北京市朝阳区', status: 'active' },
+    { key: '2', name: '李四', age: 28, address: '上海市浦东新区', status: 'inactive' },
+    { key: '3', name: '王五', age: 35, address: '广州市天河区', status: 'active' }
   ]
 
   const tableColumns = [
     { title: '姓名', dataIndex: 'name', key: 'name' },
     { title: '年龄', dataIndex: 'age', key: 'age' },
-    { title: '地址', dataIndex: 'address', key: 'address' }
+    { title: '地址', dataIndex: 'address', key: 'address' },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => (
+        <Tag color={status === 'active' ? 'green' : 'red'}>
+          {status === 'active' ? '活跃' : '非活跃'}
+        </Tag>
+      ),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: () => (
+        <>
+          <Button type="link" icon={<EditOutlined />} size="small">
+            编辑
+          </Button>
+          <Button type="link" danger icon={<DeleteOutlined />} size="small">
+            删除
+          </Button>
+        </>
+      ),
+    }
   ]
 
+  const timelineItems = [
+    {
+      children: '创建项目 2024-01-15',
+    },
+    {
+      children: '完成需求分析 2024-01-16',
+    },
+    {
+      children: '开始开发 2024-01-17',
+    },
+    {
+      children: '测试阶段 2024-01-20',
+    },
+  ]
 
   return (
-    <Layout className="app-layout">
-      <Header className="app-header">
-        <Title level={2} style={{ color: 'white', margin: 0 }}>
-          React + Vite + TypeScript + Less + Ant Design
-        </Title>
-        <ThemeToggle showLabel size="default" />
-      </Header>
-      <Content className="app-content">
-        <div className="logo-container">
-          <Space size="large">
-            <a href="https://vite.dev" target="_blank">
-              <img src={viteLogo} className="logo" alt="Vite logo" />
-            </a>
-            <a href="https://react.dev" target="_blank">
-              <img src={reactLogo} className="logo react" alt="React logo" />
-            </a>
-          </Space>
-        </div>
+    <Layout className="app">
+      <Sidebar collapsed={collapsed} />
+      <Layout className={`main-layout ${collapsed ? 'collapsed' : ''}`}>
+        <AppHeader collapsed={collapsed} onToggle={toggleCollapsed} />
+        <Content className="app-content">
+          <div className="demo-container">
+            {/* 基础组件 */}
+            <Card title="基础组件" className="demo-card">
+              <Row gutter={[16, 16]}>
+                <Col span={8}>
+                  <Input
+                    placeholder="请输入内容"
+                    prefix={<SearchOutlined />}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Select defaultValue="option1" style={{ width: '100%' }}>
+                    <Option value="option1">选项一</Option>
+                    <Option value="option2">选项二</Option>
+                    <Option value="option3">选项三</Option>
+                  </Select>
+                </Col>
+                <Col span={8}>
+                  <DatePicker style={{ width: '100%' }} placeholder="选择日期" />
+                </Col>
+              </Row>
+            </Card>
 
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          {/* 基础组件展示 */}
-          <Card title="基础组件" className="demo-card">
-            <Space wrap size="middle">
-              <Button type="primary" icon={<UserOutlined />}>
-                主要按钮
-              </Button>
-              <Button type="default">
-                默认按钮
-              </Button>
-              <Button type="dashed">
-                虚线按钮
-              </Button>
-              <Button type="text">
-                文本按钮
-              </Button>
-              <Button type="link">
-                链接按钮
-              </Button>
-              <Button 
-                type="primary" 
-                size="large"
-                onClick={() => setCount((count) => count + 1)}
-              >
-                计数器: {count}
-              </Button>
-            </Space>
-          </Card>
+            {/* 输入组件 */}
+            <Card title="输入组件" className="demo-card">
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <div>
+                    <p>滑块控件:</p>
+                    <Slider defaultValue={30} />
+                  </div>
+                </Col>
+                <Col span={12}>
+                  <div>
+                    <p>开关和选择:</p>
+                    <Switch defaultChecked style={{ marginRight: 16 }} />
+                    <Radio.Group defaultValue="a">
+                      <Radio.Button value="a">选项A</Radio.Button>
+                      <Radio.Button value="b">选项B</Radio.Button>
+                      <Radio.Button value="c">选项C</Radio.Button>
+                    </Radio.Group>
+                  </div>
+                </Col>
+              </Row>
+              <Row style={{ marginTop: 16 }}>
+                <Col span={24}>
+                  <Checkbox.Group
+                    options={['苹果', '香蕉', '橙子', '葡萄']}
+                    defaultValue={['苹果', '橙子']}
+                  />
+                </Col>
+              </Row>
+            </Card>
 
-          {/* 输入组件展示 */}
-          <Card title="输入组件" className="demo-card">
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Space wrap size="middle">
-                <Input 
-                  placeholder="请输入内容" 
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  prefix={<UserOutlined />}
-                />
-                <Select 
-                  value={selectValue} 
-                  onChange={setSelectValue}
-                  style={{ width: 120 }}
-                >
-                  <Select.Option value="option1">选项1</Select.Option>
-                  <Select.Option value="option2">选项2</Select.Option>
-                  <Select.Option value="option3">选项3</Select.Option>
-                </Select>
-                <DatePicker placeholder="选择日期" />
-              </Space>
-              
-              <div>
-                <Typography.Text>滑块值: {sliderValue}</Typography.Text>
-                <Slider 
-                  value={sliderValue} 
-                  onChange={setSliderValue}
-                  style={{ width: 200 }}
-                />
-              </div>
-
-              <Space size="middle">
-                <Switch 
-                  checked={switchValue} 
-                  onChange={setSwitchValue}
-                  checkedChildren="开"
-                  unCheckedChildren="关"
-                />
-                <Radio.Group value={radioValue} onChange={(e) => setRadioValue(e.target.value)}>
-                  <Radio value="a">选项A</Radio>
-                  <Radio value="b">选项B</Radio>
-                  <Radio value="c">选项C</Radio>
-                </Radio.Group>
-                <Checkbox 
-                  checked={checkedValue} 
-                  onChange={(e) => setCheckedValue(e.target.checked)}
-                >
-                  复选框
-                </Checkbox>
-              </Space>
-            </Space>
-          </Card>
-
-          {/* 展示组件 */}
-          <Card title="展示组件" className="demo-card">
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Space wrap size="middle">
-                <Tag color="blue">蓝色标签</Tag>
-                <Tag color="green">绿色标签</Tag>
-                <Tag color="orange">橙色标签</Tag>
-                <Tag color="red">红色标签</Tag>
-                <Badge count={5}>
-                  <Avatar shape="square" icon={<UserOutlined />} />
-                </Badge>
-                <Badge dot>
-                  <Avatar shape="square" icon={<SettingOutlined />} />
-                </Badge>
-              </Space>
-
+            {/* 展示组件 */}
+            <Card title="展示组件" className="demo-card">
               <Progress percent={30} />
               <Progress percent={50} status="active" />
               <Progress percent={70} status="exception" />
+              <Progress percent={100} />
+              
+              <Divider>标签和徽章</Divider>
+              
+              <div style={{ marginBottom: 16 }}>
+                <Tag>默认标签</Tag>
+                <Tag color="blue">蓝色标签</Tag>
+                <Tag color="green">绿色标签</Tag>
+                <Tag color="red">红色标签</Tag>
+                <Badge count={5}>
+                  <Avatar shape="square" size="large" />
+                </Badge>
+              </div>
+              
+              <Alert
+                message="成功提示"
+                description="这是一个成功提示的详细描述信息。"
+                type="success"
+                showIcon
+              />
+              <Alert
+                message="警告提示"
+                description="这是一个警告提示的详细描述信息。"
+                type="warning"
+                showIcon
+              />
+              <Alert
+                message="错误提示"
+                description="这是一个错误提示的详细描述信息。"
+                type="error"
+                showIcon
+              />
+            </Card>
 
-              <Alert message="信息提示" type="info" showIcon />
-              <Alert message="成功提示" type="success" showIcon />
-              <Alert message="警告提示" type="warning" showIcon />
-              <Alert message="错误提示" type="error" showIcon />
-            </Space>
-          </Card>
-
-          {/* 时间轴和步骤条 */}
-          <Card title="流程组件" className="demo-card">
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            {/* 流程组件 */}
+            <Card title="流程组件" className="demo-card">
               <Steps
                 current={1}
                 items={[
-                  { title: '已完成', description: '这是描述' },
-                  { title: '进行中', description: '这是描述' },
-                  { title: '待处理', description: '这是描述' }
+                  {
+                    title: '已完成',
+                    description: '这是第一步的描述',
+                  },
+                  {
+                    title: '进行中',
+                    description: '这是第二步的描述',
+                  },
+                  {
+                    title: '等待中',
+                    description: '这是第三步的描述',
+                  },
                 ]}
               />
               
-              <Timeline
-                items={[
-                  { children: '创建服务现场 2015-09-01' },
-                  { children: '初步排除网络异常 2015-09-01' },
-                  { children: '技术测试异常 2015-09-01' },
-                  { children: '网络异常正在修复 2015-09-01' }
-                ]}
-              />
-            </Space>
-          </Card>
+              <Divider>时间轴</Divider>
+              
+              <Timeline items={timelineItems} />
+            </Card>
 
-          {/* 数据表格 */}
-          <Card title="数据表格" className="demo-card">
-            <Table 
-              dataSource={tableData} 
-              columns={tableColumns} 
-              pagination={false}
-              size="middle"
-            />
-          </Card>
-
-          <Divider>
-            <Space>
-              <HeartOutlined style={{ color: '#ff4d4f' }} />
-              <Typography.Text type="secondary">
-                主题切换展示完成
-              </Typography.Text>
-              <StarOutlined style={{ color: '#faad14' }} />
-            </Space>
-          </Divider>
-        </Space>
-        
-        <Paragraph className="footer-text">
-          点击 Vite 和 React 图标了解更多信息
-        </Paragraph>
-      </Content>
+            {/* 数据展示 */}
+            <Card title="数据展示" className="demo-card">
+              <div style={{ marginBottom: 16 }}>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  新增
+                </Button>
+                <Button icon={<DownloadOutlined />} style={{ marginLeft: 8 }}>
+                  导出
+                </Button>
+                <Button icon={<UploadOutlined />} style={{ marginLeft: 8 }}>
+                  导入
+                </Button>
+              </div>
+              <Table dataSource={tableData} columns={tableColumns} />
+            </Card>
+          </div>
+        </Content>
+      </Layout>
     </Layout>
   )
 }
