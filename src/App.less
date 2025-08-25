@@ -1,7 +1,7 @@
 // 管理后台布局样式
 .app {
   min-height: 100vh;
-  background: var(--ant-background-color-base);
+  background: var(--base-background-color-base);
   
   .main-layout {
     margin-left: 256px;
@@ -60,7 +60,7 @@
     .app-content {
       margin-top: 64px;
       padding: 24px;
-      background: var(--ant-background-color-base);
+      background: var(--base-background-color-base);
       min-height: calc(100vh - 64px);
       
       .demo-container {
@@ -71,37 +71,37 @@
           margin-bottom: 24px;
           border-radius: 8px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-          background: var(--ant-component-background);
-          border: 1px solid var(--ant-border-color-base);
+          background: var(--base-component-background);
+          border: 1px solid var(--base-border-color-base);
           
           .ant-card-head {
-            border-bottom: 1px solid var(--ant-border-color-base);
-            background: var(--ant-component-background);
+            border-bottom: 1px solid var(--base-border-color-base);
+            background: var(--base-component-background);
             
             .ant-card-head-title {
-              color: var(--ant-color-text);
+              color: var(--base-color-text);
               font-weight: 600;
             }
           }
           
           .ant-card-body {
-            background: var(--ant-component-background);
+            background: var(--base-component-background);
           }
           
           // 表格样式优化
           .ant-table {
             .ant-table-thead > tr > th {
-              background-color: var(--ant-table-header-bg) !important;
-              border-bottom: 1px solid var(--ant-border-color-base);
-              color: var(--ant-color-text);
+              background-color: var(--base-table-header-bg) !important;
+              border-bottom: 1px solid var(--base-border-color-base);
+              color: var(--base-color-text);
             }
             
             .ant-table-tbody > tr > td {
-              border-bottom: 1px solid var(--ant-border-color-base);
+              border-bottom: 1px solid var(--base-border-color-base);
             }
             
             .ant-table-tbody > tr:hover > td {
-              background-color: var(--ant-color-primary-bg-hover, rgba(24, 144, 255, 0.06)) !important;
+              background-color: var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06)) !important;
             }
           }
           
