@@ -9,9 +9,31 @@
   position: fixed;
   top: 0;
   right: 0;
+  left: 256px;
   z-index: 99;
-  transition: all 0.3s ease;
+  transition: left 0.3s ease;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  
+  // 移动端样式
+  &.mobile {
+    left: 0;
+    padding: 0 16px;
+    height: 56px;
+  }
+  
+  // 平板端样式
+  &.pad {
+    left: 240px;
+    padding: 0 20px;
+    height: 60px;
+  }
+  
+  // 桌面端样式
+  &.pc {
+    left: 256px;
+    padding: 0 24px;
+    height: 64px;
+  }
 
   .header-left {
     display: flex;
@@ -101,5 +123,76 @@
         background-color: rgba(255, 255, 255, 0.08);
       }
     }
+  }
+}
+
+// 响应式断点适配
+@media (max-width: 767px) {
+  .app-header {
+    left: 0 !important;
+    padding: 0 12px;
+    height: 56px;
+    
+    .header-left {
+      .trigger {
+        margin-right: 8px;
+      }
+      
+      .breadcrumb {
+        display: none;
+      }
+    }
+    
+    .header-right {
+      .notification-btn {
+        display: none;
+      }
+      
+      .user-info {
+        .username {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .app-header {
+    left: 240px;
+    padding: 0 16px;
+    height: 60px;
+    
+    .header-left {
+      .breadcrumb {
+        font-size: 13px;
+      }
+    }
+    
+    .header-right {
+      .user-info {
+        .username {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+  
+  // 平板端折叠状态
+  .app-header.pad.collapsed {
+    left: 70px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .app-header {
+    left: 256px;
+    padding: 0 24px;
+    height: 64px;
+  }
+  
+  // 桌面端折叠状态
+  .app-header.pc.collapsed {
+    left: 80px;
   }
 }

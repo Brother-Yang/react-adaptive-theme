@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, type MenuProps } from 'antd';
+import { Menu, Drawer, type MenuProps } from 'antd';
 import {
   DashboardOutlined,
   UserOutlined,
@@ -10,6 +10,7 @@ import {
   TeamOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 import './Sidebar.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -51,17 +52,23 @@ const items: MenuItem[] = [
 
 interface SidebarProps {
   collapsed?: boolean;
+  onCollapse?: (collapsed: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
+const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
   const [selectedKeys, setSelectedKeys] = useState(['1']);
+  const breakpoint = useBreakpoint();
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setSelectedKeys([e.key]);
+    // 移动端点击菜单项后自动收起侧边栏
+    if (breakpoint.isMobile && onCollapse) {
+      onCollapse(true);
+    }
   };
 
-  return (
-    <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+  const sidebarContent = (
+    <>
       <div className="sidebar-logo">
         <div className="logo-icon">
           <DashboardOutlined />
@@ -75,9 +82,36 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed = false }) => {
         defaultOpenKeys={['sub1']}
         items={items}
         onClick={handleMenuClick}
-        inlineCollapsed={collapsed}
+        inlineCollapsed={collapsed && !breakpoint.isMobile}
         className="sidebar-menu"
       />
+    </>
+  );
+
+  // 移动端使用抽屉模式
+  if (breakpoint.isMobile) {
+    return (
+      <Drawer
+        title={null}
+        placement="left"
+        closable={false}
+        onClose={() => onCollapse?.(true)}
+        open={!collapsed}
+        bodyStyle={{ padding: 0 }}
+        width={256}
+        className="sidebar-drawer"
+      >
+        <div className="sidebar mobile">
+          {sidebarContent}
+        </div>
+      </Drawer>
+    );
+  }
+
+  // 桌面端和平板端使用固定侧边栏
+  return (
+    <div className={`sidebar ${collapsed ? 'collapsed' : ''} ${breakpoint.current}`}>
+      {sidebarContent}
     </div>
   );
 };

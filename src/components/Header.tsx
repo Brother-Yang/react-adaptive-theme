@@ -9,6 +9,7 @@ import {
   BellOutlined,
 } from '@ant-design/icons';
 import ThemeToggle from './ThemeToggle';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 import './Header.less';
 
 const { Header: AntHeader } = Layout;
@@ -19,6 +20,8 @@ interface HeaderProps {
 }
 
 const AppHeader: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
+  const breakpoint = useBreakpoint();
+  
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -56,7 +59,7 @@ const AppHeader: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   };
 
   return (
-    <AntHeader className="app-header">
+    <AntHeader className={`app-header ${breakpoint.current}`}>
       <div className="header-left">
         <Button
           type="text"
@@ -64,28 +67,34 @@ const AppHeader: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           onClick={onToggle}
           className="trigger"
         />
-        <Breadcrumb
-          className="breadcrumb"
-          items={[
-            {
-              title: '首页',
-            },
-            {
-              title: '仪表盘',
-            },
-          ]}
-        />
+        {/* 移动端隐藏面包屑 */}
+        {!breakpoint.isMobile && (
+          <Breadcrumb
+            className="breadcrumb"
+            items={[
+              {
+                title: '首页',
+              },
+              {
+                title: '仪表盘',
+              },
+            ]}
+          />
+        )}
       </div>
       
       <div className="header-right">
-        <Space size="middle">
+        <Space size={breakpoint.isMobile ? 'small' : 'middle'}>
           <ThemeToggle />
           
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            className="notification-btn"
-          />
+          {/* 平板和桌面端显示通知按钮 */}
+          {!breakpoint.isMobile && (
+            <Button
+              type="text"
+              icon={<BellOutlined />}
+              className="notification-btn"
+            />
+          )}
           
           <Dropdown
             menu={{
@@ -96,8 +105,9 @@ const AppHeader: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             arrow
           >
             <div className="user-info">
-              <Avatar size="small" icon={<UserOutlined />} />
-              <span className="username">管理员</span>
+              <Avatar size={breakpoint.isMobile ? 'small' : 'default'} icon={<UserOutlined />} />
+              {/* 移动端隐藏用户名 */}
+              {!breakpoint.isMobile && <span className="username">管理员</span>}
             </div>
           </Dropdown>
         </Space>

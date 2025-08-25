@@ -32,6 +32,8 @@ import {
 } from '@ant-design/icons'
 import Sidebar from './components/Sidebar'
 import AppHeader from './components/Header'
+import BreakpointIndicator from './components/BreakpointIndicator'
+import { useBreakpoint } from './hooks/useBreakpoint'
 import './App.less'
 
 const { Content } = Layout
@@ -39,10 +41,18 @@ const { Option } = Select
 
 function App() {
   const [collapsed, setCollapsed] = useState(false)
+  const breakpoint = useBreakpoint()
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed)
   }
+
+  // 移动端自动收起侧边栏
+  React.useEffect(() => {
+    if (breakpoint.isMobile) {
+      setCollapsed(true)
+    }
+  }, [breakpoint.isMobile])
 
   const tableData = [
     { key: '1', name: '张三', age: 32, address: '北京市朝阳区', status: 'active' },
@@ -97,8 +107,8 @@ function App() {
 
   return (
     <Layout className="app">
-      <Sidebar collapsed={collapsed} />
-      <Layout className={`main-layout ${collapsed ? 'collapsed' : ''}`}>
+      <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
+      <Layout className={`main-layout ${collapsed ? 'collapsed' : ''} ${breakpoint.current}`}>
         <AppHeader collapsed={collapsed} onToggle={toggleCollapsed} />
         <Content className="app-content">
           <div className="demo-container">
@@ -237,6 +247,9 @@ function App() {
           </div>
         </Content>
       </Layout>
+      
+      {/* 断点指示器 */}
+      <BreakpointIndicator showDetails={false} clickable={true} />
     </Layout>
   )
 }

@@ -10,9 +10,36 @@
   left: 0;
   top: 0;
   z-index: 100;
+  overflow-y: auto;
 
   &.collapsed {
     width: 80px;
+  }
+  
+  // 移动端样式
+  &.mobile {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-right: none;
+  }
+  
+  // 平板端样式
+  &.pad {
+    width: 240px;
+    
+    &.collapsed {
+      width: 70px;
+    }
+  }
+  
+  // 桌面端样式
+  &.pc {
+    width: 256px;
+    
+    &.collapsed {
+      width: 80px;
+    }
   }
 
   .sidebar-logo {
@@ -93,6 +120,17 @@
   }
 }
 
+// 抽屉样式
+.sidebar-drawer {
+  .ant-drawer-body {
+    padding: 0;
+  }
+  
+  .ant-drawer-content {
+    background: var(--ant-component-background);
+  }
+}
+
 // 暗色主题适配
 [data-theme='dark'] {
   .sidebar {
@@ -106,5 +144,42 @@
         background-color: rgba(24, 144, 255, 0.15) !important;
       }
     }
+  }
+}
+
+// 响应式断点适配
+@media (max-width: 767px) {
+  .sidebar:not(.mobile) {
+    transform: translateX(-100%);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .sidebar.pad {
+    width: 240px;
+    
+    .sidebar-logo {
+      padding: 12px 16px;
+      
+      .logo-text {
+        font-size: 16px;
+      }
+    }
+    
+    .sidebar-menu {
+      .ant-menu-item {
+        padding-left: 20px !important;
+      }
+      
+      .ant-menu-submenu-title {
+        padding-left: 20px !important;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .sidebar.pc {
+    width: 256px;
   }
 }

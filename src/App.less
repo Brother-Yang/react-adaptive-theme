@@ -12,6 +12,33 @@
       margin-left: 80px;
     }
     
+    // 移动端样式
+    &.mobile {
+      margin-left: 0;
+      
+      &.collapsed {
+        margin-left: 0;
+      }
+    }
+    
+    // 平板端样式
+    &.pad {
+      margin-left: 240px;
+      
+      &.collapsed {
+        margin-left: 70px;
+      }
+    }
+    
+    // 桌面端样式
+    &.pc {
+      margin-left: 256px;
+      
+      &.collapsed {
+        margin-left: 80px;
+      }
+    }
+    
     .app-content {
       margin-top: 64px;
       padding: 24px;
@@ -82,31 +109,98 @@
 }
 
 // 响应式设计
-@media (max-width: 1200px) {
+@media (max-width: 767px) {
   .app {
     .main-layout {
+      margin-left: 0 !important;
+      
+      &.collapsed {
+        margin-left: 0 !important;
+      }
+      
       .app-content {
-        padding: 16px;
+        margin-top: 56px;
+        padding: 12px;
         
         .demo-container {
           max-width: 100%;
+          
+          .demo-card {
+            margin-bottom: 12px;
+            border-radius: 6px;
+            
+            // 移动端表格横向滚动
+            .ant-table-wrapper {
+              overflow-x: auto;
+            }
+            
+            // 移动端按钮组垂直排列
+            .ant-btn-group {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              
+              .ant-btn {
+                width: 100%;
+              }
+            }
+            
+            // 移动端表单项垂直排列
+            .ant-form-item {
+              margin-bottom: 16px;
+            }
+          }
         }
       }
     }
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) and (max-width: 1199px) {
   .app {
     .main-layout {
-      margin-left: 0;
+      margin-left: 240px;
       
       &.collapsed {
-        margin-left: 0;
+        margin-left: 70px;
       }
       
       .app-content {
-        padding: 12px;
+        margin-top: 60px;
+        padding: 16px;
+        
+        .demo-container {
+          max-width: 100%;
+          
+          .demo-card {
+            margin-bottom: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .app {
+    .main-layout {
+      margin-left: 256px;
+      
+      &.collapsed {
+        margin-left: 80px;
+      }
+      
+      .app-content {
+        margin-top: 64px;
+        padding: 24px;
+        
+        .demo-container {
+          max-width: 1200px;
+          
+          .demo-card {
+            margin-bottom: 24px;
+          }
+        }
       }
     }
   }
