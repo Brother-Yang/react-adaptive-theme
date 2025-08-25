@@ -3,12 +3,6 @@ import { Menu, Drawer, type MenuProps } from 'antd';
 import {
   DashboardOutlined,
   UserOutlined,
-  SettingOutlined,
-  TableOutlined,
-  BarChartOutlined,
-  FileTextOutlined,
-  TeamOutlined,
-  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import './Sidebar.less';
@@ -30,24 +24,12 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem('仪表盘', '1', <DashboardOutlined />),
+  getItem('仪表盘', '1', <DashboardOutlined />), 
   getItem('用户管理', 'sub1', <UserOutlined />, [
     getItem('用户列表', '2'),
     getItem('角色管理', '3'),
     getItem('权限设置', '4'),
   ]),
-  getItem('数据管理', 'sub2', <TableOutlined />, [
-    getItem('数据列表', '5'),
-    getItem('数据分析', '6'),
-  ]),
-  getItem('统计报表', '7', <BarChartOutlined />),
-  getItem('订单管理', '8', <ShoppingCartOutlined />),
-  getItem('团队管理', 'sub3', <TeamOutlined />, [
-    getItem('团队列表', '9'),
-    getItem('部门管理', '10'),
-  ]),
-  getItem('文档中心', '11', <FileTextOutlined />),
-  getItem('系统设置', '12', <SettingOutlined />),
 ];
 
 interface SidebarProps {
