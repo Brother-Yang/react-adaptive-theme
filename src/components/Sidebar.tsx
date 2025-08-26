@@ -1,101 +1,33 @@
-import React, { useState } from 'react';
-import { Menu, Drawer, type MenuProps } from 'antd';
-import {
-  DashboardOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { useBreakpoint } from '../hooks/useBreakpoint';
+import React from 'react';
+import { useResponsiveComponent } from '../hooks/useResponsiveComponent';
+import SidebarSm from './Sidebar.Sm';
+import SidebarMd from './Sidebar.Md';
+import SidebarLg from './Sidebar.Lg';
 import './Sidebar.less';
-
-type MenuItem = Required<MenuProps>['items'][number];
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
-
-const items: MenuItem[] = [
-  getItem('仪表盘', '1', <DashboardOutlined />), 
-  getItem('用户管理', 'sub1', <UserOutlined />, [
-    getItem('用户列表', '2'),
-    getItem('角色管理', '3'),
-    getItem('权限设置', '4'),
-  ]),
-];
 
 interface SidebarProps {
   collapsed?: boolean;
   onCollapse?: (collapsed: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
-  const [selectedKeys, setSelectedKeys] = useState(['1']);
-  const breakpoint = useBreakpoint();
+/**
+ * 响应式Sidebar组件
+ * 根据屏幕尺寸自动选择合适的Sidebar变体：
+ * - xs, sm: SidebarSm (移动端抽屉模式)
+ * - md: SidebarMd (平板端固定侧边栏)
+ * - lg, xl: SidebarLg (桌面端完整功能侧边栏)
+ */
+const Sidebar: React.FC<SidebarProps> = (props) => {
+  const ResponsiveSidebar = useResponsiveComponent({
+    default: SidebarLg, // 默认使用桌面端组件
+    xs: SidebarSm,
+    sm: SidebarSm,
+    md: SidebarMd,
+    lg: SidebarLg,
+    xl: SidebarLg,
+  });
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
-    setSelectedKeys([e.key]);
-    // 移动端点击菜单项后自动收起侧边栏
-    if (breakpoint.isMobile && onCollapse) {
-      onCollapse(true);
-    }
-  };
-
-  const sidebarContent = (
-    <>
-      <div className="sidebar-logo">
-        <div className="logo-icon">
-          <DashboardOutlined />
-        </div>
-        {!collapsed && <span className="logo-text">管理后台</span>}
-      </div>
-      <Menu
-        mode="inline"
-        theme="light"
-        selectedKeys={selectedKeys}
-        defaultOpenKeys={['sub1']}
-        items={items}
-        onClick={handleMenuClick}
-        inlineCollapsed={collapsed && !breakpoint.isMobile}
-        className="sidebar-menu"
-      />
-    </>
-  );
-
-  // 移动端使用抽屉模式
-  if (breakpoint.isMobile) {
-    return (
-      <Drawer
-        title={null}
-        placement="left"
-        closable={false}
-        onClose={() => onCollapse?.(true)}
-        open={!collapsed}
-        styles={{ body: { padding: 0 } }}
-        width={256}
-        className="sidebar-drawer"
-      >
-        <div className={`sidebar ${breakpoint.current}`}>
-          {sidebarContent}
-        </div>
-      </Drawer>
-    );
-  }
-
-  // 桌面端和平板端使用固定侧边栏
-  return (
-    <div className={`sidebar ${collapsed ? 'collapsed' : ''} ${breakpoint.current}`}>
-      {sidebarContent}
-    </div>
-  );
+  return <ResponsiveSidebar {...props} />;
 };
 
 export default Sidebar;

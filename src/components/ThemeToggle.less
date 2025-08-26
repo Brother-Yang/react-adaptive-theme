@@ -21,13 +21,71 @@
       }
     }
   }
-}
 
-// 响应式设计
-@media (max-width: 768px) {
-  .theme-toggle {
-    &-label {
+  // 移动端样式
+  &.mobile {
+    gap: 4px;
+    
+    .theme-toggle-label {
       display: none;
+    }
+    
+    .theme-toggle-switch {
+      &.ant-switch {
+        min-width: 28px;
+        height: 16px;
+        
+        .anticon {
+          font-size: 10px;
+        }
+      }
+    }
+  }
+
+  // 平板端样式
+  &.tablet {
+    gap: 6px;
+    
+    .theme-toggle-label {
+      font-size: 13px;
+      
+      &.tablet {
+        display: inline-block;
+      }
+    }
+    
+    .theme-toggle-switch {
+      &.ant-switch {
+        .anticon {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+
+  // 桌面端样式
+  &.desktop {
+    gap: 8px;
+    
+    .theme-toggle-label {
+      font-size: 14px;
+      
+      &.desktop {
+        display: inline-block;
+        font-weight: 500;
+      }
+    }
+    
+    .theme-toggle-switch {
+      &.ant-switch {
+        .anticon {
+          font-size: 12px;
+        }
+        
+        &:hover {
+          background-color: var(--base-color-bg-hover);
+        }
+      }
     }
   }
 }
