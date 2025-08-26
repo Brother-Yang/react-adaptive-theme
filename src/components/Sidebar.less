@@ -98,7 +98,7 @@
       border-radius: 0;
       
       &:hover {
-        background-color: var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06));
+        background-color: var(--base-hover-bg, var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06)));
       }
     }
     
@@ -148,21 +148,7 @@
   }
 }
 
-// 暗色主题适配
-[data-theme='dark'] {
-  .sidebar {
-    .sidebar-menu {
-      .ant-menu-item:hover,
-      .ant-menu-submenu-title:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-      }
-      
-      .ant-menu-item-selected {
-        background-color: rgba(24, 144, 255, 0.15) !important;
-      }
-    }
-  }
-}
+
 
 // 响应式断点适配 - 国际标准
 // Extra Small & Small (0-767px) - 移动设备

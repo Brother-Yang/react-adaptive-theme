@@ -12,7 +12,7 @@
   left: 256px;
   z-index: 99;
   transition: left 0.3s ease;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: var(--base-box-shadow, 0 1px 4px rgba(0, 21, 41, 0.08));
   
   // Extra Small - 手机竖屏
   &.xs {
@@ -60,7 +60,7 @@
       
       &:hover {
         color: var(--base-color-primary);
-        background-color: var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06));
+        background-color: var(--base-hover-bg, var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06)));
       }
     }
 
@@ -112,29 +112,6 @@
         color: var(--base-color-text);
         font-size: 14px;
         font-weight: 500;
-      }
-    }
-  }
-}
-
-// 暗色主题适配
-[data-theme='dark'] {
-  .app-header {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    
-    .header-left {
-      .trigger:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-      }
-    }
-    
-    .header-right {
-      .notification-btn:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-      }
-      
-      .user-info:hover {
-        background-color: rgba(255, 255, 255, 0.08);
       }
     }
   }

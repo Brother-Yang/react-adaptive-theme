@@ -17,6 +17,10 @@ export interface ExtendedThemeConfig extends ThemeConfig {
     backgroundColorBase?: string
     componentBackground?: string
     tableHeaderBg?: string
+    cardShadow?: string
+    tableRowHoverBg?: string
+    hoverBg?: string
+    boxShadow?: string
   }
 }
 
@@ -54,6 +58,10 @@ export const lightTheme: ExtendedThemeConfig = {
     backgroundColorBase: '#f0f2f5',
     componentBackground: '#ffffff',
     tableHeaderBg: '#fafafa',
+    cardShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    tableRowHoverBg: 'rgba(0, 0, 0, 0.04)',
+    hoverBg: 'rgba(0, 0, 0, 0.04)',
+    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
   },
 }
 
@@ -91,6 +99,10 @@ export const darkTheme: ExtendedThemeConfig = {
     backgroundColorBase: '#141414',
     componentBackground: '#1f1f1f',
     tableHeaderBg: '#262626',
+    cardShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+    tableRowHoverBg: 'rgba(255, 255, 255, 0.08)',
+    hoverBg: 'rgba(255, 255, 255, 0.08)',
+    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.2)',
   },
 }
 

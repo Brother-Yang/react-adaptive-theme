@@ -70,9 +70,10 @@
         .demo-card {
           margin-bottom: 24px;
           border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+          box-shadow: var(--base-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
           background: var(--base-component-background);
-          border: 1px solid var(--base-border-color-base);
+          border: 1px solid var(--base-border-color-base); 
           
           .ant-card-head {
             border-bottom: 1px solid var(--base-border-color-base);
@@ -253,19 +254,17 @@
   }
 }
 
-// 暗色主题适配
-[data-theme='dark'] {
-  .app {
-    .main-layout {
-      .app-content {
-        .demo-container {
-          .demo-card {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            
-            .ant-table {
-              .ant-table-tbody > tr:hover > td {
-                background-color: rgba(255, 255, 255, 0.08) !important;
-              }
+// 使用CSS变量替代data-theme选择器
+.app {
+  .main-layout {
+    .app-content {
+      .demo-container {
+        .demo-card {
+          box-shadow: var(--base-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+          
+          .ant-table {
+            .ant-table-tbody > tr:hover > td {
+              background-color: var(--base-table-row-hover-bg, rgba(0, 0, 0, 0.04)) !important;
             }
           }
         }

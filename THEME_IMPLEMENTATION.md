@@ -105,7 +105,7 @@ export const applyBaseTheme = (theme: ExtendedThemeConfig) => {
 
 #### 自定义组件
 - 使用 CSS 变量实现主题响应
-- 通过 `[data-theme='dark']` 选择器区分主题
+- 通过 CSS 变量动态切换主题样式
 - 动态更新的 CSS 自定义属性值
 
 ## 使用方式

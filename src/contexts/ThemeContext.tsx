@@ -52,10 +52,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
-  // 更新HTML根元素的data-theme属性并应用base主题
+  // 应用主题变化
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', themeMode)
-    // 应用当前主题的base属性到CSS变量
+    // 应用基础主题CSS变量
     applyBaseTheme(themeConfigs[themeMode])
   }, [themeMode])
 
