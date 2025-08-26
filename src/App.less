@@ -102,7 +102,7 @@
             }
             
             .ant-table-tbody > tr:hover > td {
-              background-color: var(--base-color-primary-bg-hover, rgba(24, 144, 255, 0.06)) !important;
+              background-color: var(--base-table-row-hover-bg, rgba(0, 0, 0, 0.04)) !important;
             }
           }
           
@@ -247,25 +247,6 @@
           
           .demo-card {
             margin-bottom: 24px;
-          }
-        }
-      }
-    }
-  }
-}
-
-// 使用CSS变量替代data-theme选择器
-.app {
-  .main-layout {
-    .app-content {
-      .demo-container {
-        .demo-card {
-          box-shadow: var(--base-card-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
-          
-          .ant-table {
-            .ant-table-tbody > tr:hover > td {
-              background-color: var(--base-table-row-hover-bg, rgba(0, 0, 0, 0.04)) !important;
-            }
           }
         }
       }

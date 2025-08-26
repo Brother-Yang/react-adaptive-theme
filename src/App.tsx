@@ -39,6 +39,28 @@ import './App.less'
 const { Content } = Layout
 const { Option } = Select
 
+// 静态数据移到组件外部以提升性能
+const tableData = [
+  { key: '1', name: '张三', age: 32, address: '北京市朝阳区', status: 'active' },
+  { key: '2', name: '李四', age: 28, address: '上海市浦东新区', status: 'inactive' },
+  { key: '3', name: '王五', age: 35, address: '广州市天河区', status: 'active' }
+] as const
+
+const timelineItems = [
+  {
+    children: '创建项目 2024-01-15',
+  },
+  {
+    children: '完成需求分析 2024-01-16',
+  },
+  {
+    children: '开始开发 2024-01-17',
+  },
+  {
+    children: '测试阶段 2024-01-20',
+  },
+]
+
 function App() {
   const [collapsed, setCollapsed] = useState(false)
   const breakpoint = useBreakpoint()
@@ -54,13 +76,8 @@ function App() {
     }
   }, [breakpoint.isMobile])
 
-  const tableData = [
-    { key: '1', name: '张三', age: 32, address: '北京市朝阳区', status: 'active' },
-    { key: '2', name: '李四', age: 28, address: '上海市浦东新区', status: 'inactive' },
-    { key: '3', name: '王五', age: 35, address: '广州市天河区', status: 'active' }
-  ]
-
-  const tableColumns = [
+  // 使用useMemo优化表格列配置
+  const tableColumns = React.useMemo(() => [
     { title: '姓名', dataIndex: 'name', key: 'name' },
     { title: '年龄', dataIndex: 'age', key: 'age' },
     { title: '地址', dataIndex: 'address', key: 'address' },
@@ -88,22 +105,7 @@ function App() {
         </>
       ),
     }
-  ]
-
-  const timelineItems = [
-    {
-      children: '创建项目 2024-01-15',
-    },
-    {
-      children: '完成需求分析 2024-01-16',
-    },
-    {
-      children: '开始开发 2024-01-17',
-    },
-    {
-      children: '测试阶段 2024-01-20',
-    },
-  ]
+  ], [])
 
   return (
     <Layout className="app">

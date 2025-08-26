@@ -1,34 +1,13 @@
-// 全局变量定义
+// 引入全局变量
+@import './styles/variables.less';
+
+// Less 变量定义（兼容性）
 @primary-color: #1890ff;
 @primary-hover-color: #40a9ff;
 @font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 @line-height-base: 1.5;
 @font-weight-base: 400;
 @transition-duration: 0.3s;
-
-// CSS 变量支持主题切换
-// :root {
-//   --base-color-primary: #1890ff;
-//   --base-color-success: #52c41a;
-//   --base-color-warning: #faad14;
-//   --base-color-error: #ff4d4f;
-//   --base-color-text: #262626;
-//   --base-color-text-secondary: #8c8c8c;
-//   --base-border-color-base: #d9d9d9;
-//   --base-background-color-base: #f0f2f5;
-//   --base-component-background: #ffffff;
-//   --base-table-header-bg: #fafafa;
-// }
-
-// 暗色主题变量
-// [data-theme='dark'] {
-//   --base-color-text: #ffffff;
-//   --base-color-text-secondary: #a6a6a6;
-//   --base-border-color-base: #434343;
-//   --base-background-color-base: #141414;
-//   --base-component-background: #1f1f1f;
-//   --base-table-header-bg: #262626;
-// }
 
 // 全局重置
 * {
@@ -84,14 +63,14 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--base-background-color-base);
+  background: var(--background-color-light);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--base-border-color-base);
-  border-radius: 4px;
+  background: var(--border-color);
+  border-radius: var(--border-radius-sm);
   
   &:hover {
-    background: var(--base-color-text-secondary);
+    background: var(--text-color-secondary);
   }
 }
