@@ -1,9 +1,9 @@
 import React from 'react';
-import { useResponsiveComponent } from '../hooks/useResponsiveComponent';
-import SidebarSm from './Sidebar.Sm';
-import SidebarMd from './Sidebar.Md';
-import SidebarLg from './Sidebar.Lg';
-import './Sidebar.less';
+import { useResponsiveComponent } from '../../hooks/useResponsiveComponent';
+import SidebarSm from './index.Sm';
+import SidebarMd from './index.Md';
+import SidebarLg from './index.Lg';
+import './index.less';
 
 interface SidebarProps {
   collapsed?: boolean;

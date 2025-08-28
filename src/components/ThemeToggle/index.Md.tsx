@@ -1,8 +1,8 @@
 import React from 'react'
 import { Switch, Tooltip } from 'antd'
 import { SunOutlined, MoonOutlined } from '@ant-design/icons'
-import { useTheme } from '../hooks/useTheme'
-import './ThemeToggle.less'
+import { useTheme } from '../../hooks/useTheme'
+import './index.less'
 
 interface ThemeToggleProps {
   size?: 'small' | 'default'

@@ -1,9 +1,9 @@
 import React from 'react';
-import { useResponsiveComponent } from '../hooks/useResponsiveComponent';
-import HeaderSm from './Header.Sm';
-import HeaderMd from './Header.Md';
-import HeaderLg from './Header.Lg';
-import './Header.less';
+import { useResponsiveComponent } from '../../hooks/useResponsiveComponent';
+import HeaderSm from './index.Sm';
+import HeaderMd from './index.Md';
+import HeaderLg from './index.Lg';
+import './index.less';
 
 interface HeaderProps {
   collapsed: boolean;

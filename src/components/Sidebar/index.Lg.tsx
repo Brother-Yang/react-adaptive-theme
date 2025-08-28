@@ -7,7 +7,7 @@ import {
   FileTextOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import './Sidebar.less';
+import './index.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

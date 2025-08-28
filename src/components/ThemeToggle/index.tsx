@@ -1,9 +1,9 @@
 import React from 'react'
-import { useResponsiveComponent } from '../hooks/useResponsiveComponent'
-import ThemeToggleSm from './ThemeToggle.Sm'
-import ThemeToggleMd from './ThemeToggle.Md'
-import ThemeToggleLg from './ThemeToggle.Lg'
-import './ThemeToggle.less'
+import { useResponsiveComponent } from '../../hooks/useResponsiveComponent'
+import ThemeToggleSm from './index.Sm'
+import ThemeToggleMd from './index.Md'
+import ThemeToggleLg from './index.Lg'
+import './index.less'
 
 interface ThemeToggleProps {
   size?: 'small' | 'default'

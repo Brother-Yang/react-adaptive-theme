@@ -1,15 +1,14 @@
 import React from 'react';
-import { Layout, Breadcrumb, Avatar, Dropdown, Space, Button, type MenuProps } from 'antd';
+import { Layout, Avatar, Dropdown, Space, Button, type MenuProps } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
   LogoutOutlined,
   SettingOutlined,
-  BellOutlined,
 } from '@ant-design/icons';
-import ThemeToggle from './ThemeToggle';
-import './Header.less';
+import ThemeToggle from '../ThemeToggle';
+import './index.less';
 
 const { Header: AntHeader } = Layout;
 
@@ -19,15 +18,14 @@ interface HeaderProps {
 }
 
 /**
- * 桌面端Header组件
- * 专为大屏幕设备（lg, xl）优化
- * - 显示完整的面包屑导航
- * - 显示所有功能按钮
- * - 显示完整的用户信息
- * - 使用宽松的间距
- * - 可以显示更多操作按钮
+ * 移动端Header组件
+ * 专为小屏幕设备（xs, sm）优化
+ * - 隐藏面包屑导航
+ * - 隐藏通知按钮
+ * - 隐藏用户名，只显示头像
+ * - 使用更紧凑的间距
  */
-const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
+const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -65,41 +63,22 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   };
 
   return (
-    <AntHeader className={`app-header desktop ${collapsed ? 'collapsed' : ''}`}>
+    <AntHeader className={`app-header mobile ${collapsed ? 'collapsed' : ''}`}>
       <div className="header-left">
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={onToggle}
           className="trigger"
+          size="small"
         />
-        {/* 桌面端显示完整面包屑 */}
-        <Breadcrumb
-          className="breadcrumb full"
-          items={[
-            {
-              title: '首页',
-            },
-            {
-              title: '工作台',
-            },
-            {
-              title: '仪表盘',
-            },
-          ]}
-        />
+        {/* 移动端可以显示简化的标题 */}
+        <span className="mobile-title">控制台</span>
       </div>
       
       <div className="header-right">
-        <Space size="large">
+        <Space size="small">
           <ThemeToggle />
-          
-          {/* 桌面端可以显示更多功能按钮 */}
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            className="notification-btn"
-          />
           
           <Dropdown
             menu={{
@@ -109,12 +88,8 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             placement="bottomRight"
             arrow
           >
-            <div className="user-info desktop">
-              <Avatar size="default" icon={<UserOutlined />} />
-              <div className="user-details">
-                <span className="username">管理员</span>
-                <span className="user-role">系统管理员</span>
-              </div>
+            <div className="user-info mobile">
+              <Avatar size="small" icon={<UserOutlined />} />
             </div>
           </Dropdown>
         </Space>
@@ -123,4 +98,4 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   );
 };
 
-export default HeaderLg;
+export default HeaderSm;

@@ -8,8 +8,8 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
-import ThemeToggle from './ThemeToggle';
-import './Header.less';
+import ThemeToggle from '../ThemeToggle';
+import './index.less';
 
 const { Header: AntHeader } = Layout;
 
