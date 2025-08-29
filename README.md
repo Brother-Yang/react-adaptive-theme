@@ -1,11 +1,13 @@
-# Theme App
+# React Responsive Theme App
 
-一个基于 React + TypeScript + Ant Design 的现代化主题切换应用，支持响应式设计和暗色/亮色主题切换。
+一个基于 React + TypeScript + Ant Design 的现代化响应式主题应用，支持智能断点切换、组件级响应式设计和暗色/亮色主题无缝切换。
 
 ## ✨ 功能特性
 
 - 🎨 **主题切换**: 支持亮色/暗色主题无缝切换
-- 📱 **响应式设计**: 基于国际标准断点 (xs/sm/md/lg/xl) 的完全响应式布局
+- 📱 **智能响应式**: 基于五级断点 (sm/md/lg/xl/xxl) 的组件级响应式设计
+- 🔌 **响应式插件**: 自研 Vite 插件，支持组件按断点自动切换
+- 🎯 **断点优化**: 修复断点切换bug，支持快速切换无延迟
 - 🎯 **现代化UI**: 使用 Ant Design 5.x 组件库，界面美观现代
 - 🔧 **TypeScript**: 完整的 TypeScript 支持，类型安全
 - 📊 **断点调试**: 内置断点指示器，方便开发调试
@@ -57,17 +59,28 @@ pnpm lint
 
 开发服务器启动后，访问 [http://localhost:5173](http://localhost:5173) 查看应用。
 
-## 📱 响应式断点
+## 📱 响应式断点系统
 
-项目采用国际标准的五分类响应式断点：
+项目采用优化的五级响应式断点系统：
 
-| 断点 | 设备类型 | 屏幕宽度 | 侧边栏宽度 |
-|------|----------|----------|------------|
-| xs | 手机竖屏 | < 576px | 抽屉模式 |
-| sm | 手机横屏 | 576px - 767px | 抽屉模式 |
-| md | 平板设备 | 768px - 991px | 240px |
-| lg | 桌面设备 | 992px - 1199px | 256px |
-| xl | 大屏设备 | ≥ 1200px | 280px |
+| 断点 | 设备类型 | 屏幕宽度范围 | 侧边栏宽度 | 说明 |
+|------|----------|-------------|------------|------|
+| sm | 小屏设备 | < 768px | 抽屉模式 | 手机设备，包含 < 576px 的超小屏 |
+| md | 平板设备 | 768px - 991px | 240px | 平板竖屏 |
+| lg | 桌面设备 | 992px - 1199px | 256px | 小型桌面 |
+| xl | 大屏设备 | 1200px - 1399px | 280px | 标准桌面 |
+| xxl | 超大屏 | ≥ 1400px | 300px | 大型显示器 |
+
+### 断点配置
+```typescript
+export const BREAKPOINTS = {
+  sm: 576,   // Small devices
+  md: 768,   // Medium devices  
+  lg: 992,   // Large devices
+  xl: 1200,  // Extra large devices
+  xxl: 1400  // Extra extra large devices
+} as const;
+```
 
 ## 🎨 主题系统
 
@@ -113,13 +126,17 @@ src/
 │   └── ThemeContextDefinition.ts
 ├── hooks/              # 自定义 Hooks
 │   ├── useBreakpoint.ts   # 断点检测 Hook
+│   ├── useResponsiveComponent.ts # 响应式组件 Hook
 │   └── useTheme.ts        # 主题管理 Hook
 ├── config/             # 配置文件
 │   └── theme.ts           # 主题配置
 ├── App.tsx             # 主应用组件
 ├── App.less            # 全局样式
 ├── main.tsx            # 应用入口
+├── styles/             # 样式文件
+│   └── variables.less     # 样式变量
 └── index.less          # 基础样式
+vite-plugin-react-responsive.ts # 响应式插件
 ```
 
 ## 🔧 核心功能
@@ -135,13 +152,31 @@ function MyComponent() {
   return (
     <div>
       <p>当前断点: {breakpoint.current}</p>
+      <p>屏幕宽度: {breakpoint.width}px</p>
       <p>是否移动端: {breakpoint.isMobile ? '是' : '否'}</p>
+      <p>是否PC端: {breakpoint.isPc ? '是' : '否'}</p>
     </div>
   )
 }
 ```
 
-### 2. 主题切换
+### 2. 组件级响应式设计
+
+项目支持为同一组件创建不同断点的版本：
+
+```
+components/Header/
+├── index.tsx          # 默认组件
+├── index.sm.tsx       # 小屏版本
+├── index.md.tsx       # 平板版本
+├── index.lg.tsx       # 桌面版本
+├── index.xl.tsx       # 大屏版本
+└── index.xxl.tsx      # 超大屏版本
+```
+
+系统会根据当前屏幕尺寸自动选择合适的组件版本。
+
+### 3. 主题切换
 
 ```typescript
 import { useTheme } from './hooks/useTheme'
@@ -157,12 +192,54 @@ function ThemeButton() {
 }
 ```
 
+## 🔌 Vite 响应式插件
+
+项目包含自研的 `vite-plugin-react-responsive` 插件，提供以下功能：
+
+- **自动组件切换**: 根据屏幕尺寸自动选择对应的组件版本
+- **动态导入**: 按需加载组件，优化性能
+- **开发调试**: 提供 `/responsive-debug` 端点查看插件配置
+- **类型安全**: 完整的 TypeScript 支持
+
+### 插件配置
+
+```typescript
+// vite.config.ts
+import reactResponsivePlugin from './vite-plugin-react-responsive'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    reactResponsivePlugin({
+      breakpoints: {
+        sm: 576,
+        md: 768,
+        lg: 992,
+        xl: 1200,
+        xxl: 1400
+      },
+      defaultBreakpoint: 'lg'
+    })
+  ]
+})
+```
+
 ## 🎯 开发指南
 
-### 添加新组件
-1. 在 `src/components/` 目录下创建组件文件
-2. 创建对应的 `.less` 样式文件
-3. 确保组件支持主题切换和响应式设计
+### 添加响应式组件
+1. 在 `src/components/` 目录下创建组件文件夹
+2. 创建 `index.tsx` 作为默认组件
+3. 根据需要创建 `index.{breakpoint}.tsx` 文件
+4. 创建对应的 `.less` 样式文件
+5. 确保组件支持主题切换
+
+### 断点文件命名规范
+- 默认组件: `index.tsx`
+- 小屏组件: `index.sm.tsx`
+- 平板组件: `index.md.tsx`
+- 桌面组件: `index.lg.tsx`
+- 大屏组件: `index.xl.tsx`
+- 超大屏组件: `index.xxl.tsx`
 
 ### 样式开发
 - 使用 Less 预处理器
