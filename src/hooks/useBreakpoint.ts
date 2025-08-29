@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
 
-// 定义断点类型（按照前端国际标准）
-export type BreakpointType = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+// 定义断点类型（与插件配置保持一致）
+export type BreakpointType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
-// 定义断点配置（符合Bootstrap 5、Material Design等国际标准）
+// 定义断点配置（与插件配置保持一致）
 export const BREAKPOINTS = {
-  xs: { min: 0, max: 575 },      // Extra small devices (portrait phones)
-  sm: { min: 576, max: 767 },   // Small devices (landscape phones)
-  md: { min: 768, max: 991 },   // Medium devices (tablets)
-  lg: { min: 992, max: 1199 },  // Large devices (desktops)
-  xl: { min: 1200, max: Infinity } // Extra large devices (large desktops)
+  sm: 576,   // Small devices - 对应插件 Sm
+  md: 768,   // Medium devices - 对应插件 Md
+  lg: 992,   // Large devices - 对应插件 Lg
+  xl: 1200,  // Extra large devices - 对应插件 Xl
+  xxl: 1400  // Extra extra large devices - 对应插件 Xxl
 } as const;
 
 // 兼容性别名（保持向后兼容）
 export const BREAKPOINT_ALIASES = {
-  mobile: ['xs', 'sm'] as const,
+  mobile: ['sm'] as const,
   pad: ['md'] as const,
-  pc: ['lg', 'xl'] as const
+  pc: ['lg', 'xl', 'xxl'] as const
 } as const;
 
 // 断点信息接口
@@ -24,15 +24,15 @@ export interface BreakpointInfo {
   current: BreakpointType;
   width: number;
   height: number;
-  isXs: boolean;
   isSm: boolean;
   isMd: boolean;
   isLg: boolean;
   isXl: boolean;
+  isXxl: boolean;
   // 兼容性属性
-  isMobile: boolean; // xs + sm
+  isMobile: boolean; // sm
   isPad: boolean;    // md
-  isPc: boolean;     // lg + xl
+  isPc: boolean;     // lg + xl + xxl
 }
 
 /**
@@ -41,16 +41,19 @@ export interface BreakpointInfo {
  * @returns 断点类型
  */
 function getBreakpointType(width: number): BreakpointType {
-  if (width <= BREAKPOINTS.xs.max) {
-    return 'xs';
-  } else if (width >= BREAKPOINTS.sm.min && width <= BREAKPOINTS.sm.max) {
+  // 使用与插件相同的范围判断逻辑
+  if (width < BREAKPOINTS.sm) {
+    return 'sm'; // 小于576px时使用sm
+  } else if (width >= BREAKPOINTS.sm && width < BREAKPOINTS.md) {
     return 'sm';
-  } else if (width >= BREAKPOINTS.md.min && width <= BREAKPOINTS.md.max) {
+  } else if (width >= BREAKPOINTS.md && width < BREAKPOINTS.lg) {
     return 'md';
-  } else if (width >= BREAKPOINTS.lg.min && width <= BREAKPOINTS.lg.max) {
+  } else if (width >= BREAKPOINTS.lg && width < BREAKPOINTS.xl) {
     return 'lg';
-  } else {
+  } else if (width >= BREAKPOINTS.xl && width < BREAKPOINTS.xxl) {
     return 'xl';
+  } else {
+    return 'xxl'; // 大于等于1400px时使用xxl
   }
 }
 
@@ -66,15 +69,15 @@ function createBreakpointInfo(current: BreakpointType, width: number, height: nu
     current,
     width,
     height,
-    isXs: current === 'xs',
     isSm: current === 'sm',
     isMd: current === 'md',
     isLg: current === 'lg',
     isXl: current === 'xl',
+    isXxl: current === 'xxl',
     // 兼容性属性
-    isMobile: current === 'xs' || current === 'sm',
+    isMobile: current === 'sm',
     isPad: current === 'md',
-    isPc: current === 'lg' || current === 'xl'
+    isPc: current === 'lg' || current === 'xl' || current === 'xxl'
   };
 }
 
@@ -85,7 +88,7 @@ function createBreakpointInfo(current: BreakpointType, width: number, height: nu
 export function useBreakpoint(): BreakpointInfo {
   const [breakpointInfo, setBreakpointInfo] = useState<BreakpointInfo>(() => {
     // 初始化时获取当前窗口尺寸
-    const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1400;
     const height = typeof window !== 'undefined' ? window.innerHeight : 800;
     const current = getBreakpointType(width);
     
@@ -127,8 +130,17 @@ export function useBreakpoint(): BreakpointInfo {
  * @returns 是否匹配
  */
 export function matchBreakpoint(breakpoint: BreakpointType, width: number): boolean {
-  const config = BREAKPOINTS[breakpoint];
-  return width >= config.min && width <= config.max;
+  const breakpointValue = BREAKPOINTS[breakpoint];
+  const breakpoints = Object.entries(BREAKPOINTS).sort(([,a], [,b]) => a - b);
+  const currentIndex = breakpoints.findIndex(([key]) => key === breakpoint);
+  
+  if (currentIndex === 0) {
+    return width < breakpointValue;
+  } else if (currentIndex === breakpoints.length - 1) {
+    return width >= breakpoints[currentIndex - 1][1];
+  } else {
+    return width >= breakpoints[currentIndex - 1][1] && width < breakpointValue;
+  }
 }
 
 /**
@@ -137,13 +149,15 @@ export function matchBreakpoint(breakpoint: BreakpointType, width: number): bool
  * @returns CSS媒体查询字符串
  */
 export function getBreakpointMediaQuery(breakpoint: BreakpointType): string {
-  const config = BREAKPOINTS[breakpoint];
+  const breakpointValue = BREAKPOINTS[breakpoint];
+  const breakpoints = Object.entries(BREAKPOINTS).sort(([,a], [,b]) => a - b);
+  const currentIndex = breakpoints.findIndex(([key]) => key === breakpoint);
   
-  if (config.max === Infinity) {
-    return `(min-width: ${config.min}px)`;
-  } else if (config.min === 0) {
-    return `(max-width: ${config.max}px)`;
+  if (currentIndex === 0) {
+    return `(max-width: ${breakpointValue - 1}px)`;
+  } else if (currentIndex === breakpoints.length - 1) {
+    return `(min-width: ${breakpoints[currentIndex - 1][1]}px)`;
   } else {
-    return `(min-width: ${config.min}px) and (max-width: ${config.max}px)`;
+    return `(min-width: ${breakpoints[currentIndex - 1][1]}px) and (max-width: ${breakpointValue - 1}px)`;
   }
 }

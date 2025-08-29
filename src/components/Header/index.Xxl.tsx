@@ -50,7 +50,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     },
   ];
 
-  console.log('lg')
+  console.log('xxl')
 
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {

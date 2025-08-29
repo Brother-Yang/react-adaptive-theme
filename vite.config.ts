@@ -1,9 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import reactResponsivePlugin from './vite-plugin-react-responsive'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    reactResponsivePlugin({
+      breakpoints: {
+        sm: 576,
+        md: 768,
+        lg: 992,
+        xl: 1200,
+        xxl: 1400,
+      },
+      defaultBreakpoint: 'lg',
+      include: /\/components\/.*\/index\.(tsx?|jsx?)$/,
+    }),
+  ],
   resolve: {
     alias: {
       '@': '/src',

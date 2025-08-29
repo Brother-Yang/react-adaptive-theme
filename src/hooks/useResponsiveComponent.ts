@@ -3,21 +3,21 @@ import { useBreakpoint, type BreakpointType } from './useBreakpoint';
 
 // 响应式组件映射类型
 export interface ResponsiveComponentMap<T = React.ComponentType<unknown>> {
-  xs?: T;
   sm?: T;
   md?: T;
   lg?: T;
   xl?: T;
+  xxl?: T;
   default: T; // 默认组件（必需）
 }
 
 // 组件后缀映射
-const COMPONENT_SUFFIX_MAP: Record<BreakpointType, string> = {
-  xs: 'Xs',
+const COMPONENT_SUFFIX_MAP: Record<string, string> = {
   sm: 'Sm', 
   md: 'Md',
   lg: 'Lg',
-  xl: 'Xl'
+  xl: 'Xl',
+  xxl: 'Xxl'
 };
 
 /**
@@ -117,12 +117,12 @@ export function createResponsiveComponent<P extends Record<string, unknown> = Re
  * 断点优先级映射（用于回退逻辑）
  * 当指定断点的组件不存在时，按此优先级查找替代组件
  */
-const BREAKPOINT_FALLBACK_ORDER: Record<BreakpointType, BreakpointType[]> = {
-  xs: ['sm', 'md', 'lg', 'xl'],
-  sm: ['xs', 'md', 'lg', 'xl'],
-  md: ['sm', 'lg', 'xs', 'xl'],
-  lg: ['md', 'xl', 'sm', 'xs'],
-  xl: ['lg', 'md', 'sm', 'xs']
+const BREAKPOINT_FALLBACK_ORDER: Record<string, string[]> = {
+  sm: ['md', 'lg', 'xl', 'xxl'],
+  md: ['sm', 'lg', 'xl', 'xxl'],
+  lg: ['md', 'xl', 'sm', 'xxl'],
+  xl: ['lg', 'md', 'sm', 'xxl'],
+  xxl: ['xl', 'lg', 'md', 'sm']
 };
 
 /**
@@ -137,15 +137,15 @@ export function useSmartResponsiveComponent<T>(componentMap: ResponsiveComponent
   
   return useMemo(() => {
     // 首先尝试当前断点
-    if (componentMap[current]) {
-      return componentMap[current];
+    if (componentMap[current as keyof ResponsiveComponentMap<T>]) {
+      return componentMap[current as keyof ResponsiveComponentMap<T>]!;
     }
     
     // 按回退优先级查找
     const fallbackOrder = BREAKPOINT_FALLBACK_ORDER[current];
     for (const fallbackBreakpoint of fallbackOrder) {
-      if (componentMap[fallbackBreakpoint]) {
-        return componentMap[fallbackBreakpoint];
+      if (componentMap[fallbackBreakpoint as keyof ResponsiveComponentMap<T>]) {
+        return componentMap[fallbackBreakpoint as keyof ResponsiveComponentMap<T>]!;
       }
     }
     
