@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import reactResponsivePlugin from './vite-plugin-react-responsive'
+import reactResponsivePlugin from './plugins/vite-plugin-react-responsive'
 
 // https://vite.dev/config/
 export default defineConfig({

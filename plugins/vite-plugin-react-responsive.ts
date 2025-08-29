@@ -213,7 +213,7 @@ export default function reactResponsivePlugin(options: ReactResponsivePluginOpti
          const relativePath = './index';
         
         // 生成新的代码
-          const newCode = generateDynamicImport(relativePath, breakpoints, defaultBreakpoint, existingBreakpoints);
+        const newCode = generateDynamicImport(relativePath, breakpoints, defaultBreakpoint, existingBreakpoints);
         
         return {
           code: newCode,
@@ -222,7 +222,7 @@ export default function reactResponsivePlugin(options: ReactResponsivePluginOpti
         
       } catch (error) {
          
-        // eslint-disable-next-line no-console
+         
         console.warn(`[vite-plugin-react-responsive] Failed to transform ${id}:`, error);
         return null;
       }
