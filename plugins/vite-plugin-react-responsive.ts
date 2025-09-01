@@ -221,9 +221,7 @@ export default function reactResponsivePlugin(options: ReactResponsivePluginOpti
         };
         
       } catch (error) {
-         
-         
-        console.warn(`[vite-plugin-react-responsive] Failed to transform ${id}:`, error);
+        // console.warn(`[vite-plugin-react-responsive] Failed to transform ${id}:`, error);
         return null;
       }
     },
