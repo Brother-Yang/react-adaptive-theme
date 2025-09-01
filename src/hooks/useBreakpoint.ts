@@ -97,7 +97,7 @@ export function useBreakpoint(): BreakpointInfo {
 
   useEffect(() => {
     // 防抖处理
-    let timeoutId: number;
+    let timeoutId: NodeJS.Timeout;
     
     const handleResize = () => {
       clearTimeout(timeoutId);
