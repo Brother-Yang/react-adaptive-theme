@@ -8,7 +8,9 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../ThemeToggle';
+import LanguageToggle from '../LanguageToggle';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -27,16 +29,18 @@ interface HeaderProps {
  * - 使用中等间距
  */
 const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
+  const { t } = useTranslation();
+  
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: '个人中心',
+      label: t('header.userMenu.profile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: '账户设置',
+      label: t('header.userMenu.settings'),
     },
     {
       type: 'divider',
@@ -44,7 +48,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('header.userMenu.logout'),
       danger: true,
     },
   ];
@@ -79,10 +83,10 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className="breadcrumb compact"
           items={[
             {
-              title: '首页',
+              title: t('header.breadcrumb.home'),
             },
             {
-              title: '仪表盘',
+              title: t('header.breadcrumb.dashboard'),
             },
           ]}
         />
@@ -91,6 +95,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
       <div className="header-right">
         <Space size="middle">
           <ThemeToggle />
+          <LanguageToggle />
           
           <Button
             type="text"
@@ -108,7 +113,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           >
             <div className="user-info tablet">
               <Avatar size="default" icon={<UserOutlined />} />
-              <span className="username compact">管理员</span>
+              <span className="username compact">{t('header.user.admin')}</span>
             </div>
           </Dropdown>
         </Space>

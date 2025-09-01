@@ -1,6 +1,7 @@
 import React from 'react'
 import { Switch, Tooltip } from 'antd'
 import { SunOutlined, MoonOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../../hooks/useTheme'
 import './index.less'
 
@@ -24,14 +25,15 @@ const ThemeToggleMd: React.FC<ThemeToggleProps> = ({
   className = ''
 }) => {
   const { toggleTheme, isDark } = useTheme()
+  const { t } = useTranslation()
 
-  const tooltipTitle = isDark ? '切换到亮色模式' : '切换到暗色模式'
+  const tooltipTitle = isDark ? t('theme.switchToLight') : t('theme.switchToDark')
 
   return (
     <div className={`theme-toggle tablet ${className}`}>
       {showLabel && (
         <span className="theme-toggle-label tablet">
-          {isDark ? '暗色' : '亮色'}
+          {isDark ? t('theme.darkShort') : t('theme.lightShort')}
         </span>
       )}
       <Tooltip title={tooltipTitle} placement="bottom">

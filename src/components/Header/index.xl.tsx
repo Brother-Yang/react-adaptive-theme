@@ -8,7 +8,9 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from '../ThemeToggle';
+import LanguageToggle from '../LanguageToggle';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -28,16 +30,18 @@ interface HeaderProps {
  * - 可以显示更多操作按钮
  */
 const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
+  const { t } = useTranslation();
+  
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: '个人中心',
+      label: t('header.userMenu.profile'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: '账户设置',
+      label: t('header.userMenu.settings'),
     },
     {
       type: 'divider',
@@ -45,7 +49,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('header.userMenu.logout'),
       danger: true,
     },
   ];
@@ -80,13 +84,13 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className="breadcrumb full"
           items={[
             {
-              title: '首页',
+              title: t('header.breadcrumb.home'),
             },
             {
-              title: '工作台',
+              title: t('header.breadcrumb.workspace'),
             },
             {
-              title: '仪表盘',
+              title: t('header.breadcrumb.dashboard'),
             },
           ]}
         />
@@ -95,6 +99,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
       <div className="header-right">
         <Space size="large">
           <ThemeToggle />
+          <LanguageToggle />
           
           {/* 桌面端可以显示更多功能按钮 */}
           <Button
@@ -114,8 +119,8 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             <div className="user-info desktop">
               <Avatar size="default" icon={<UserOutlined />} />
               <div className="user-details">
-                <span className="username">管理员</span>
-                <span className="user-role">系统管理员</span>
+                <span className="username">{t('header.user.admin')}</span>
+                <span className="user-role">{t('header.user.role')}</span>
               </div>
             </div>
           </Dropdown>

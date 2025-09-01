@@ -7,6 +7,7 @@ import {
   FileTextOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import './index.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -25,25 +26,25 @@ function getItem(
   } as MenuItem;
 }
 
-// 桌面端可以显示更多菜单项
-const items: MenuItem[] = [
-  getItem('仪表盘', '1', <DashboardOutlined />), 
-  getItem('用户管理', 'sub1', <UserOutlined />, [
-    getItem('用户列表', '2'),
-    getItem('角色管理', '3'),
-    getItem('权限设置', '4'),
+// 生成菜单项的函数
+const createMenuItems = (t: (key: string) => string): MenuItem[] => [
+  getItem(t('sidebar.dashboard'), '1', <DashboardOutlined />), 
+  getItem(t('sidebar.userManagement'), 'sub1', <UserOutlined />, [
+    getItem(t('sidebar.userList'), '2'),
+    getItem(t('sidebar.roleManagement'), '3'),
+    getItem(t('sidebar.permissionSettings'), '4'),
   ]),
-  getItem('内容管理', 'sub2', <FileTextOutlined />, [
-    getItem('文章管理', '5'),
-    getItem('分类管理', '6'),
+  getItem(t('sidebar.contentManagement'), 'sub2', <FileTextOutlined />, [
+    getItem(t('sidebar.articleManagement'), '5'),
+    getItem(t('sidebar.categoryManagement'), '6'),
   ]),
-  getItem('团队协作', 'sub3', <TeamOutlined />, [
-    getItem('项目管理', '7'),
-    getItem('任务分配', '8'),
+  getItem(t('sidebar.teamCollaboration'), 'sub3', <TeamOutlined />, [
+    getItem(t('sidebar.projectManagement'), '7'),
+    getItem(t('sidebar.taskAssignment'), '8'),
   ]),
-  getItem('系统设置', 'sub4', <SettingOutlined />, [
-    getItem('基础设置', '9'),
-    getItem('安全设置', '10'),
+  getItem(t('sidebar.systemSettings'), 'sub4', <SettingOutlined />, [
+    getItem(t('sidebar.basicSettings'), '9'),
+    getItem(t('sidebar.securitySettings'), '10'),
   ]),
 ];
 
@@ -62,8 +63,12 @@ interface SidebarProps {
  * - 支持折叠/展开动画
  */
 const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
+  const { t } = useTranslation();
   const [selectedKeys, setSelectedKeys] = useState(['1']);
   const [openKeys, setOpenKeys] = useState(['sub1']);
+  
+  // 根据当前语言生成菜单项
+  const items = createMenuItems(t);
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setSelectedKeys([e.key]);
@@ -81,8 +86,8 @@ const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
         </div>
         {!collapsed && (
           <div className="logo-content">
-            <span className="logo-text">管理后台</span>
-            <span className="logo-subtitle">Admin Dashboard</span>
+            <span className="logo-text">{t('header.title')}</span>
+            <span className="logo-subtitle">{t('header.subtitle')}</span>
           </div>
         )}
       </div>

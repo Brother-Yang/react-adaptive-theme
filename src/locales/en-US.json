@@ -1,0 +1,160 @@
+{
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "reset": "Reset",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "noData": "No Data",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "download": "Download",
+    "upload": "Upload",
+    "pending": "Pending"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "lightShort": "Light",
+    "darkShort": "Dark",
+    "switchToLight": "Switch to Light Mode",
+    "switchToDark": "Switch to Dark Mode"
+  },
+  "language": {
+    "chinese": "中文",
+    "english": "English",
+    "toggle": "Toggle Language",
+    "currentLanguage": "Current Language"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "userManagement": "User Management",
+    "userList": "User List",
+    "roleManagement": "Role Management",
+    "permissionSettings": "Permission Settings",
+    "contentManagement": "Content Management",
+    "articleManagement": "Article Management",
+    "categoryManagement": "Category Management",
+    "teamCollaboration": "Team Collaboration",
+    "projectManagement": "Project Management",
+    "taskAssignment": "Task Assignment",
+    "systemSettings": "System Settings",
+    "basicSettings": "Basic Settings",
+    "securitySettings": "Security Settings"
+  },
+  "header": {
+    "title": "Console",
+    "subtitle": "Modern React Theme Switching System",
+    "welcome": "Welcome to",
+    "profile": "Profile",
+    "logout": "Logout",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "userMenu": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "dashboard": "Dashboard",
+      "workspace": "Workspace"
+    },
+    "user": {
+       "admin": "Administrator",
+       "role": "System Administrator"
+     }
+   },
+   "sidebar": {
+    "collapse": "Collapse Sidebar",
+    "expand": "Expand Sidebar",
+    "menu": "Menu",
+    "dashboard": "Dashboard",
+    "userManagement": "User Management",
+    "userList": "User List",
+    "roleManagement": "Role Management",
+    "permissionSettings": "Permission Settings",
+    "contentManagement": "Content Management",
+    "articleManagement": "Article Management",
+    "categoryManagement": "Category Management",
+    "teamCollaboration": "Team Collaboration",
+    "projectManagement": "Project Management",
+    "taskAssignment": "Task Assignment",
+    "systemSettings": "System Settings",
+    "basicSettings": "Basic Settings",
+    "securitySettings": "Security Settings"
+  },
+  "breakpoint": {
+    "indicator": "Breakpoint Indicator",
+    "current": "Current Breakpoint",
+    "width": "Screen Width",
+    "device": "Device Type",
+    "mobile": "Mobile Device",
+    "tablet": "Tablet Device",
+    "desktop": "Desktop Device",
+    "largeDesktop": "Large Desktop",
+    "extraLargeDesktop": "Extra Large Desktop",
+    "height": "Height",
+    "ratio": "Ratio",
+    "clickToCollapse": "Click to Collapse",
+    "clickToExpand": "Click to Expand"
+  },
+  "demo": {
+    "title": "Demo Page",
+    "description": "This is a detailed description of the demo page",
+    "features": {
+      "responsive": "Basic Components",
+      "theme": "Display Components",
+      "breakpoint": "Feedback Components"
+    },
+    "statistics": {
+      "users": "Users",
+      "projects": "Projects",
+      "tasks": "Tasks",
+      "messages": "Messages"
+    },
+    "inputComponents": "Input Components",
+    "slider": "Slider Control",
+    "switchAndSelect": "Switch and Select",
+    "optionA": "Option A",
+    "optionB": "Option B",
+    "optionC": "Option C",
+    "apple": "Apple",
+    "banana": "Banana",
+    "orange": "Orange",
+    "grape": "Grape",
+    "tagsAndBadges": "Tags and Badges",
+    "successDescription": "This is a detailed description for success alert.",
+    "warningDescription": "This is a detailed description for warning alert.",
+    "errorDescription": "This is a detailed description for error alert.",
+    "processComponents": "Process Components",
+    "timeline": "Timeline"
+  },
+  "form": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "invalidPhone": "Please enter a valid phone number",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "pleaseSelect": "Please select",
+    "pleaseInput": "Please input"
+  },
+  "table": {
+    "actions": "Actions",
+    "status": "Status",
+    "createTime": "Create Time",
+    "updateTime": "Update Time",
+    "total": "Total {{count}} records",
+    "pageSize": "Records per page"
+  }
+}
