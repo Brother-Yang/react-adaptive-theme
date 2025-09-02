@@ -8,7 +8,7 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
@@ -30,18 +30,18 @@ interface HeaderProps {
  * - 可以显示更多操作按钮
  */
 const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { t } = useTranslation();
+  const { tAuto } = useAutoTranslation();
   
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: t('header.userMenu.profile'),
+      label: tAuto('个人中心'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: t('header.userMenu.settings'),
+      label: tAuto('账户设置'),
     },
     {
       type: 'divider',
@@ -49,12 +49,12 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: t('header.userMenu.logout'),
+      label: tAuto('退出登录'),
       danger: true,
     },
   ];
 
-  console.log('xxl')
+  console.log('lg')
 
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
@@ -84,22 +84,22 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className="breadcrumb full"
           items={[
             {
-              title: t('header.breadcrumb.home'),
+              title: tAuto('首页'),
             },
             {
-              title: t('header.breadcrumb.workspace'),
+              title: tAuto('工作台'),
             },
             {
-              title: t('header.breadcrumb.dashboard'),
+              title: tAuto('仪表盘'),
             },
           ]}
         />
       </div>
-      
+
       <div className="header-right">
         <Space size="large">
-          <ThemeToggle />
           <LanguageToggle />
+          <ThemeToggle />
           
           {/* 桌面端可以显示更多功能按钮 */}
           <Button
@@ -119,8 +119,8 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             <div className="user-info desktop">
               <Avatar size="default" icon={<UserOutlined />} />
               <div className="user-details">
-                <span className="username">{t('header.user.admin')}</span>
-                <span className="user-role">{t('header.user.role')}</span>
+                <span className="username">{tAuto('管理员')}</span>
+                <span className="user-role">{tAuto('系统管理员')}</span>
               </div>
             </div>
           </Dropdown>

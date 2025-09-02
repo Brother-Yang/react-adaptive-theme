@@ -15,12 +15,6 @@ const TestTranslation: React.FC = () => {
         </div>
 
         <div>
-          {/* 以key为准，显示的还是个人资料 */}
-          <div>{tAuto('个人资料cccc', {key:'header.profile'})}</div>
-          <div>{tAuto('新插件测试')}</div>
-        </div>
-
-        <div>
           <Title level={5}>{tAuto('自动生成key的示例')}:</Title>
           <Paragraph>
             {tAuto('这是一个测试文本，会自动生成key')}
@@ -43,10 +37,10 @@ const TestTranslation: React.FC = () => {
         <div>
           <Title level={5}>{tAuto('使用tWithKey的示例')}:</Title>
           <Paragraph>
-            {tAuto('确认',{key:'common.confirm'})}
+            {tAuto('确认')}
           </Paragraph>
           <Paragraph>
-            {tAuto('取消',{key:'common.cancel'})}
+            {tAuto('取消')}
           </Paragraph>
         </div>
         
@@ -78,6 +72,9 @@ const TestTranslation: React.FC = () => {
           </Paragraph>
           <Paragraph>
             {tAuto('This is an English text example')}
+          </Paragraph>
+          <Paragraph>
+            {tAuto('This is an example of English characters being too long')}
           </Paragraph>
           <Paragraph>
             {tAuto('Hello {{name}}, you have {{count}} new messages', { name: 'John', count: 3 })}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Dropdown, type MenuProps } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import { supportedLanguages } from '../../config/i18n';
 import './index.less';
 
@@ -10,7 +10,7 @@ import './index.less';
  * 支持多语言切换功能
  */
 const LanguageToggle: React.FC = () => {
-  const { i18n, t } = useTranslation();
+  const { i18n, tAuto } = useAutoTranslation();
 
   // 获取当前语言信息
   const currentLanguage = supportedLanguages.find(lang => lang.code === i18n.language) || supportedLanguages[0];
@@ -43,7 +43,7 @@ const LanguageToggle: React.FC = () => {
         type="text"
         icon={<GlobalOutlined />}
         className="language-toggle"
-        title={t('language.toggle')}
+        title={tAuto('切换语言')}
       >
         <span className="current-language">{currentLanguage.nativeName}</span>
       </Button>

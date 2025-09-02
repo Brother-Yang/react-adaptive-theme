@@ -7,7 +7,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
@@ -28,18 +28,18 @@ interface HeaderProps {
  * - 使用更紧凑的间距
  */
 const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { t } = useTranslation();
+  const { tAuto } = useAutoTranslation();
   
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: t('header.userMenu.profile'),
+      label: tAuto('个人中心'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: t('header.userMenu.settings'),
+      label: tAuto('账户设置'),
     },
     {
       type: 'divider',
@@ -47,7 +47,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: t('header.userMenu.logout'),
+      label: tAuto('退出登录'),
       danger: true,
     },
   ];
@@ -79,7 +79,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           size="small"
         />
         {/* 移动端可以显示简化的标题 */}
-        <span className="mobile-title">{t('header.title')}</span>
+        <span className="mobile-title">{tAuto('控制台')}</span>
       </div>
       
       <div className="header-right">

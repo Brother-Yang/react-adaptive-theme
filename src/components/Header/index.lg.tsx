@@ -8,7 +8,7 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
@@ -30,18 +30,18 @@ interface HeaderProps {
  * - 可以显示更多操作按钮
  */
 const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { t } = useTranslation();
+  const { tAuto } = useAutoTranslation();
   
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: t('header.profile'),
+      label: tAuto('个人资料'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: t('common.edit'),
+      label: tAuto('编辑'),
     },
     {
       type: 'divider',
@@ -49,7 +49,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: t('header.logout'),
+      label: tAuto('退出登录'),
       danger: true,
     },
   ];
@@ -84,10 +84,10 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className="breadcrumb full"
           items={[
             {
-              title: t('navigation.dashboard'),
+              title: tAuto('仪表盘'),
             },
             {
-              title: t('demo.title'),
+              title: tAuto('演示标题'),
             },
           ]}
         />
@@ -116,7 +116,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             <div className="user-info desktop">
               <Avatar size="default" icon={<UserOutlined />} />
               <div className="user-details">
-                <span className="username">{t('header.welcome')}</span>
+                <span className="username">{tAuto('欢迎')}</span>
                 <span className="user-role">Admin</span>
               </div>
             </div>

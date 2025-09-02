@@ -4,7 +4,7 @@ import {
   DashboardOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import './index.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -39,16 +39,16 @@ interface SidebarProps {
  * - 触摸友好的交互
  */
 const SidebarSm: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) => {
-  const { t } = useTranslation();
+  const { tAuto } = useAutoTranslation();
   const [selectedKeys, setSelectedKeys] = useState(['1']);
 
   // 根据当前语言生成菜单项
   const items: MenuItem[] = [
-    getItem(t('sidebar.dashboard'), '1', <DashboardOutlined />), 
-    getItem(t('sidebar.userManagement'), 'sub1', <UserOutlined />, [
-      getItem(t('sidebar.userList'), '2'),
-      getItem(t('sidebar.roleManagement'), '3'),
-      getItem(t('sidebar.permissionSettings'), '4'),
+    getItem(tAuto('仪表盘'), '1', <DashboardOutlined />), 
+    getItem(tAuto('用户管理'), 'sub1', <UserOutlined />, [
+      getItem(tAuto('用户列表'), '2'),
+      getItem(tAuto('角色管理'), '3'),
+      getItem(tAuto('权限设置'), '4'),
     ]),
   ];
 
@@ -66,7 +66,7 @@ const SidebarSm: React.FC<SidebarProps> = ({ collapsed = false, onCollapse }) =>
         <div className="logo-icon">
           <DashboardOutlined />
         </div>
-        <span className="logo-text">{t('header.title')}</span>
+        <span className="logo-text">{tAuto('管理系统')}</span>
       </div>
       <Menu
         mode="inline"

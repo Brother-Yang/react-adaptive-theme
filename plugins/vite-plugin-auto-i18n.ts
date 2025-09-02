@@ -57,13 +57,20 @@ function generateKey(value: string): string {
     return `auto.${hash.substring(0, 12)}`; // 取前12位，进一步降低冲突概率
   } else {
     // 英文文本：转换为驼峰格式，保持在一个层级
-    const camelCase = value
+    let camelCase = value
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '') // 移除特殊字符
       .split(/\s+/) // 按空格分割
       .filter(word => word.length > 0) // 过滤空字符串
       .map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1))
       .join('');
+    
+    // 如果驼峰命名超过30个字符，截取前30个字符并添加12位hash
+    if (camelCase.length > 30) {
+      const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
+      camelCase = camelCase.substring(0, 30) + hash.substring(0, 12);
+    }
+    
     return `auto.${camelCase.charAt(0).toUpperCase() + camelCase.slice(1)}`;
   }
 }

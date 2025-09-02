@@ -26,7 +26,8 @@ export function useAutoTranslation() {
   return useMemo(() => ({
     tAuto,
     locale,
-  }), [tAuto, locale]);
+    i18n,
+  }), [tAuto, locale, i18n]);
 }
 
 export default useAutoTranslation;

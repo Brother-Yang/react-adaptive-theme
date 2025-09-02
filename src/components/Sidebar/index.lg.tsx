@@ -7,7 +7,7 @@ import {
   FileTextOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import './index.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -27,25 +27,25 @@ function getItem(
 }
 
 // 生成菜单项的函数
-const createMenuItems = (t: (key: string) => string): MenuItem[] => [
-  getItem(t('sidebar.dashboard'), '1', <DashboardOutlined />), 
-  getItem(t('sidebar.userManagement'), 'sub1', <UserOutlined />, [
-    getItem(t('sidebar.userList'), '2'),
-    getItem(t('sidebar.roleManagement'), '3'),
-    getItem(t('sidebar.permissionSettings'), '4'),
-  ]),
-  getItem(t('sidebar.contentManagement'), 'sub2', <FileTextOutlined />, [
-    getItem(t('sidebar.articleManagement'), '5'),
-    getItem(t('sidebar.categoryManagement'), '6'),
-  ]),
-  getItem(t('sidebar.teamCollaboration'), 'sub3', <TeamOutlined />, [
-    getItem(t('sidebar.projectManagement'), '7'),
-    getItem(t('sidebar.taskAssignment'), '8'),
-  ]),
-  getItem(t('sidebar.systemSettings'), 'sub4', <SettingOutlined />, [
-    getItem(t('sidebar.basicSettings'), '9'),
-    getItem(t('sidebar.securitySettings'), '10'),
-  ]),
+const createMenuItems = (tAuto: (key: string) => string): MenuItem[] => [
+   getItem(tAuto('仪表盘'), '1', <DashboardOutlined />), 
+   getItem(tAuto('用户管理'), 'sub1', <UserOutlined />, [
+     getItem(tAuto('用户列表'), '2'),
+     getItem(tAuto('角色管理'), '3'),
+     getItem(tAuto('权限设置'), '4'),
+   ]),
+   getItem(tAuto('内容管理'), 'sub2', <FileTextOutlined />, [
+     getItem(tAuto('文章管理'), '5'),
+     getItem(tAuto('分类管理'), '6'),
+   ]),
+   getItem(tAuto('团队协作'), 'sub3', <TeamOutlined />, [
+     getItem(tAuto('项目管理'), '7'),
+     getItem(tAuto('任务分配'), '8'),
+   ]),
+   getItem(tAuto('系统设置'), 'sub4', <SettingOutlined />, [
+     getItem(tAuto('基础设置'), '9'),
+     getItem(tAuto('安全设置'), '10'),
+   ]),
 ];
 
 interface SidebarProps {
@@ -63,12 +63,12 @@ interface SidebarProps {
  * - 支持折叠/展开动画
  */
 const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
-  const { t } = useTranslation();
+  const { tAuto } = useAutoTranslation();
   const [selectedKeys, setSelectedKeys] = useState(['1']);
   const [openKeys, setOpenKeys] = useState(['sub1']);
   
   // 根据当前语言生成菜单项
-  const items = createMenuItems(t);
+  const items = createMenuItems(tAuto);
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setSelectedKeys([e.key]);
@@ -86,8 +86,8 @@ const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
         </div>
         {!collapsed && (
           <div className="logo-content">
-            <span className="logo-text">{t('header.title')}</span>
-            <span className="logo-subtitle">{t('header.subtitle')}</span>
+            <span className="logo-text">{tAuto('管理系统')}</span>
+            <span className="logo-subtitle">{tAuto('后台管理')}</span>
           </div>
         )}
       </div>

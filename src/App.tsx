@@ -30,7 +30,7 @@ import {
   DeleteOutlined,
   PlusOutlined
 } from '@ant-design/icons'
-import { useTranslation } from 'react-i18next'
+import { useAutoTranslation } from './hooks/useAutoTranslation'
 import Sidebar from './components/Sidebar'
 import AppHeader from './components/Header'
 import BreakpointIndicator from './components/BreakpointIndicator'
@@ -49,29 +49,29 @@ const createTableData = () => [
 ] as const
 
 // 生成时间轴数据的函数
-const createTimelineItems = (t: (key: string) => string) => [
+const createTimelineItems = (tAuto: (key: string) => string) => [
   {
-    children: `${t('demo.title')} 2024-01-15`,
+    children: `${tAuto('演示页面')} 2024-01-15`,
   },
   {
-    children: `${t('common.confirm')} 2024-01-16`,
+    children: `${tAuto('确认')} 2024-01-16`,
   },
   {
-    children: `${t('common.edit')} 2024-01-17`,
+    children: `${tAuto('编辑')} 2024-01-17`,
   },
   {
-    children: `${t('common.submit')} 2024-01-20`,
+    children: `${tAuto('提交')} 2024-01-20`,
   },
 ]
 
 function App() {
-  const { t } = useTranslation()
+  const { tAuto } = useAutoTranslation()
   const [collapsed, setCollapsed] = useState(false)
   const breakpoint = useBreakpoint()
   
   // 根据当前语言生成数据
   const tableData = createTableData()
-  const timelineItems = createTimelineItems(t)
+  const timelineItems = createTimelineItems(tAuto)
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed)
@@ -86,34 +86,34 @@ function App() {
 
   // 使用useMemo优化表格列配置
   const tableColumns = React.useMemo(() => [
-    { title: t('form.pleaseInput'), dataIndex: 'name', key: 'name' },
-    { title: t('table.status'), dataIndex: 'age', key: 'age' },
-    { title: t('table.createTime'), dataIndex: 'address', key: 'address' },
+    { title: tAuto('请输入'), dataIndex: 'name', key: 'name' },
+    { title: tAuto('状态'), dataIndex: 'age', key: 'age' },
+    { title: tAuto('创建时间'), dataIndex: 'address', key: 'address' },
     {
-      title: t('table.status'),
+      title: tAuto('状态'),
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
         <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status === 'active' ? t('common.success') : t('common.error')}
+          {status === 'active' ? tAuto('成功') : tAuto('错误')}
         </Tag>
       ),
     },
     {
-      title: t('table.actions'),
+      title: tAuto('操作'),
       key: 'action',
       render: () => (
         <>
           <Button type="link" icon={<EditOutlined />} size="small">
-            {t('common.edit')}
+            {tAuto('编辑')}
           </Button>
           <Button type="link" danger icon={<DeleteOutlined />} size="small">
-            {t('common.delete')}
+            {tAuto('删除')}
           </Button>
         </>
       ),
     }
-  ], [t])
+  ], [tAuto])
 
   return (
     <Layout className="app">
@@ -124,44 +124,44 @@ function App() {
           <TestTranslation />
           <div className="demo-container">
             {/* 基础组件 */}
-            <Card title={t('demo.features.responsive')} className="demo-card">
+            <Card title={tAuto('基础组件')} className="demo-card">
               <Row gutter={[16, 16]}>
                 <Col span={8}>
                   <Input
-                    placeholder={t('form.pleaseInput')}
+                    placeholder={tAuto('请输入')}
                     prefix={<SearchOutlined />}
                   />
                 </Col>
                 <Col span={8}>
                   <Select defaultValue="option1" style={{ width: '100%' }}>
-                    <Option value="option1">{t('form.pleaseSelect')} 1</Option>
-                    <Option value="option2">{t('form.pleaseSelect')} 2</Option>
-                    <Option value="option3">{t('form.pleaseSelect')} 3</Option>
+                    <Option value="option1">{tAuto('请选择')} 1</Option>
+                    <Option value="option2">{tAuto('请选择')} 2</Option>
+                    <Option value="option3">{tAuto('请选择')} 3</Option>
                   </Select>
                 </Col>
                 <Col span={8}>
-                  <DatePicker style={{ width: '100%' }} placeholder={t('form.pleaseSelect')} />
+                  <DatePicker style={{ width: '100%' }} placeholder={tAuto('请选择')} />
                 </Col>
               </Row>
             </Card>
 
             {/* 输入组件 */}
-        <Card title={t('demo.inputComponents')} className="demo-card">
+        <Card title={tAuto('输入组件')} className="demo-card">
               <Row gutter={[16, 16]}>
                 <Col span={12}>
                   <div>
-                    <p>{t('demo.slider')}:</p>
+                    <p>{tAuto('滑块控件')}:</p>
                     <Slider defaultValue={30} />
                   </div>
                 </Col>
                 <Col span={12}>
                   <div>
-                    <p>{t('demo.switchAndSelect')}:</p>
+                    <p>{tAuto('开关和选择')}:</p>
                     <Switch defaultChecked style={{ marginRight: 16 }} />
                     <Radio.Group defaultValue="a">
-                      <Radio.Button value="a">{t('demo.optionA')}</Radio.Button>
-            <Radio.Button value="b">{t('demo.optionB')}</Radio.Button>
-            <Radio.Button value="c">{t('demo.optionC')}</Radio.Button>
+                      <Radio.Button value="a">{tAuto('选项A')}</Radio.Button>
+            <Radio.Button value="b">{tAuto('选项B')}</Radio.Button>
+            <Radio.Button value="c">{tAuto('选项C')}</Radio.Button>
                     </Radio.Group>
                   </div>
                 </Col>
@@ -169,88 +169,88 @@ function App() {
               <Row style={{ marginTop: 16 }}>
                 <Col span={24}>
                   <Checkbox.Group
-                    options={[t('demo.apple'), t('demo.banana'), t('demo.orange'), t('demo.grape')]}
-            defaultValue={[t('demo.apple'), t('demo.orange')]}
+                    options={[tAuto('苹果'), tAuto('香蕉'), tAuto('橙子'), tAuto('葡萄')]}
+            defaultValue={[tAuto('苹果'), tAuto('橙子')]}
                   />
                 </Col>
               </Row>
             </Card>
 
             {/* 展示组件 */}
-            <Card title={t('demo.features.theme')} className="demo-card">
+            <Card title={tAuto('展示组件')} className="demo-card">
               <Progress percent={30} />
               <Progress percent={50} status="active" />
               <Progress percent={70} status="exception" />
               <Progress percent={100} />
               
-              <Divider>{t('demo.tagsAndBadges')}</Divider>
+              <Divider>{tAuto('标签和徽章')}</Divider>
               
               <div style={{ marginBottom: 16 }}>
-                <Tag>{t('common.confirm')}</Tag>
-                <Tag color="blue">{t('common.info')}</Tag>
-                <Tag color="green">{t('common.success')}</Tag>
-                <Tag color="red">{t('common.error')}</Tag>
+                <Tag>{tAuto('确认')}</Tag>
+                <Tag color="blue">{tAuto('信息')}</Tag>
+                <Tag color="green">{tAuto('成功')}</Tag>
+                <Tag color="red">{tAuto('错误')}</Tag>
                 <Badge count={5}>
                   <Avatar shape="square" size="large" />
                 </Badge>
               </div>
               
               <Alert
-                message={t('common.success')}
-                description={t('demo.successDescription')}
+                message={tAuto('成功')}
+                description={tAuto('这是一个成功提示的详细描述信息。')}
                 type="success"
                 showIcon
               />
               <Alert
-                message={t('common.warning')}
-                description={t('demo.warningDescription')}
+                message={tAuto('警告')}
+                description={tAuto('这是一个警告提示的详细描述信息。')}
                 type="warning"
                 showIcon
               />
               <Alert
-                message={t('common.error')}
-                description={t('demo.errorDescription')}
-                type="error"
-                showIcon
-              />
+                  message={tAuto('错误')}
+                  description={tAuto('这是一个错误提示的详细描述信息。')}
+                  type="error"
+                  showIcon
+                />
             </Card>
 
             {/* 流程组件 */}
-        <Card title={t('demo.processComponents')} className="demo-card">
+        <Card title={tAuto('流程组件')} className="demo-card">
               <Steps
                 current={1}
                 items={[
                   {
-                    title: t('common.success'),
-                    description: t('demo.description'),
+                    title: tAuto('成功'),
+                    description: tAuto('这是一个演示页面的详细描述'),
                   },
                   {
-                    title: t('common.loading'),
-                    description: t('demo.description'),
+                    title: tAuto('加载中...'),
+                    description: tAuto('这是一个演示页面的详细描述'),
                   },
                   {
-                    title: t('common.pending'),
-                    description: t('demo.description'),
+                    title: tAuto('等待中'),
+                    description: tAuto('这是一个演示页面的详细描述'),
                   },
                 ]}
               />
               
-              <Divider>{t('demo.timeline')}</Divider>
+              <Divider>{tAuto('时间轴')}</Divider>
               
               <Timeline items={timelineItems} />
             </Card>
 
             {/* 数据展示 */}
-            <Card title={t('demo.title')} className="demo-card">
+            <Card title={tAuto('演示页面')} className="demo-card">
               <div style={{ marginBottom: 16 }}>
                 <Button type="primary" icon={<PlusOutlined />}>
-                  {t('common.add')}
+                  {tAuto('添加')}
                 </Button>
                 <Button icon={<DownloadOutlined />} style={{ marginLeft: 8 }}>
-                  {t('common.download')}
+                  {tAuto('下载')}
                 </Button>
                 <Button icon={<UploadOutlined />} style={{ marginLeft: 8 }}>
-                  {t('common.upload')}
+                  {tAuto('上传')}
                 </Button>
               </div>
               <Table dataSource={tableData} columns={tableColumns} />
