@@ -13,11 +13,11 @@ export interface ResponsiveComponentMap<T = React.ComponentType<unknown>> {
 
 // 组件后缀映射
 const COMPONENT_SUFFIX_MAP: Record<string, string> = {
-  sm: 'Sm', 
-  md: 'Md',
-  lg: 'Lg',
-  xl: 'Xl',
-  xxl: 'Xxl'
+  sm: 'sm', 
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl',
+  xxl: 'xxl'
 };
 
 /**
@@ -30,8 +30,8 @@ const COMPONENT_SUFFIX_MAP: Record<string, string> = {
  * @example
  * ```tsx
  * import Header from './Header';
- * import HeaderSm from './Header.Sm';
- * import HeaderMd from './Header.Md';
+ * import HeaderSm from './Header.sm';
+ * import HeaderMd from './Header.md';
  * 
  * const ResponsiveHeader = () => {
  *   const Component = useResponsiveComponent({
@@ -60,8 +60,8 @@ export function useResponsiveComponent<T>(componentMap: ResponsiveComponentMap<T
  * 
  * @example
  * ```tsx
- * getComponentSuffix('sm') // 返回 'Sm'
- * getComponentSuffix('lg') // 返回 'Lg'
+ * getComponentSuffix('sm') // 返回 'sm'
+ * getComponentSuffix('lg') // 返回 'lg'
  * ```
  */
 export function getComponentSuffix(breakpoint: BreakpointType): string {
@@ -76,8 +76,8 @@ export function getComponentSuffix(breakpoint: BreakpointType): string {
  * 
  * @example
  * ```tsx
- * getResponsiveComponentName('Header', 'sm') // 返回 'Header.Sm'
- * getResponsiveComponentName('Sidebar', 'lg') // 返回 'Sidebar.Lg'
+ * getResponsiveComponentName('Header', 'sm') // 返回 'Header.sm'
+ * getResponsiveComponentName('Sidebar', 'lg') // 返回 'Sidebar.lg'
  * ```
  */
 export function getResponsiveComponentName(baseName: string, breakpoint: BreakpointType): string {
@@ -94,8 +94,8 @@ export function getResponsiveComponentName(baseName: string, breakpoint: Breakpo
  * @example
  * ```tsx
  * import Header from './Header';
- * import HeaderSm from './Header.Sm';
- * import HeaderMd from './Header.Md';
+ * import HeaderSm from './Header.sm';
+ * import HeaderMd from './Header.md';
  * 
  * export const ResponsiveHeader = createResponsiveComponent({
  *   sm: HeaderSm,

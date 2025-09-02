@@ -10,11 +10,11 @@ const traverseDefault = typeof traverse === 'function' ? traverse : (traverse as
 
 // 默认断点配置
 const defaultBreakpoints: Record<string, number> = {
-  sm: 576,   // Small devices - 对应插件 Sm
-  md: 768,   // Medium devices - 对应插件 Md
-  lg: 992,   // Large devices - 对应插件 Lg
-  xl: 1200,  // Extra large devices - 对应插件 Xl
-  xxl: 1400  // Extra extra large devices - 对应插件 Xxl
+  sm: 576,   // Small devices - 对应插件 sm
+  md: 768,   // Medium devices - 对应插件 md
+  lg: 992,   // Large devices - 对应插件 lg
+  xl: 1200,  // Extra large devices - 对应插件 xl
+  xxl: 1400  // Extra extra large devices - 对应插件 xxl
 };
 
 // 插件配置接口
