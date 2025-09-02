@@ -1,6 +1,7 @@
 import React from 'react'
 import { Switch, Tooltip } from 'antd'
 import { SunOutlined, MoonOutlined } from '@ant-design/icons'
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import { useTheme } from '../../hooks/useTheme'
 import './index.less'
 
@@ -25,14 +26,15 @@ const ThemeToggleLg: React.FC<ThemeToggleProps> = ({
   className = ''
 }) => {
   const { toggleTheme, isDark } = useTheme()
+  const { tAuto } = useAutoTranslation();
 
-  const tooltipTitle = isDark ? '切换到亮色模式' : '切换到暗色模式'
+  const tooltipTitle = isDark ? tAuto('切换到浅色主题') : tAuto('切换到深色主题');
 
   return (
     <div className={`theme-toggle desktop ${className}`}>
       {showLabel && (
         <span className="theme-toggle-label desktop">
-          {isDark ? '暗色模式' : '亮色模式'}
+          {isDark ? tAuto('深色模式') : tAuto('浅色模式')}
         </span>
       )}
       <Tooltip title={tooltipTitle} placement="bottom">

@@ -7,7 +7,9 @@ import {
   LogoutOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
+import LanguageToggle from '../LanguageToggle';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -26,16 +28,18 @@ interface HeaderProps {
  * - 使用更紧凑的间距
  */
 const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
+  const { tAuto } = useAutoTranslation();
+  
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: '个人中心',
+      label: tAuto('个人中心'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: '账户设置',
+      label: tAuto('账户设置'),
     },
     {
       type: 'divider',
@@ -43,7 +47,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: tAuto('退出登录'),
       danger: true,
     },
   ];
@@ -75,12 +79,13 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           size="small"
         />
         {/* 移动端可以显示简化的标题 */}
-        <span className="mobile-title">控制台</span>
+        <span className="mobile-title">{tAuto('控制台')}</span>
       </div>
       
       <div className="header-right">
         <Space size="small">
           <ThemeToggle />
+          <LanguageToggle />
           
           <Dropdown
             menu={{

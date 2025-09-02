@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tag } from 'antd';
+import { useAutoTranslation } from '../hooks/useAutoTranslation';
 import { useBreakpoint, type BreakpointType } from '../hooks/useBreakpoint';
 import './BreakpointIndicator.less';
 
@@ -21,22 +22,16 @@ const BREAKPOINT_ICONS: Record<BreakpointType, string> = {
   xxl: '🖥️'  // 超大屏桌面
 };
 
-// 断点名称映射
-const BREAKPOINT_NAMES: Record<BreakpointType, string> = {
-  sm: 'Small',        // 0-576px
-  md: 'Medium',       // 576-768px
-  lg: 'Large',        // 768-992px
-  xl: 'Extra Large',  // 992-1200px
-  xxl: 'Extra Extra Large' // 1200px+
-};
-
-// 断点描述映射（与插件配置保持一致）
-const BREAKPOINT_DESCRIPTIONS: Record<BreakpointType, string> = {
-  sm: '小屏设备 (0-576px)',
-  md: '中屏设备 (576-768px)',
-  lg: '大屏设备 (768-992px)',
-  xl: '超大屏设备 (992-1200px)',
-  xxl: '极大屏设备 (1200px+)'
+// 获取断点名称的函数
+const getBreakpointName = (breakpoint: BreakpointType, tAuto: (key: string) => string): string => {
+  const nameMap: Record<BreakpointType, string> = {
+    sm: tAuto('移动设备'),
+    md: tAuto('平板设备'),
+    lg: tAuto('桌面设备'),
+    xl: tAuto('大屏桌面'),
+    xxl: tAuto('超大屏桌面')
+  };
+  return nameMap[breakpoint];
 };
 
 interface BreakpointIndicatorProps {
@@ -57,6 +52,7 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
   className = '',
   clickable = true
 }) => {
+  const { tAuto } = useAutoTranslation();
   const breakpoint = useBreakpoint();
   const [showDetailInfo, setShowDetailInfo] = React.useState(showDetails);
 
@@ -80,30 +76,30 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
           {BREAKPOINT_ICONS[breakpoint.current]}
         </span>
         <span className="breakpoint-name">
-          {BREAKPOINT_NAMES[breakpoint.current]}
+          {getBreakpointName(breakpoint.current, tAuto)}
         </span>
       </Tag>
       
       {showDetailInfo && (
         <div className="breakpoint-details">
           <div className="detail-item">
-            <span className="detail-label">断点:</span>
+            <span className="detail-label">{tAuto('当前断点')}:</span>
             <span className="detail-value">{breakpoint.current.toUpperCase()}</span>
           </div>
           <div className="detail-item">
-            <span className="detail-label">描述:</span>
-            <span className="detail-value">{BREAKPOINT_DESCRIPTIONS[breakpoint.current]}</span>
+            <span className="detail-label">{tAuto('设备类型')}:</span>
+            <span className="detail-value">{getBreakpointName(breakpoint.current, tAuto)}</span>
           </div>
           <div className="detail-item">
-            <span className="detail-label">宽度:</span>
+            <span className="detail-label">{tAuto('屏幕宽度')}:</span>
             <span className="detail-value">{breakpoint.width}px</span>
           </div>
           <div className="detail-item">
-            <span className="detail-label">高度:</span>
+            <span className="detail-label">{tAuto('屏幕高度')}:</span>
             <span className="detail-value">{breakpoint.height}px</span>
           </div>
           <div className="detail-item">
-            <span className="detail-label">比例:</span>
+            <span className="detail-label">{tAuto('宽高比')}:</span>
             <span className="detail-value">
               {(breakpoint.width / breakpoint.height).toFixed(2)}
             </span>
@@ -113,7 +109,7 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
       
       {clickable && (
         <div className="click-hint">
-          {showDetailInfo ? '点击收起' : '点击展开'}
+          {showDetailInfo ? tAuto('点击收起') : tAuto('点击展开')}
         </div>
       )}
     </div>

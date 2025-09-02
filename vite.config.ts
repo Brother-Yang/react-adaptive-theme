@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import reactResponsivePlugin from './plugins/vite-plugin-react-responsive'
+import { autoI18nPlugin } from './plugins/vite-plugin-auto-i18n'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -16,6 +17,12 @@ export default defineConfig({
       },
       defaultBreakpoint: 'lg',
       include: /\/components\/.*\/index\.(tsx?|jsx?)$/,
+    }),
+    autoI18nPlugin({
+      localesDir: 'src/locales',
+      defaultLocale: 'zh-CN',
+      include: ['src/**/*.{ts,tsx,js,jsx}'],
+      exclude: ['node_modules/**', 'dist/**', '**/*.d.ts']
     }),
   ],
   resolve: {

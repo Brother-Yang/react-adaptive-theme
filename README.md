@@ -7,6 +7,7 @@
 - 🎨 **主题切换**: 支持亮色/暗色主题无缝切换
 - 📱 **智能响应式**: 基于五级断点 (sm/md/lg/xl/xxl) 的组件级响应式设计
 - 🔌 **响应式插件**: 自研 Vite 插件，支持组件按断点自动切换
+- 🌍 **自动国际化**: 编译时key生成的高性能国际化系统，支持自动翻译和插值变量
 - 🎯 **断点优化**: 修复断点切换bug，支持快速切换无延迟
 - 🎯 **现代化UI**: 使用 Ant Design 5.x 组件库，界面美观现代
 - 🔧 **TypeScript**: 完整的 TypeScript 支持，类型安全
@@ -22,6 +23,7 @@
 - **图标库**: @ant-design/icons 6.0.0
 - **样式预处理**: Less 4.4.1
 - **构建工具**: Vite 7.1.2
+- **国际化**: react-i18next + 自研自动国际化系统
 - **代码规范**: ESLint 9.33.0
 
 ## 📦 安装
@@ -120,23 +122,32 @@ src/
 │   ├── BreakpointIndicator # 断点指示器
 │   ├── Header             # 头部组件
 │   ├── Sidebar           # 侧边栏组件
-│   └── ThemeToggle       # 主题切换组件
+│   ├── ThemeToggle       # 主题切换组件
+│   ├── LanguageToggle    # 语言切换组件
+│   └── TestTranslation   # 国际化测试组件
 ├── contexts/           # React Context
 │   ├── ThemeContext.tsx   # 主题上下文
 │   └── ThemeContextDefinition.ts
 ├── hooks/              # 自定义 Hooks
 │   ├── useBreakpoint.ts   # 断点检测 Hook
 │   ├── useResponsiveComponent.ts # 响应式组件 Hook
-│   └── useTheme.ts        # 主题管理 Hook
+│   ├── useTheme.ts        # 主题管理 Hook
+│   └── useAutoTranslation.ts # 自动翻译 Hook
 ├── config/             # 配置文件
-│   └── theme.ts           # 主题配置
+│   ├── theme.ts           # 主题配置
+│   └── i18n.ts            # 国际化配置
+├── locales/            # 翻译文件
+│   ├── zh-CN.json         # 中文翻译
+│   └── en-US.json         # 英文翻译
 ├── App.tsx             # 主应用组件
 ├── App.less            # 全局样式
 ├── main.tsx            # 应用入口
 ├── styles/             # 样式文件
 │   └── variables.less     # 样式变量
 └── index.less          # 基础样式
-vite-plugin-react-responsive.ts # 响应式插件
+plugins/
+├── vite-plugin-react-responsive.ts # 响应式插件
+└── vite-plugin-auto-i18n.ts        # 自动国际化插件
 ```
 
 ## 🔧 核心功能
@@ -192,24 +203,74 @@ function ThemeButton() {
 }
 ```
 
-## 🔌 Vite 响应式插件
+## 🌍 自动国际化系统
 
-项目包含自研的 `vite-plugin-react-responsive` 插件，提供以下功能：
+项目集成了高性能的自动国际化系统，采用编译时key生成架构：
 
+### 核心特性
+- **编译时key生成**: 构建时预生成所有翻译key，运行时零开销
+- **智能key处理**: 自动生成key或手动指定key，两种方式都会添加到JSON文件
+- **灵活翻译模式**: 支持 `tAuto("文本")` 自动生成key 和 `tAuto("文本", {key: "custom.key"})` 手动指定key
+- **插值变量**: 完全兼容react-i18next的插值语法
+- **实时更新**: 开发时自动更新翻译文件
+
+### 基本使用
+
+```typescript
+import { useAutoTranslation } from '../hooks/useAutoTranslation';
+
+function MyComponent() {
+  const { tAuto, locale } = useAutoTranslation();
+  
+  return (
+    <div>
+      {/* 自动生成key - 插件会自动为文本生成唯一key */}
+      <h1>{tAuto('欢迎使用系统')}</h1>
+      
+      {/* 手动指定key - 插件会将指定的key添加到JSON文件 */}
+      <p>{tAuto('系统运行正常', { key: 'system.status.ok' })}</p>
+      
+      {/* 插值变量 */}
+      <p>{tAuto('欢迎 {{name}}', { name: '张三' })}</p>
+      
+      {/* 手动key + 插值 */}
+      <p>{tAuto('用户 {{user}} 在线', { key: 'user.online', user: '张三' })}</p>
+    </div>
+  );
+}
+```
+
+详细使用说明请参考 [AUTO_I18N_GUIDE.md](./AUTO_I18N_GUIDE.md)
+
+## 🔌 Vite 插件系统
+
+项目包含两个自研的 Vite 插件：
+
+### 响应式插件 (vite-plugin-react-responsive)
 - **自动组件切换**: 根据屏幕尺寸自动选择对应的组件版本
 - **动态导入**: 按需加载组件，优化性能
 - **开发调试**: 提供 `/responsive-debug` 端点查看插件配置
 - **类型安全**: 完整的 TypeScript 支持
 
+### 自动国际化插件 (vite-plugin-auto-i18n)
+- **编译时扫描**: 构建时扫描所有源码文件中的翻译调用
+- **key映射生成**: 自动生成完整的key-value映射表
+- **客户端注入**: 通过HTML转换将映射表注入到客户端
+- **性能优化**: 移除运行时key生成逻辑，大幅提升性能
+
 ### 插件配置
 
 ```typescript
 // vite.config.ts
-import reactResponsivePlugin from './vite-plugin-react-responsive'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import reactResponsivePlugin from './plugins/vite-plugin-react-responsive'
+import autoI18nPlugin from './plugins/vite-plugin-auto-i18n'
 
 export default defineConfig({
   plugins: [
     react(),
+    // 响应式插件配置
     reactResponsivePlugin({
       breakpoints: {
         sm: 576,
@@ -219,6 +280,12 @@ export default defineConfig({
         xxl: 1400
       },
       defaultBreakpoint: 'lg'
+    }),
+    // 自动国际化插件配置
+    autoI18nPlugin({
+      localesDir: 'src/locales',
+      defaultLocale: 'zh-CN',
+      supportedLocales: ['zh-CN', 'en-US']
     })
   ]
 })
