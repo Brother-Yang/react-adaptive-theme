@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next'
 import Sidebar from './components/Sidebar'
 import AppHeader from './components/Header'
 import BreakpointIndicator from './components/BreakpointIndicator'
+import TestTranslation from './components/TestTranslation'
 import { useBreakpoint } from './hooks/useBreakpoint'
 import './App.less'
 
@@ -120,6 +121,7 @@ function App() {
       <Layout className={`main-layout ${collapsed ? 'collapsed' : ''} ${breakpoint.current}`}>
         <AppHeader collapsed={collapsed} onToggle={toggleCollapsed} />
         <Content className="app-content">
+          <TestTranslation />
           <div className="demo-container">
             {/* 基础组件 */}
             <Card title={t('demo.features.responsive')} className="demo-card">

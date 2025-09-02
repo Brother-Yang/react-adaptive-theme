@@ -24,6 +24,12 @@ export const supportedLanguages = [
 
 // 获取默认语言
 export const getDefaultLanguage = (): string => {
+  // 优先使用环境变量指定的语言
+  const envLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE
+  if (envLanguage && supportedLanguages.some(lang => lang.code === envLanguage)) {
+    return envLanguage
+  }
+  
   // 优先使用localStorage中保存的语言
   const savedLanguage = localStorage.getItem('i18nextLng')
   if (savedLanguage && supportedLanguages.some(lang => lang.code === savedLanguage)) {
@@ -64,5 +70,10 @@ i18n
     // 调试模式（生产环境建议关闭）
     debug: process.env.NODE_ENV === 'development'
   })
+
+// 将i18n实例暴露到全局，供插件使用
+if (typeof window !== 'undefined') {
+  (window as typeof window & { i18n: typeof i18n }).i18n = i18n;
+}
 
 export default i18n

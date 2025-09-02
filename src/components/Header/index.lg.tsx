@@ -92,7 +92,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           ]}
         />
       </div>
-      
+
       <div className="header-right">
         <Space size="large">
           <LanguageToggle />

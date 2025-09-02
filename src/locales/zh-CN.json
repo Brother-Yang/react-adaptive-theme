@@ -156,5 +156,41 @@
     "updateTime": "更新时间",
     "total": "共 {{count}} 条记录",
     "pageSize": "每页显示条数"
-  }
+  },
+  "test": {
+    "optimize": "优化修改测试",
+    "manual": {
+      "key": "这是手动指定key的文本"
+    }
+  },
+  "auto": {
+    "0ecf2343085f": "测试翻译功能",
+    "a94ea8c004af": "当前语言",
+    "9280baff7d9e": "新插件测试",
+    "34b97af0d4a9": "优化修改测试",
+    "636dcfdcbd35": "自动生成key的示例",
+    "eb6c4659ffa3": "这是一个测试文本，会自动生成key",
+    "0ba89c3dc9e8": "欢迎使用自动国际化系统",
+    "104df752eab0": "系统会自动为每个文本生成唯一的key",
+    "0708039153d9": "手动指定key的示例",
+    "ab39669fa21f": "使用tWithKey的示例",
+    "be5fbbe34ce9": "保存",
+    "625fb26b4b33": "取消",
+    "4b9c3271dc2f": "重置",
+    "d554cff845a2": "插值变量示例",
+    "0aff4ecbbd94": "欢迎 {{name}}，今天是 {{date}}",
+    "1d339711a271": "您有 {{count}} 条未读消息",
+    "47d8c7176079": "英文示例",
+    "HelloWorld": "Hello World",
+    "ThisIsAnEnglishTextExample": "This is an English text example",
+    "HelloNameYouHaveCountNewMessages": "Hello {{name}}, you have {{count}} new messages",
+    "f645472bef0f": "测试一"
+  },
+  "user": {
+    "login": {
+      "success": "手动key的插值示例：用户 {{username}} 登录成功"
+    }
+  },
+  "testOptimize": "优化修改测试",
+  "test2": "测试二"
 }
