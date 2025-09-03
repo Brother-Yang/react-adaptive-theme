@@ -26,10 +26,12 @@ src/
 ├── locales/
 │   ├── zh-CN.json               # 中文翻译文件
 │   └── en-US.json               # 英文翻译文件
+├── config/
+│   └── i18n.ts                  # i18next配置文件
 └── components/
     └── TestTranslation/         # 使用示例
 plugins/
-└── vite-plugin-auto-i18n.ts    # Vite插件
+└── vite-plugin-auto-i18n.ts    # 自动国际化插件
 ```
 
 ### 2. Vite配置
@@ -42,7 +44,7 @@ import autoI18n from './plugins/vite-plugin-auto-i18n'
 
 export default defineConfig({
   plugins: [
-    // 其他插件...
+    // 自动国际化插件
     autoI18n(),
   ],
 })
@@ -55,13 +57,12 @@ export default defineConfig({
 ```typescript
 import { useAutoTranslation } from '../hooks/useAutoTranslation';
 
-const { tAuto, tWithKey, locale, i18n } = useAutoTranslation();
+const { tAuto, locale, i18n } = useAutoTranslation();
 ```
 
 #### 返回值
 
-- `tAuto`: 自动翻译函数
-- `tWithKey`: 手动key翻译函数
+- `tAuto`: 自动翻译函数，支持自动生成key和手动指定key
 - `locale`: 当前语言
 - `i18n`: react-i18next实例
 
@@ -87,13 +88,12 @@ tAuto('Welcome back', { key: 'user.welcome' })
 tAuto('测试自动国际化', { key: 'testAutoLocal' })
 ```
 
-### 3. 使用tWithKey
+### 3. 直接使用已存在的key
 
 ```typescript
-// 直接使用已存在的key
-tWithKey('common.confirm', '确认')
-tWithKey('common.cancel', '取消')
-```
+// 对于已经存在于翻译文件中的key，可以直接使用手动key方式
+tAuto('确认', { key: 'common.confirm' })
+tAuto('取消', { key: 'common.cancel' })
 
 ## 插值变量
 
@@ -159,7 +159,7 @@ import React from 'react';
 import { useAutoTranslation } from '../hooks/useAutoTranslation';
 
 const MyComponent: React.FC = () => {
-  const { tAuto, tWithKey, locale } = useAutoTranslation();
+  const { tAuto, locale } = useAutoTranslation();
   const userName = '张三';
   const messageCount = 5;
 
@@ -184,9 +184,9 @@ const MyComponent: React.FC = () => {
         user: userName 
       })}</p>
       
-      {/* 使用tWithKey */}
-      <button>{tWithKey('common.save', '保存')}</button>
-      <button>{tWithKey('common.cancel', '取消')}</button>
+      {/* 使用手动key方式访问已存在的翻译 */}
+      <button>{tAuto('保存', { key: 'common.save' })}</button>
+      <button>{tAuto('取消', { key: 'common.cancel' })}</button>
     </div>
   );
 };
@@ -215,13 +215,20 @@ const MyComponent: React.FC = () => {
 
 ## 翻译文件结构
 
-### zh-CN.json
+### zh-CN.json（实际项目示例）
 ```json
 {
   "auto": {
-    "123456789": "欢迎使用系统",
-    "HelloWorld": "Hello World",
-    "ThisIsATest": "This is a test"
+    "f19cc4345b6f": "切换语言",
+    "3fa8b34a2744": "仪表盘",
+    "7d94de1cdba7": "用户管理",
+    "6b045a518d90": "用户列表",
+    "3f856ec241d6": "角色管理",
+    "e69c654eec1a": "权限设置",
+    "ff4fce81b636": "切换到浅色主题",
+    "c7163389115c": "切换到深色主题",
+    "18d1485cc24c": "深色模式",
+    "8755e992302b": "浅色模式"
   },
   "user": {
     "login": {
@@ -235,13 +242,20 @@ const MyComponent: React.FC = () => {
 }
 ```
 
-### en-US.json
+### en-US.json（实际项目示例）
 ```json
 {
   "auto": {
-    "123456789": "Welcome to the system",
-    "HelloWorld": "Hello World",
-    "ThisIsATest": "This is a test"
+    "f19cc4345b6f": "Switch language",
+    "3fa8b34a2744": "Dashboard",
+    "7d94de1cdba7": "User Management",
+    "6b045a518d90": "User List",
+    "3f856ec241d6": "Role Management",
+    "e69c654eec1a": "Permission settings",
+    "ff4fce81b636": "Switch to light theme",
+    "c7163389115c": "Switch to dark theme",
+    "18d1485cc24c": "Dark Mode",
+    "8755e992302b": "Light-colored mode"
   },
   "user": {
     "login": {
@@ -313,12 +327,36 @@ tAuto('取消', { key: 'common.cancel' })
 - ❌ **重复计算**：相同文本多次生成相同key
 - ❌ **状态管理**：需要维护复杂的运行时状态
 
+### 技术实现细节
+
+#### 1. 构建时扫描与key生成
+- **AST解析**：使用 `@babel/parser` 和 `@babel/traverse` 精确解析源码
+- **函数调用识别**：自动识别 `tAuto()` 函数调用
+- **智能key生成**：
+  - 中文文本：MD5 hash前12位（如：`f19cc4345b6f`）
+  - 英文文本：驼峰命名转换（如：`HelloWorld`）
+  - 长文本优化：超过30字符自动截取+hash后缀
+
+#### 2. 客户端注入机制
+- **HTML转换**：通过 `transformIndexHtml` 钩子注入客户端脚本
+- **全局对象**：创建 `window.__AUTO_I18N_PLUGIN__` 全局对象
+- **key映射表**：将构建时生成的key映射注入到客户端
+- **i18n实例检测**：智能检测多种i18n实例挂载方式
+
+#### 3. 运行时优化
+- **零计算开销**：直接查询预生成的key映射表
+- **缓存机制**：避免重复的key添加请求
+- **fallback处理**：插件不可用时优雅降级
+- **类型安全**：完整的TypeScript类型定义
+
 ### 性能优化
 
 1. **构建时优化**：所有key生成工作在构建时完成
 2. **内存优化**：移除运行时Map和Set数据结构
 3. **查询优化**：O(1)时间复杂度的key查询
 4. **包体积优化**：减少运行时代码体积
+5. **并发处理**：构建时支持并发文件处理
+6. **增量更新**：只处理变更的文件
 
 ## 注意事项
 
@@ -378,6 +416,13 @@ tAuto('忘记密码', { key: 'auth.forgot.password' })
 
 ## 更新日志
 
+- **v3.0.0** (当前版本): 
+  - 🔄 **架构重构**: 完全移除 `tWithKey` 函数，统一使用 `tAuto` 函数
+  - 🚀 **客户端注入**: 实现完整的客户端key映射注入机制
+  - 🎯 **智能检测**: 支持多种i18n实例挂载方式的自动检测
+  - 💾 **缓存优化**: 添加客户端key缓存，避免重复请求
+  - 🛡️ **错误处理**: 完善的fallback机制和错误处理
+  - 📦 **类型安全**: 完整的TypeScript类型定义
 - **v2.1.0**: 优化英文key生成逻辑，支持长文本自动截取和hash后缀
 - **v2.0.0**: 重构为编译时key生成架构，大幅提升性能
 - **v1.2.0**: 添加插值变量支持

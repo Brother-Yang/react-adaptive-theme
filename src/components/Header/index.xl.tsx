@@ -31,7 +31,7 @@ interface HeaderProps {
  */
 const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   const { tAuto } = useAutoTranslation();
-  
+
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -54,34 +54,32 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     },
   ];
 
-  console.log('lg')
-
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
-        console.log('跳转到个人中心');
+        // TODO: 实现跳转到个人中心功能
         break;
       case 'settings':
-        console.log('跳转到账户设置');
+        // TODO: 实现跳转到账户设置功能
         break;
       case 'logout':
-        console.log('退出登录');
+        // TODO: 实现退出登录功能
         break;
     }
   };
 
   return (
     <AntHeader className={`app-header desktop ${collapsed ? 'collapsed' : ''}`}>
-      <div className="header-left">
+      <div className='header-left'>
         <Button
-          type="text"
+          type='text'
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={onToggle}
-          className="trigger"
+          className='trigger'
         />
         {/* 桌面端显示完整面包屑 */}
         <Breadcrumb
-          className="breadcrumb full"
+          className='breadcrumb full'
           items={[
             {
               title: tAuto('首页'),
@@ -96,31 +94,27 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
         />
       </div>
 
-      <div className="header-right">
-        <Space size="large">
+      <div className='header-right'>
+        <Space size='large'>
           <LanguageToggle />
           <ThemeToggle />
-          
+
           {/* 桌面端可以显示更多功能按钮 */}
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            className="notification-btn"
-          />
-          
+          <Button type='text' icon={<BellOutlined />} className='notification-btn' />
+
           <Dropdown
             menu={{
               items: userMenuItems,
               onClick: handleUserMenuClick,
             }}
-            placement="bottomRight"
+            placement='bottomRight'
             arrow
           >
-            <div className="user-info desktop">
-              <Avatar size="default" icon={<UserOutlined />} />
-              <div className="user-details">
-                <span className="username">{tAuto('管理员')}</span>
-                <span className="user-role">{tAuto('系统管理员')}</span>
+            <div className='user-info desktop'>
+              <Avatar size='default' icon={<UserOutlined />} />
+              <div className='user-details'>
+                <span className='username'>{tAuto('管理员')}</span>
+                <span className='user-role'>{tAuto('系统管理员')}</span>
               </div>
             </div>
           </Dropdown>

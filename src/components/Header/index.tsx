@@ -7,7 +7,7 @@ interface HeaderProps {
   onToggle: () => void;
 }
 
-const AppHeader: React.FC<HeaderProps> = (props) => { 
+const AppHeader: React.FC<HeaderProps> = props => {
   return <HeaderLg {...props} />;
 };
 
