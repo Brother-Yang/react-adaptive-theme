@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { 
   Button, 
   Card, 
@@ -48,8 +48,14 @@ const createTableData = () => [
   { key: '3', name: 'Bob Johnson', age: 35, address: 'Tokyo', status: 'active' }
 ] as const
 
-// 生成时间轴数据的函数
-const createTimelineItems = (tAuto: (key: string) => string) => [
+function App() {
+  const { tAuto } = useAutoTranslation()
+  const [collapsed, setCollapsed] = useState(false)
+  const breakpoint = useBreakpoint()
+  
+  // 根据当前语言生成数据
+  const tableData = createTableData()
+  const timelineItems = [
   {
     children: `${tAuto('演示页面')} 2024-01-15`,
   },
@@ -64,28 +70,19 @@ const createTimelineItems = (tAuto: (key: string) => string) => [
   },
 ]
 
-function App() {
-  const { tAuto } = useAutoTranslation()
-  const [collapsed, setCollapsed] = useState(false)
-  const breakpoint = useBreakpoint()
-  
-  // 根据当前语言生成数据
-  const tableData = createTableData()
-  const timelineItems = createTimelineItems(tAuto)
-
   const toggleCollapsed = () => {
     setCollapsed(!collapsed)
   }
 
   // 移动端自动收起侧边栏
-  React.useEffect(() => {
+  useEffect(() => {
     if (breakpoint.isMobile) {
       setCollapsed(true)
     }
   }, [breakpoint.isMobile])
 
   // 使用useMemo优化表格列配置
-  const tableColumns = React.useMemo(() => [
+  const tableColumns = [
     { title: tAuto('请输入'), dataIndex: 'name', key: 'name' },
     { title: tAuto('状态'), dataIndex: 'age', key: 'age' },
     { title: tAuto('创建时间'), dataIndex: 'address', key: 'address' },
@@ -113,7 +110,7 @@ function App() {
         </>
       ),
     }
-  ], [tAuto])
+  ]
 
   return (
     <Layout className="app">

@@ -466,34 +466,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       }
     },
     
-    configureServer(server) {
-      // 注入客户端脚本，提供API给useTranslation使用
-      server.middlewares.use('/__auto_i18n_api/add-key', (req, res, next) => {
-        if (req.method === 'POST') {
-          let body = '';
-          req.on('data', chunk => {
-            body += chunk.toString();
-          });
-          
-          req.on('end', () => {
-            try {
-              const { key, value } = JSON.parse(body);
-              const keyValuePairs = [{ key, value, file: 'runtime', line: 0 }];
-              const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
-              updateLocaleFile(localeFilePath, keyValuePairs);
-              
-              res.writeHead(200, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ success: true }));
-            } catch {
-              res.writeHead(400, { 'Content-Type': 'application/json' });
-              res.end(JSON.stringify({ error: 'Invalid JSON' }));
-            }
-          });
-        } else {
-          next();
-        }
-      });
-    },
+    
     
     transformIndexHtml(html) {
       // 将key映射转换为普通对象
@@ -530,13 +503,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         }
         
         this.addedKeys.add(keyValuePair);
-        fetch('/__auto_i18n_api/add-key', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ key, value })
-        }).catch(console.error);
+
       },
       getKey: function(value) {
         return this.keyMapping[value];

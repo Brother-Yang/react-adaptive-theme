@@ -103,7 +103,8 @@
     "ThisIsAnEnglishTextExample": "This is an English text example",
     "HelloNameYouHaveCountNewMessages": "Hello {{name}}, you have {{count}} new messages",
     "ThisIsAnExampleOfEnglishCharac756771065b40": "This is an example of English characters being too long",
-    "HelloNameYouHaveCountNewMessagb46ef6c74c48": "Hello {{name}}, you have {{count}} new messages"
+    "HelloNameYouHaveCountNewMessagb46ef6c74c48": "Hello {{name}}, you have {{count}} new messages",
+    "a309f80cd37d": "自动翻译测试"
   },
   "test": {
     "manual": {

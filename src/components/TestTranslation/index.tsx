@@ -17,6 +17,9 @@ const TestTranslation: React.FC = () => {
         <div>
           <Title level={5}>{tAuto('自动生成key的示例')}:</Title>
           <Paragraph>
+            {tAuto('自动翻译测试')}
+          </Paragraph>
+          <Paragraph>
             {tAuto('这是一个测试文本，会自动生成key')}
           </Paragraph>
           <Paragraph>
