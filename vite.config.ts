@@ -33,7 +33,7 @@ export default defineConfig({
   },
   build: {
     // Vite 7.x 构建优化
-    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+    target: 'esnext', // 使用最新的 ECMAScript 特性,不考虑兼容性
     minify: 'terser',
     sourcemap: process.env.NODE_ENV === 'development',
     
