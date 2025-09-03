@@ -67,9 +67,7 @@ export default defineConfig({
           // Ant Design 图标
           'antd-icons': ['@ant-design/icons'],
           // 国际化相关
-          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
-          // 工具库
-          'utils': ['p-limit']
+          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector']
         },
         // 文件命名策略 - Vite 7.x 优化
         chunkFileNames: (chunkInfo) => {
