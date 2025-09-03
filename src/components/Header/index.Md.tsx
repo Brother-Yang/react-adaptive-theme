@@ -30,7 +30,7 @@ interface HeaderProps {
  */
 const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   const { tAuto } = useAutoTranslation();
-  
+
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
@@ -53,34 +53,32 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     },
   ];
 
-  console.log('md')
-
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     switch (key) {
       case 'profile':
-        console.log('跳转到个人中心');
+        // TODO: 实现跳转到个人中心功能
         break;
       case 'settings':
-        console.log('跳转到账户设置');
+        // TODO: 实现跳转到账户设置功能
         break;
       case 'logout':
-        console.log('退出登录');
+        // TODO: 实现退出登录功能
         break;
     }
   };
 
   return (
     <AntHeader className={`app-header tablet ${collapsed ? 'collapsed' : ''}`}>
-      <div className="header-left">
+      <div className='header-left'>
         <Button
-          type="text"
+          type='text'
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={onToggle}
-          className="trigger"
+          className='trigger'
         />
         {/* 平板端显示简化面包屑 */}
         <Breadcrumb
-          className="breadcrumb compact"
+          className='breadcrumb compact'
           items={[
             {
               title: tAuto('首页'),
@@ -91,29 +89,25 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           ]}
         />
       </div>
-      
-      <div className="header-right">
-        <Space size="middle">
+
+      <div className='header-right'>
+        <Space size='middle'>
           <ThemeToggle />
           <LanguageToggle />
-          
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            className="notification-btn"
-          />
-          
+
+          <Button type='text' icon={<BellOutlined />} className='notification-btn' />
+
           <Dropdown
             menu={{
               items: userMenuItems,
               onClick: handleUserMenuClick,
             }}
-            placement="bottomRight"
+            placement='bottomRight'
             arrow
           >
-            <div className="user-info tablet">
-              <Avatar size="default" icon={<UserOutlined />} />
-              <span className="username compact">{tAuto('管理员')}</span>
+            <div className='user-info tablet'>
+              <Avatar size='default' icon={<UserOutlined />} />
+              <span className='username compact'>{tAuto('管理员')}</span>
             </div>
           </Dropdown>
         </Space>

@@ -1,0 +1,55 @@
+# 构建输出
+dist/
+build/
+
+# 依赖
+node_modules/
+
+# 日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 缓存文件
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
+
+# 配置文件
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 翻译缓存
+.translation-cache.json
+
+# 文档文件（保持原有格式）
+*.md
+
+# 静态资源
+public/
+src/assets/
+
+# 特殊配置文件
+vite.config.ts
+eslint.config.js

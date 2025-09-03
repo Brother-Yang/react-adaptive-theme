@@ -12,6 +12,26 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Security
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Cache and temporary files
+.cache
+.temp
+.tmp
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
