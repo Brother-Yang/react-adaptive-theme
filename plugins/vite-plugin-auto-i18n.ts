@@ -7,7 +7,7 @@ import traverse from '@babel/traverse';
 import type { NodePath } from '@babel/traverse';
 import type { CallExpression } from '@babel/types';
 // 兼容不同版本的@babel/traverse导入
-const traverseAST = (traverse as unknown as { default?: typeof traverse }) .default || traverse;
+const traverseAST = (traverse as unknown as { default?: typeof traverse }).default || traverse;
 import * as t from '@babel/types';
 
 interface AutoI18nOptions {
@@ -43,14 +43,14 @@ const DEFAULT_OPTIONS: Required<AutoI18nOptions> = {
   defaultLocale: 'zh-CN',
   include: ['**/*.{ts,tsx,js,jsx}'],
   exclude: ['node_modules/**', 'dist/**', '**/*.d.ts'],
-  resolveAlias: {}
+  resolveAlias: {},
 };
 
 // 生成key的函数
 function generateKey(value: string): string {
   // 检查是否包含中文字符
   const hasChinese = /[\u4e00-\u9fff]/.test(value);
-  
+
   if (hasChinese) {
     // 中文文本：使用MD5 hash避免冲突，增加到12位提高安全性
     const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
@@ -58,19 +58,17 @@ function generateKey(value: string): string {
   } else {
     // 英文文本：转换为驼峰格式，保持在一个层级
     let camelCase = value
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // 移除特殊字符
+      .replace(/[^a-zA-Z0-9\s]/g, '') // 移除特殊字符，保留大小写
       .split(/\s+/) // 按空格分割
       .filter(word => word.length > 0) // 过滤空字符串
-      .map((word, index) => index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1))
-      .join('');
-    
+      .join(''); // 直接连接，不转换驼峰
+
     // 如果驼峰命名超过30个字符，截取前30个字符并添加12位hash
     if (camelCase.length > 30) {
       const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
       camelCase = camelCase.substring(0, 30) + hash.substring(0, 12);
     }
-    
+
     return `auto.${camelCase.charAt(0).toUpperCase() + camelCase.slice(1)}`;
   }
 }
@@ -78,23 +76,17 @@ function generateKey(value: string): string {
 // 解析文件中的t函数调用
 function parseFile(filePath: string, content: string): KeyValuePair[] {
   const keyValuePairs: KeyValuePair[] = [];
-  
+
   try {
     const ast = parse(content, {
       sourceType: 'module',
-      plugins: [
-        'typescript',
-        'jsx',
-        'decorators-legacy',
-        'classProperties',
-        'objectRestSpread'
-      ]
+      plugins: ['typescript', 'jsx', 'decorators-legacy', 'classProperties', 'objectRestSpread'],
     });
-    
+
     traverseAST(ast, {
       CallExpression(path: NodePath<CallExpression>) {
         const { node } = path;
-        
+
         // 检查是否是tAuto函数调用
         if (
           t.isIdentifier(node.callee, { name: 'tAuto' }) &&
@@ -105,46 +97,59 @@ function parseFile(filePath: string, content: string): KeyValuePair[] {
           let manualKey: string | null = null;
           if (node.arguments.length > 1 && t.isObjectExpression(node.arguments[1])) {
             const options = node.arguments[1];
-            const keyProperty = options.properties.find(prop => 
-              t.isObjectProperty(prop) && 
-              t.isIdentifier(prop.key, { name: 'key' })
+            const keyProperty = options.properties.find(
+              prop => t.isObjectProperty(prop) && t.isIdentifier(prop.key, { name: 'key' })
             );
-            if (keyProperty && t.isObjectProperty(keyProperty) && t.isStringLiteral(keyProperty.value)) {
+            if (
+              keyProperty &&
+              t.isObjectProperty(keyProperty) &&
+              t.isStringLiteral(keyProperty.value)
+            ) {
               manualKey = keyProperty.value.value;
             }
           }
-          
+
           const value = node.arguments[0].value;
           const line = node.loc?.start.line || 0;
-          
+
           // 如果有手动指定的key，使用手动key；否则自动生成key
           const key = manualKey || generateKey(value);
-          
+
           keyValuePairs.push({
             key,
             value,
             file: filePath,
-            line
+            line,
           });
         }
-      }
+      },
     });
   } catch (error) {
     console.warn(`Failed to parse ${filePath}:`, error);
   }
-  
+
   return keyValuePairs;
 }
 
 // 深度合并对象，保留已有值
-function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>
+): Record<string, unknown> {
   const result = { ...target };
-  
+
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-        if (typeof result[key] === 'object' && result[key] !== null && !Array.isArray(result[key])) {
-          result[key] = deepMerge(result[key] as Record<string, unknown>, source[key] as Record<string, unknown>);
+        if (
+          typeof result[key] === 'object' &&
+          result[key] !== null &&
+          !Array.isArray(result[key])
+        ) {
+          result[key] = deepMerge(
+            result[key] as Record<string, unknown>,
+            source[key] as Record<string, unknown>
+          );
         } else {
           result[key] = source[key];
         }
@@ -156,14 +161,14 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
       }
     }
   }
-  
+
   return result;
 }
 
 // 更新JSON文件（支持深度合并）
 function updateLocaleFile(localeFilePath: string, keyValuePairs: KeyValuePair[]) {
   let localeData: Record<string, unknown> = {};
-  
+
   // 读取现有的locale文件
   if (fs.existsSync(localeFilePath)) {
     try {
@@ -173,31 +178,31 @@ function updateLocaleFile(localeFilePath: string, keyValuePairs: KeyValuePair[])
       console.warn(`Failed to parse ${localeFilePath}:`, error);
     }
   }
-  
+
   // 构建新的数据结构
   const newData: Record<string, unknown> = {};
   let hasChanges = false;
-  
+
   for (const { key, value } of keyValuePairs) {
     const existingValue = getNestedValue(localeData, key);
     if (!existingValue || existingValue === '') {
-       setNestedValue(newData, key, value);
-       hasChanges = true;
-       console.log(`Added key: ${key} = ${value}`);
-     } else {
-       console.log(`Skipped existing key: ${key} (current: ${existingValue})`);
-     }
+      setNestedValue(newData, key, value);
+      hasChanges = true;
+      console.log(`Added key: ${key} = ${value}`);
+    } else {
+      console.log(`Skipped existing key: ${key} (current: ${existingValue})`);
+    }
   }
-  
+
   // 深度合并，保留已有翻译
   if (hasChanges) {
     const mergedData = deepMerge(localeData, newData);
-    
+
     const dir = path.dirname(localeFilePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     fs.writeFileSync(localeFilePath, JSON.stringify(mergedData, null, 2), 'utf-8');
     console.log(`Updated ${localeFilePath}`);
   }
@@ -207,7 +212,7 @@ function updateLocaleFile(localeFilePath: string, keyValuePairs: KeyValuePair[])
 function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
   const keys = key.split('.');
   let current: unknown = obj;
-  
+
   for (const k of keys) {
     if (current && typeof current === 'object' && current !== null && k in current) {
       current = (current as Record<string, unknown>)[k];
@@ -215,7 +220,7 @@ function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
       return undefined;
     }
   }
-  
+
   return current;
 }
 
@@ -223,7 +228,7 @@ function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
 function setNestedValue(obj: Record<string, unknown>, key: string, value: unknown): void {
   const keys = key.split('.');
   let current: Record<string, unknown> = obj;
-  
+
   for (let i = 0; i < keys.length - 1; i++) {
     const k = keys[i];
     if (!(k in current) || typeof current[k] !== 'object' || current[k] === null) {
@@ -231,7 +236,7 @@ function setNestedValue(obj: Record<string, unknown>, key: string, value: unknow
     }
     current = current[k] as Record<string, unknown>;
   }
-  
+
   current[keys[keys.length - 1]] = value;
 }
 
@@ -248,92 +253,108 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
   // 待写入队列，用于批量I/O操作
   const pendingWrites = new Map<string, KeyValuePair[]>();
   let writeTimer: NodeJS.Timeout | null = null;
-  
+
   // 批量写入队列处理
   function flushPendingWrites() {
     if (pendingWrites.size === 0) return;
-    
+
     console.log(`🔄 Flushing ${pendingWrites.size} pending locale updates...`);
-    
+
     pendingWrites.forEach((keyValuePairs, localeFilePath) => {
       updateLocaleFile(localeFilePath, keyValuePairs);
     });
-    
+
     pendingWrites.clear();
     console.log('✅ All locale files updated');
   }
-   
+
   // 添加到写入队列
   function queueLocaleUpdates(localeFilePath: string, keyValuePairs: KeyValuePair[]) {
     // 合并到待写入队列
     const existing = pendingWrites.get(localeFilePath) || [];
     pendingWrites.set(localeFilePath, [...existing, ...keyValuePairs]);
-    
+
     // 防抖写入，避免频繁I/O
     if (writeTimer) {
       clearTimeout(writeTimer);
     }
     writeTimer = setTimeout(flushPendingWrites, 500); // 500ms防抖
   }
-  
+
   // 解析文件中的t函数调用（带缓存）
-  function parseFileWithCache(filePath: string, content: string, mtime: number, size: number): KeyValuePair[] {
+  function parseFileWithCache(
+    filePath: string,
+    content: string,
+    mtime: number,
+    size: number
+  ): KeyValuePair[] {
     // 生成内容哈希用于更可靠的缓存验证
     const contentHash = crypto.createHash('md5').update(content, 'utf8').digest('hex');
-    
+
     // 检查缓存，使用多重验证：内容、修改时间、文件大小、内容哈希
     const cached = fileCache.get(filePath);
-    if (cached && 
-        cached.content === content && 
-        cached.mtime === mtime && 
-        cached.size === size &&
-        cached.contentHash === contentHash) {
+    if (
+      cached &&
+      cached.content === content &&
+      cached.mtime === mtime &&
+      cached.size === size &&
+      cached.contentHash === contentHash
+    ) {
       return cached.keyValuePairs;
     }
-    
+
     // 解析文件
     const keyValuePairs = parseFile(filePath, content);
-    
+
     // 更新缓存
     fileCache.set(filePath, {
       content,
       mtime,
       size,
       contentHash,
-      keyValuePairs
+      keyValuePairs,
     });
-    
+
     return keyValuePairs;
   }
-  
+
   // 扫描所有文件收集key映射
   function scanAllFiles() {
     function scanDirectory(dir: string): string[] {
       const files: string[] = [];
       const entries = fs.readdirSync(dir, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
         if (entry.isDirectory()) {
           if (!['node_modules', 'dist', '.git'].includes(entry.name)) {
             files.push(...scanDirectory(fullPath));
           }
-        } else if (entry.isFile() && /\.(ts|tsx|js|jsx)$/.test(entry.name) && !entry.name.endsWith('.d.ts')) {
+        } else if (
+          entry.isFile() &&
+          /\.(ts|tsx|js|jsx)$/.test(entry.name) &&
+          !entry.name.endsWith('.d.ts')
+        ) {
           files.push(fullPath);
         }
       }
       return files;
     }
-    
+
     const files = scanDirectory(root);
     files.forEach((filePath: string) => {
       if (fs.existsSync(filePath)) {
         const stats = fs.statSync(filePath);
         const content = fs.readFileSync(filePath, 'utf-8');
-        const keyValuePairs = parseFileWithCache(filePath, content, stats.mtime.getTime(), stats.size);
+        const keyValuePairs = parseFileWithCache(
+          filePath,
+          content,
+          stats.mtime.getTime(),
+          stats.size
+        );
         keyValuePairs.forEach(({ key, value, file, line }) => {
           globalKeyMapping.set(value, key);
-          
+
           // 检测重复key
           if (duplicateKeys.has(key)) {
             const existing = duplicateKeys.get(key)!;
@@ -341,15 +362,15 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
           } else {
             duplicateKeys.set(key, {
               key,
-              files: [{ file, line, value }]
+              files: [{ file, line, value }],
             });
           }
         });
       }
     });
-    
+
     // 输出重复key警告
-    duplicateKeys.forEach((info) => {
+    duplicateKeys.forEach(info => {
       if (info.files.length > 1) {
         console.warn(`\n⚠️  重复key检测: "${info.key}"`);
         info.files.forEach(({ file, line, value }) => {
@@ -358,70 +379,70 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       }
     });
   }
-  
+
   // 解析路径，支持alias和相对路径
   function resolvePath(inputPath: string): string {
     // 处理绝对路径
     if (path.isAbsolute(inputPath)) {
       return inputPath;
     }
-    
+
     // 处理alias
     if (resolvedConfig && resolvedConfig.resolve && resolvedConfig.resolve.alias) {
       const aliases = resolvedConfig.resolve.alias;
       for (const [alias, aliasPath] of Object.entries(aliases)) {
         if (inputPath.startsWith(alias)) {
-          const resolvedAliasPath = path.isAbsolute(aliasPath as string) 
-            ? aliasPath as string 
+          const resolvedAliasPath = path.isAbsolute(aliasPath as string)
+            ? (aliasPath as string)
             : path.resolve(root, aliasPath as string);
           return inputPath.replace(alias, resolvedAliasPath);
         }
       }
     }
-    
+
     // 处理自定义alias
     for (const [alias, aliasPath] of Object.entries(opts.resolveAlias)) {
       if (inputPath.startsWith(alias)) {
-        const resolvedAliasPath = path.isAbsolute(aliasPath) 
-          ? aliasPath 
+        const resolvedAliasPath = path.isAbsolute(aliasPath)
+          ? aliasPath
           : path.resolve(root, aliasPath);
         return inputPath.replace(alias, resolvedAliasPath);
       }
     }
-    
+
     // 处理相对路径
     return path.resolve(root, inputPath);
   }
-  
+
   return {
     name: 'vite-plugin-auto-i18n',
     configResolved(config) {
       root = config.root;
       resolvedConfig = config;
-      
+
       // 解析localesDir路径
       const resolvedLocalesDir = resolvePath(opts.localesDir);
       opts.localesDir = path.relative(root, resolvedLocalesDir) || opts.localesDir;
-      
+
       console.log(`📁 Locales directory resolved to: ${opts.localesDir}`);
-      
+
       // 确保locale目录和默认locale文件存在
       const localesDirPath = path.resolve(root, opts.localesDir);
       const defaultLocaleFilePath = path.resolve(localesDirPath, `${opts.defaultLocale}.json`);
-      
+
       // 创建locales目录
       if (!fs.existsSync(localesDirPath)) {
         fs.mkdirSync(localesDirPath, { recursive: true });
         console.log(`📁 Created locales directory: ${opts.localesDir}`);
       }
-      
+
       // 创建默认locale文件（如果不存在）
       if (!fs.existsSync(defaultLocaleFilePath)) {
         fs.writeFileSync(defaultLocaleFilePath, JSON.stringify({}, null, 2), 'utf-8');
         console.log(`📄 Created default locale file: ${opts.defaultLocale}.json`);
       }
     },
-    
+
     buildStart() {
       // 在开发模式下，扫描所有文件并更新locale文件
       if (process.env.NODE_ENV === 'development') {
@@ -430,51 +451,49 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         scanAllFiles();
       }
     },
-    
+
     generateBundle() {
       // 在构建阶段批量写入所有待处理的locale更新
       flushPendingWrites();
     },
-    
+
     handleHotUpdate({ file, server }) {
       // 只处理TypeScript/JavaScript文件
       if (!/\.(ts|tsx|js|jsx)$/.test(file)) {
         return;
       }
-      
+
       // 读取文件内容、修改时间和文件大小
       const stats = fs.statSync(file);
       const content = fs.readFileSync(file, 'utf-8');
-      
+
       // 解析文件中的t函数调用（使用缓存）
       const keyValuePairs = parseFileWithCache(file, content, stats.mtime.getTime(), stats.size);
-      
+
       if (keyValuePairs.length > 0) {
         // 更新全局key映射
         keyValuePairs.forEach(({ key, value }) => {
           globalKeyMapping.set(value, key);
         });
-        
+
         // 添加到写入队列，减少I/O操作
         const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
         queueLocaleUpdates(localeFilePath, keyValuePairs);
-        
+
         // 通知客户端刷新
         server.ws.send({
-          type: 'full-reload'
+          type: 'full-reload',
         });
       }
     },
-    
-    
-    
+
     transformIndexHtml(html) {
       // 将key映射转换为普通对象
       const keyMappingObject: Record<string, string> = {};
       globalKeyMapping.forEach((key, value) => {
         keyMappingObject[value] = key;
       });
-      
+
       // 构建客户端脚本
       const clientScript = `
   <script>
@@ -567,10 +586,10 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       }
     };
   </script>`;
-      
+
       // 注入客户端脚本
       return html.replace('<head>', '<head>' + clientScript);
-    }
+    },
   };
 }
 
