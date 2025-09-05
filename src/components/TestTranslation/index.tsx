@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button, Space, Typography } from 'antd';
 import { useAutoTranslation } from '../../hooks/useAutoTranslation';
+// 测试性能优化效果
 
 const { Title, Paragraph } = Typography;
 
