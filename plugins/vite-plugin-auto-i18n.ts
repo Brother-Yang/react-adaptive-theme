@@ -574,11 +574,11 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       }
     }
 
-    // 批量更新locale文件
+    // 批量更新locale文件（使用队列机制优化性能）
     if (allKeyValuePairs.length > 0) {
       const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
-      updateLocaleFile(localeFilePath, allKeyValuePairs);
-      console.log(`📝 Updated locale file with ${allKeyValuePairs.length} entries`);
+      queueLocaleUpdates(localeFilePath, allKeyValuePairs);
+      console.log(`📝 Queued ${allKeyValuePairs.length} entries for batch update`);
     }
 
     // 执行清理功能
