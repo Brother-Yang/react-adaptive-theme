@@ -8,7 +8,6 @@ const { Title, Paragraph, Text } = Typography;
 const LocalResponsiveExample: React.FC = () => {
   // 1. 文本内容的响应式处理
   const title = useLocalResponsiveText({
-    xs: '移动端',
     sm: '小屏幕',
     md: '中等屏幕',
     lg: '大屏幕',
@@ -18,7 +17,6 @@ const LocalResponsiveExample: React.FC = () => {
 
   // 2. 数值的响应式处理（字体大小）
   const fontSize = useLocalResponsiveValue({
-    xs: 12,
     sm: 14,
     md: 16,
     lg: 18,
@@ -28,7 +26,6 @@ const LocalResponsiveExample: React.FC = () => {
 
   // 3. 间距的响应式处理
   const spacing = useLocalResponsiveValue({
-    xs: 8,
     sm: 12,
     md: 16,
     lg: 20,
@@ -38,7 +35,6 @@ const LocalResponsiveExample: React.FC = () => {
 
   // 4. 按钮尺寸的响应式处理
   const buttonSize = useLocalResponsive({
-    xs: 'small',
     sm: 'small',
     md: 'middle',
     lg: 'middle',
@@ -48,13 +44,6 @@ const LocalResponsiveExample: React.FC = () => {
 
   // 5. 复杂内容的响应式处理（React 节点）
   const complexContent = useLocalResponsive({
-    xs: (
-      <div>
-        <Text type="secondary">移动端简化内容</Text>
-        <br />
-        <Button size="small" type="primary">移动操作</Button>
-      </div>
-    ),
     md: (
       <div>
         <Paragraph>
@@ -86,9 +75,6 @@ const LocalResponsiveExample: React.FC = () => {
 
   // 6. 函数式内容的响应式处理
   const dynamicContent = useLocalResponsive({
-    xs: () => (
-      <Text code>{`当前时间: ${new Date().toLocaleTimeString()}`}</Text>
-    ),
     md: () => (
       <div>
         <Text strong>动态内容示例</Text>

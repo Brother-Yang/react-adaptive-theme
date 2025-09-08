@@ -1,29 +1,31 @@
-import { useMemo } from 'react';
-import { useBreakpoint } from './useBreakpoint';
+import React, { useMemo } from 'react';
+import { useBreakpoint, type BreakpointType } from './useBreakpoint';
+import {
+  BREAKPOINT_ORDER,
+  BREAKPOINT_FALLBACK_ORDER
+} from '../config/breakpoints';
 
-// 支持的内容类型
-type ResponsiveContent = string | number | React.ReactNode | (() => React.ReactNode);
+// 响应式内容类型
+export type ResponsiveContent<T = any> = T | (() => T);
 
-// 断点内容映射
-interface ResponsiveContentMap {
-  xs?: ResponsiveContent;
-  sm?: ResponsiveContent;
-  md?: ResponsiveContent;
-  lg?: ResponsiveContent;
-  xl?: ResponsiveContent;
-  xxl?: ResponsiveContent;
+// 响应式内容映射接口
+export interface ResponsiveContentMap<T = any> {
+  sm?: ResponsiveContent<T>;
+  md?: ResponsiveContent<T>;
+  lg?: ResponsiveContent<T>;
+  xl?: ResponsiveContent<T>;
+  xxl?: ResponsiveContent<T>;
 }
 
-// Hook 配置选项
-interface UseLocalResponsiveOptions {
-  // 默认内容，当没有匹配的断点时使用
+// 配置选项接口
+export interface UseLocalResponsiveOptions {
+  /** 默认内容，当没有匹配的断点时使用 */
   defaultContent?: ResponsiveContent;
-  // 是否启用回退机制（向下查找更小的断点）
+  /** 是否启用智能回退（当前断点无内容时自动查找其他断点） */
   enableFallback?: boolean;
+  /** 自定义回退顺序 */
+  fallbackOrder?: BreakpointType[];
 }
-
-// 断点优先级顺序（从大到小）
-const BREAKPOINT_ORDER = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'] as const;
 
 /**
  * 局部响应式内容 Hook
@@ -65,17 +67,15 @@ export const useLocalResponsive = (
       return content;
     }
 
-    // 如果启用回退机制，向下查找更小的断点
+    // 如果启用回退机制，使用统一配置的智能回退顺序
     if (enableFallback) {
-      const currentIndex = BREAKPOINT_ORDER.indexOf(currentBreakpoint);
+      // 使用自定义回退顺序或统一配置的回退顺序
+      const fallbackBreakpoints = options?.fallbackOrder || BREAKPOINT_FALLBACK_ORDER[currentBreakpoint] || BREAKPOINT_ORDER;
       
-      // 从当前断点开始，向后查找（更小的断点）
-      for (let i = currentIndex + 1; i < BREAKPOINT_ORDER.length; i++) {
-        const fallbackBreakpoint = BREAKPOINT_ORDER[i];
-        content = contentMap[fallbackBreakpoint];
-        
-        if (content !== undefined) {
-          return content;
+      for (const bp of fallbackBreakpoints) {
+        if (contentMap[bp] !== undefined) {
+          const fallbackContent = contentMap[bp];
+          return typeof fallbackContent === 'function' ? fallbackContent() : fallbackContent;
         }
       }
     }
