@@ -35,6 +35,7 @@ import Sidebar from './components/Sidebar'
 import AppHeader from './components/Header'
 import BreakpointIndicator from './components/BreakpointIndicator'
 import TestTranslation from './components/TestTranslation'
+import LocalResponsiveExample from './components/LocalResponsiveExample'
 import { useBreakpoint } from './hooks/useBreakpoint'
 import './App.less'
 
@@ -119,6 +120,7 @@ function App() {
         <AppHeader collapsed={collapsed} onToggle={toggleCollapsed} />
         <Content className="app-content">
           <TestTranslation />
+          <LocalResponsiveExample />
           <div className="demo-container">
             {/* 基础组件 */}
             <Card title={tAuto('基础组件')} className="demo-card">
