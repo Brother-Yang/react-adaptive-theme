@@ -31,6 +31,8 @@ interface HeaderProps {
 const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   const { tAuto } = useAutoTranslation();
 
+  console.log('md');
+
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',

@@ -20,6 +20,8 @@ const { Header: AntHeader } = Layout;
 const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   const { tAuto } = useAutoTranslation();
 
+  console.log('sm');
+
   // 使用共享的用户菜单配置
   const userMenuItems = createUserMenuItems(tAuto);
 
