@@ -9,19 +9,19 @@ export type AutoTranslationFunction = (text: string, options?: { key?: string })
 
 /**
  * 用户菜单配置
- * @param tAuto 自动翻译函数
+ * @param $tAuto 自动翻译函数
  * @returns 菜单项配置
  */
-export const createUserMenuItems = (tAuto: AutoTranslationFunction): MenuProps['items'] => [
+export const createUserMenuItems = ($tAuto: AutoTranslationFunction): MenuProps['items'] => [
   {
     key: 'profile',
     icon: React.createElement(UserOutlined),
-    label: tAuto('个人中心'),
+    label: $tAuto('个人中心'),
   },
   {
     key: 'settings',
     icon: React.createElement(SettingOutlined),
-    label: tAuto('账户设置'),
+    label: $tAuto('账户设置'),
   },
   {
     type: 'divider',
@@ -29,7 +29,7 @@ export const createUserMenuItems = (tAuto: AutoTranslationFunction): MenuProps['
   {
     key: 'logout',
     icon: React.createElement(LogoutOutlined),
-    label: tAuto('退出登录'),
+    label: $tAuto('退出登录'),
     danger: true,
   },
 ];

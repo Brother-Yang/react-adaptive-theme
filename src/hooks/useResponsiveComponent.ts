@@ -1,8 +1,12 @@
 import React, { useMemo } from 'react';
 import { useBreakpoint, type BreakpointType } from './useBreakpoint';
+import {
+  COMPONENT_SUFFIX_MAP,
+  BREAKPOINT_FALLBACK_ORDER
+} from '../config/breakpoints';
 
-// 响应式组件映射类型
-export interface ResponsiveComponentMap<T = React.ComponentType<unknown>> {
+// 响应式组件映射接口
+export interface ResponsiveComponentMap<T = any> {
   sm?: T;
   md?: T;
   lg?: T;
@@ -10,15 +14,6 @@ export interface ResponsiveComponentMap<T = React.ComponentType<unknown>> {
   xxl?: T;
   default: T; // 默认组件（必需）
 }
-
-// 组件后缀映射
-const COMPONENT_SUFFIX_MAP: Record<string, string> = {
-  sm: 'sm', 
-  md: 'md',
-  lg: 'lg',
-  xl: 'xl',
-  xxl: 'xxl'
-};
 
 /**
  * 响应式组件加载Hook
@@ -113,17 +108,7 @@ export function createResponsiveComponent<P extends Record<string, unknown> = Re
   };
 }
 
-/**
- * 断点优先级映射（用于回退逻辑）
- * 当指定断点的组件不存在时，按此优先级查找替代组件
- */
-const BREAKPOINT_FALLBACK_ORDER: Record<string, string[]> = {
-  sm: ['md', 'lg', 'xl', 'xxl'],
-  md: ['sm', 'lg', 'xl', 'xxl'],
-  lg: ['md', 'xl', 'sm', 'xxl'],
-  xl: ['lg', 'md', 'sm', 'xxl'],
-  xxl: ['xl', 'lg', 'md', 'sm']
-};
+
 
 /**
  * 智能响应式组件选择Hook

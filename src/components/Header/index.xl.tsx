@@ -8,7 +8,6 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
-import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
@@ -30,18 +29,16 @@ interface HeaderProps {
  * - 可以显示更多操作按钮
  */
 const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { tAuto } = useAutoTranslation();
-
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: tAuto('个人中心'),
+      label: $tAuto('个人中心'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: tAuto('账户设置'),
+      label: $tAuto('账户设置'),
     },
     {
       type: 'divider',
@@ -49,7 +46,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: tAuto('退出登录'),
+      label: $tAuto('退出登录'),
       danger: true,
     },
   ];
@@ -82,13 +79,13 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className='breadcrumb full'
           items={[
             {
-              title: tAuto('首页'),
+              title: $tAuto('首页'),
             },
             {
-              title: tAuto('工作台'),
+              title: $tAuto('工作台'),
             },
             {
-              title: tAuto('仪表盘'),
+              title: $tAuto('仪表盘'),
             },
           ]}
         />
@@ -113,8 +110,8 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
             <div className='user-info desktop'>
               <Avatar size='default' icon={<UserOutlined />} />
               <div className='user-details'>
-                <span className='username'>{tAuto('管理员')}</span>
-                <span className='user-role'>{tAuto('系统管理员')}</span>
+                <span className='username'>{$tAuto('管理员')}</span>
+                <span className='user-role'>{$tAuto('系统管理员')}</span>
               </div>
             </div>
           </Dropdown>

@@ -9,6 +9,7 @@ import type { CallExpression } from '@babel/types';
 // 兼容不同版本的@babel/traverse导入
 const traverseAST = (traverse as unknown as { default?: typeof traverse }).default || traverse;
 import * as t from '@babel/types';
+import { get, set, isObject, isArray } from 'radash';
 
 interface AutoI18nOptions {
   localesDir?: string;
@@ -16,6 +17,8 @@ interface AutoI18nOptions {
   include?: string[];
   exclude?: string[];
   resolveAlias?: Record<string, string>;
+  enableCleanup?: boolean; // 是否启用清理未使用的key
+  cleanupNamespaces?: string[]; // 指定要清理的命名空间，默认只清理 'auto' 命名空间
 }
 
 interface KeyValuePair {
@@ -44,6 +47,8 @@ const DEFAULT_OPTIONS: Required<AutoI18nOptions> = {
   include: ['**/*.{ts,tsx,js,jsx}'],
   exclude: ['node_modules/**', 'dist/**', '**/*.d.ts'],
   resolveAlias: {},
+  enableCleanup: true, // 默认启用清理功能
+  cleanupNamespaces: ['auto'], // 默认只清理 'auto' 命名空间
 };
 
 // 生成key的函数
@@ -73,171 +78,224 @@ function generateKey(value: string): string {
   }
 }
 
-// 解析文件中的t函数调用
-function parseFile(filePath: string, content: string): KeyValuePair[] {
-  const keyValuePairs: KeyValuePair[] = [];
-
-  try {
-    const ast = parse(content, {
-      sourceType: 'module',
-      plugins: ['typescript', 'jsx', 'decorators-legacy', 'classProperties', 'objectRestSpread'],
-    });
-
-    traverseAST(ast, {
-      CallExpression(path: NodePath<CallExpression>) {
-        const { node } = path;
-
-        // 检查是否是tAuto函数调用
-        if (
-          t.isIdentifier(node.callee, { name: 'tAuto' }) &&
-          node.arguments.length > 0 &&
-          t.isStringLiteral(node.arguments[0])
-        ) {
-          // 检查第二个参数是否包含key选项
-          let manualKey: string | null = null;
-          if (node.arguments.length > 1 && t.isObjectExpression(node.arguments[1])) {
-            const options = node.arguments[1];
-            const keyProperty = options.properties.find(
-              prop => t.isObjectProperty(prop) && t.isIdentifier(prop.key, { name: 'key' })
-            );
-            if (
-              keyProperty &&
-              t.isObjectProperty(keyProperty) &&
-              t.isStringLiteral(keyProperty.value)
-            ) {
-              manualKey = keyProperty.value.value;
-            }
-          }
-
-          const value = node.arguments[0].value;
-          const line = node.loc?.start.line || 0;
-
-          // 如果有手动指定的key，使用手动key；否则自动生成key
-          const key = manualKey || generateKey(value);
-
-          keyValuePairs.push({
-            key,
-            value,
-            file: filePath,
-            line,
-          });
-        }
-      },
-    });
-  } catch (error) {
-    console.warn(`Failed to parse ${filePath}:`, error);
-  }
-
-  return keyValuePairs;
-}
-
-// 深度合并对象，保留已有值
+// 使用 Radash 的 assign 函数进行深度合并，保留已有值
 function deepMerge(
   target: Record<string, unknown>,
   source: Record<string, unknown>
 ): Record<string, unknown> {
-  const result = { ...target };
+  if (!source || !isObject(source)) return target;
+  if (!target || !isObject(target)) return source;
 
-  for (const key in source) {
-    if (Object.prototype.hasOwnProperty.call(source, key)) {
-      if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
+  // 创建自定义合并逻辑，只在目标值不存在或为空时才覆盖
+  const customMerge = (
+    targetObj: Record<string, unknown>,
+    sourceObj: Record<string, unknown>
+  ): Record<string, unknown> => {
+    const result = { ...targetObj };
+
+    for (const key in sourceObj) {
+      if (Object.prototype.hasOwnProperty.call(sourceObj, key)) {
+        const sourceValue = sourceObj[key];
+        const targetValue = result[key];
+
         if (
-          typeof result[key] === 'object' &&
-          result[key] !== null &&
-          !Array.isArray(result[key])
+          isObject(sourceValue) &&
+          !isArray(sourceValue) &&
+          isObject(targetValue) &&
+          !isArray(targetValue)
         ) {
-          result[key] = deepMerge(
-            result[key] as Record<string, unknown>,
-            source[key] as Record<string, unknown>
+          result[key] = customMerge(
+            targetValue as Record<string, unknown>,
+            sourceValue as Record<string, unknown>
           );
         } else {
-          result[key] = source[key];
-        }
-      } else {
-        // 只有当目标值不存在或为空时才覆盖
-        if (result[key] === undefined || result[key] === null || result[key] === '') {
-          result[key] = source[key];
+          // 只有当目标值不存在或为空时才覆盖
+          if (result[key] === undefined || result[key] === null || result[key] === '') {
+            result[key] = sourceValue;
+          }
         }
       }
     }
-  }
 
-  return result;
+    return result;
+  };
+
+  return customMerge(target, source);
 }
 
-// 更新JSON文件（支持深度合并）
+// 优化的locale文件更新
 function updateLocaleFile(localeFilePath: string, keyValuePairs: KeyValuePair[]) {
-  let localeData: Record<string, unknown> = {};
+  if (!keyValuePairs.length) return;
 
-  // 读取现有的locale文件
+  // 确保目录存在
+  const dir = path.dirname(localeFilePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  // 读取现有数据
+  let existingData: Record<string, unknown> = {};
   if (fs.existsSync(localeFilePath)) {
     try {
-      const content = fs.readFileSync(localeFilePath, 'utf-8');
-      localeData = JSON.parse(content);
+      existingData = JSON.parse(fs.readFileSync(localeFilePath, 'utf-8'));
     } catch (error) {
       console.warn(`Failed to parse ${localeFilePath}:`, error);
     }
   }
 
-  // 构建新的数据结构
+  // 构建新数据并统计跳过的key
   const newData: Record<string, unknown> = {};
-  let hasChanges = false;
+  const skippedKeys: string[] = [];
 
-  for (const { key, value } of keyValuePairs) {
-    const existingValue = getNestedValue(localeData, key);
-    if (!existingValue || existingValue === '') {
+  keyValuePairs.forEach(({ key, value }) => {
+    const existingValue = getNestedValue(existingData, key);
+    if (existingValue && existingValue !== '') {
+      skippedKeys.push(`"${key}" -> "${value}" (existing: "${existingValue}")`);
+    } else {
       setNestedValue(newData, key, value);
-      hasChanges = true;
-      console.log(`Added key: ${key} = ${value}`);
-    } else {
-      console.log(`Skipped existing key: ${key} (current: ${existingValue})`);
     }
-  }
+  });
 
-  // 深度合并，保留已有翻译
-  if (hasChanges) {
-    const mergedData = deepMerge(localeData, newData);
-
-    const dir = path.dirname(localeFilePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
+  // 合并并写入
+  if (Object.keys(newData).length > 0) {
+    const mergedData = deepMerge(existingData, newData);
     fs.writeFileSync(localeFilePath, JSON.stringify(mergedData, null, 2), 'utf-8');
-    console.log(`Updated ${localeFilePath}`);
+  }
+
+  // 输出统计信息
+  if (skippedKeys.length > 0) {
+    console.log(`⏭️  Skipped ${skippedKeys.length} existing keys`);
   }
 }
 
-// 获取嵌套对象的值
+// 使用 Radash 的 get 函数获取嵌套对象的值
 function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
-  const keys = key.split('.');
-  let current: unknown = obj;
-
-  for (const k of keys) {
-    if (current && typeof current === 'object' && current !== null && k in current) {
-      current = (current as Record<string, unknown>)[k];
-    } else {
-      return undefined;
-    }
-  }
-
-  return current;
+  return get(obj, key);
 }
 
-// 设置嵌套对象的值
+// 使用 Radash 的 set 函数设置嵌套对象的值
 function setNestedValue(obj: Record<string, unknown>, key: string, value: unknown): void {
-  const keys = key.split('.');
-  let current: Record<string, unknown> = obj;
+  // Radash 的 set 函数返回新对象，我们需要手动更新原对象
+  const updated = set(obj, key, value);
+  Object.assign(obj, updated);
+}
 
-  for (let i = 0; i < keys.length - 1; i++) {
-    const k = keys[i];
-    if (!(k in current) || typeof current[k] !== 'object' || current[k] === null) {
-      current[k] = {};
+// 统一的对象操作工具
+const ObjectUtils = {
+  // 收集所有key路径
+  collectKeys(obj: Record<string, unknown>, prefix = ''): Set<string> {
+    const keys = new Set<string>();
+
+    for (const [key, value] of Object.entries(obj)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+
+      if (isObject(value) && !isArray(value)) {
+        const nestedKeys = this.collectKeys(value as Record<string, unknown>, fullKey);
+        nestedKeys.forEach(nestedKey => keys.add(nestedKey));
+      } else {
+        keys.add(fullKey);
+      }
     }
-    current = current[k] as Record<string, unknown>;
+
+    return keys;
+  },
+
+  // 删除嵌套key并清理空对象
+  deleteKey(obj: Record<string, unknown>, keyPath: string[]): boolean {
+    if (!keyPath.length) return false;
+
+    if (keyPath.length === 1) {
+      const key = keyPath[0];
+      if (key in obj) {
+        delete obj[key];
+        return true;
+      }
+      return false;
+    }
+
+    const [currentKey, ...restPath] = keyPath;
+    if (!(currentKey in obj) || !isObject(obj[currentKey]) || obj[currentKey] === null) {
+      return false;
+    }
+
+    const deleted = this.deleteKey(obj[currentKey] as Record<string, unknown>, restPath);
+
+    // 清理空对象
+    if (
+      deleted &&
+      isObject(obj[currentKey]) &&
+      Object.keys(obj[currentKey] as Record<string, unknown>).length === 0
+    ) {
+      delete obj[currentKey];
+    }
+
+    return deleted;
+  },
+
+  // 清理所有空对象
+  cleanupEmpty(obj: Record<string, unknown>): Record<string, unknown> {
+    const cleaned: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (isObject(value) && !isArray(value)) {
+        const cleanedNested = this.cleanupEmpty(value as Record<string, unknown>);
+        if (Object.keys(cleanedNested).length > 0) {
+          cleaned[key] = cleanedNested;
+        }
+      } else {
+        cleaned[key] = value;
+      }
+    }
+
+    return cleaned;
+  },
+};
+
+// 清理未使用的key
+function cleanupUnusedKeys(
+  localeFilePath: string,
+  currentKeys: Set<string>,
+  cleanupNamespaces: string[]
+): number {
+  if (!fs.existsSync(localeFilePath)) {
+    return 0;
   }
 
-  current[keys[keys.length - 1]] = value;
+  let localeData: Record<string, unknown> = {};
+  try {
+    const content = fs.readFileSync(localeFilePath, 'utf-8');
+    localeData = JSON.parse(content);
+  } catch (error) {
+    console.warn(`Failed to parse ${localeFilePath}:`, error);
+    return 0;
+  }
+
+  // 收集locale文件中的所有key
+  const allLocaleKeys = ObjectUtils.collectKeys(localeData);
+
+  // 找出需要删除的key并删除
+  let deletedCount = 0;
+  allLocaleKeys.forEach(key => {
+    const belongsToCleanupNamespace = cleanupNamespaces.some(namespace =>
+      key.startsWith(`${namespace}.`)
+    );
+
+    if (belongsToCleanupNamespace && !currentKeys.has(key)) {
+      if (ObjectUtils.deleteKey(localeData, key.split('.'))) {
+        deletedCount++;
+        console.log(`🗑️  Removed unused key: ${key}`);
+      }
+    }
+  });
+
+  // 如果有删除操作，清理空对象并写回文件
+  if (deletedCount > 0) {
+    const cleanedData = ObjectUtils.cleanupEmpty(localeData);
+    fs.writeFileSync(localeFilePath, JSON.stringify(cleanedData, null, 2), 'utf-8');
+    console.log(`🧹 Cleaned up ${deletedCount} unused keys from ${path.basename(localeFilePath)}`);
+  }
+
+  return deletedCount;
 }
 
 export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
@@ -250,100 +308,242 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
   const fileCache = new Map<string, FileCache>();
   // 重复key检测
   const duplicateKeys = new Map<string, DuplicateKeyInfo>();
-  // 待写入队列，用于批量I/O操作
-  const pendingWrites = new Map<string, KeyValuePair[]>();
+  // 优化的批量写入机制
+  const pendingWrites = new Map<string, Set<string>>();
+  const pendingKeyValuePairs = new Map<string, KeyValuePair[]>();
   let writeTimer: NodeJS.Timeout | null = null;
 
   // 批量写入队列处理
   function flushPendingWrites() {
-    if (pendingWrites.size === 0) return;
+    if (pendingKeyValuePairs.size === 0) return;
 
-    console.log(`🔄 Flushing ${pendingWrites.size} pending locale updates...`);
+    console.log(`🔄 Flushing ${pendingKeyValuePairs.size} pending locale updates...`);
 
-    pendingWrites.forEach((keyValuePairs, localeFilePath) => {
-      updateLocaleFile(localeFilePath, keyValuePairs);
-    });
+    // 批量执行所有待写入的操作
+    const writePromises = Array.from(pendingKeyValuePairs.entries()).map(
+      ([localeFilePath, keyValuePairs]) => updateLocaleFile(localeFilePath, keyValuePairs)
+    );
 
+    // 清理缓存
     pendingWrites.clear();
+    pendingKeyValuePairs.clear();
     console.log('✅ All locale files updated');
+
+    // 可选：等待所有写入完成
+    Promise.all(writePromises).catch(error => {
+      console.warn('Batch write failed:', error);
+    });
   }
 
-  // 添加到写入队列
+  // 添加到写入队列（优化去重）
   function queueLocaleUpdates(localeFilePath: string, keyValuePairs: KeyValuePair[]) {
-    // 合并到待写入队列
-    const existing = pendingWrites.get(localeFilePath) || [];
-    pendingWrites.set(localeFilePath, [...existing, ...keyValuePairs]);
+    // 去重合并待写入的数据
+    const existingPairs = pendingKeyValuePairs.get(localeFilePath) || [];
+    const existingKeys = pendingWrites.get(localeFilePath) || new Set();
+
+    const newPairs = keyValuePairs.filter(pair => !existingKeys.has(pair.key));
+    if (newPairs.length === 0) return; // 没有新数据，跳过
+
+    newPairs.forEach(pair => existingKeys.add(pair.key));
+    pendingKeyValuePairs.set(localeFilePath, [...existingPairs, ...newPairs]);
+    pendingWrites.set(localeFilePath, existingKeys);
 
     // 防抖写入，避免频繁I/O
     if (writeTimer) {
       clearTimeout(writeTimer);
     }
-    writeTimer = setTimeout(flushPendingWrites, 500); // 500ms防抖
+    writeTimer = setTimeout(flushPendingWrites, 200); // 减少到200ms防抖
   }
 
-  // 解析文件中的t函数调用（带缓存）
+  // AST缓存，避免重复解析
+  const astCache = new Map<string, { hash: string; ast: any }>();
+
+  // 文件列表缓存
+  let cachedFileList: string[] | null = null;
+  let fileListCacheTime = 0;
+  const FILE_LIST_CACHE_TTL = 5000; // 5秒缓存
+
+  // 计算文件内容哈希（更高效）
+  function getContentHash(content: string, mtime: number, size: number): string {
+    return `${mtime}-${size}-${content.length}`;
+  }
+
+  // 从AST中提取key-value对
+  function extractKeyValuePairs(ast: any, filePath: string): KeyValuePair[] {
+    const keyValuePairs: KeyValuePair[] = [];
+
+    try {
+      traverseAST(ast, {
+        CallExpression(path: NodePath<CallExpression>) {
+          const { node } = path;
+
+          // 检查是否是window.$tAuto函数调用
+          if (
+            (t.isIdentifier(node.callee, { name: '$tAuto' }) ||
+              (t.isMemberExpression(node.callee) &&
+                t.isIdentifier(node.callee.object, { name: 'window' }) &&
+                t.isIdentifier(node.callee.property, { name: '$tAuto' }))) &&
+            node.arguments.length > 0 &&
+            t.isStringLiteral(node.arguments[0])
+          ) {
+            // 检查第二个参数是否包含key选项
+            let manualKey: string | null = null;
+            if (node.arguments.length > 1 && t.isObjectExpression(node.arguments[1])) {
+              const options = node.arguments[1];
+              const keyProperty = options.properties.find(
+                prop => t.isObjectProperty(prop) && t.isIdentifier(prop.key, { name: 'key' })
+              );
+              if (
+                keyProperty &&
+                t.isObjectProperty(keyProperty) &&
+                t.isStringLiteral(keyProperty.value)
+              ) {
+                manualKey = keyProperty.value.value;
+              }
+            }
+
+            const value = node.arguments[0].value;
+            const line = node.loc?.start.line || 0;
+
+            // 如果有手动指定的key，使用手动key；否则自动生成key
+            const key = manualKey || generateKey(value);
+
+            keyValuePairs.push({
+              key,
+              value,
+              file: filePath,
+              line,
+            });
+          }
+        },
+      });
+    } catch (error) {
+      console.warn(`Failed to traverse AST for ${filePath}:`, error);
+    }
+
+    return keyValuePairs;
+  }
+
+  // 带AST缓存的文件解析
   function parseFileWithCache(
     filePath: string,
     content: string,
     mtime: number,
     size: number
   ): KeyValuePair[] {
-    // 生成内容哈希用于更可靠的缓存验证
-    const contentHash = crypto.createHash('md5').update(content, 'utf8').digest('hex');
+    const hash = getContentHash(content, mtime, size);
 
-    // 检查缓存，使用多重验证：内容、修改时间、文件大小、内容哈希
+    // 检查完整缓存
     const cached = fileCache.get(filePath);
-    if (
-      cached &&
-      cached.content === content &&
-      cached.mtime === mtime &&
-      cached.size === size &&
-      cached.contentHash === contentHash
-    ) {
+    if (cached && cached.contentHash === hash) {
       return cached.keyValuePairs;
     }
 
-    // 解析文件
-    const keyValuePairs = parseFile(filePath, content);
+    // 检查AST缓存
+    let ast: any;
+    const astCached = astCache.get(filePath);
+    if (astCached && astCached.hash === hash) {
+      ast = astCached.ast;
+    } else {
+      try {
+        ast = parse(content, {
+          sourceType: 'module',
+          plugins: [
+            'typescript',
+            'jsx',
+            'decorators-legacy',
+            'classProperties',
+            'objectRestSpread',
+          ],
+        });
+        astCache.set(filePath, { hash, ast });
+      } catch (error) {
+        console.warn(`Failed to parse ${filePath}:`, error);
+        return [];
+      }
+    }
 
-    // 更新缓存
+    const keyValuePairs = extractKeyValuePairs(ast, filePath);
+
+    // 更新完整缓存
     fileCache.set(filePath, {
       content,
       mtime,
       size,
-      contentHash,
+      contentHash: hash,
       keyValuePairs,
     });
+
+    // 清理过期缓存
+    cleanupCache();
 
     return keyValuePairs;
   }
 
-  // 扫描所有文件收集key映射
-  function scanAllFiles() {
-    function scanDirectory(dir: string): string[] {
-      const files: string[] = [];
-      const entries = fs.readdirSync(dir, { withFileTypes: true });
+  // 清理过期缓存
+  function cleanupCache() {
+    const maxCacheSize = 1000;
+    if (fileCache.size > maxCacheSize) {
+      const entries = Array.from(fileCache.entries());
+      const toDelete = entries.slice(0, entries.length - maxCacheSize);
+      toDelete.forEach(([key]) => {
+        fileCache.delete(key);
+        astCache.delete(key);
+      });
+    }
+  }
 
-      for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          if (!['node_modules', 'dist', '.git'].includes(entry.name)) {
-            files.push(...scanDirectory(fullPath));
-          }
-        } else if (
-          entry.isFile() &&
-          /\.(ts|tsx|js|jsx)$/.test(entry.name) &&
-          !entry.name.endsWith('.d.ts')
-        ) {
-          files.push(fullPath);
-        }
-      }
-      return files;
+  // 获取所有需要扫描的文件（带缓存）
+  function getAllScanFiles(): string[] {
+    const now = Date.now();
+    if (cachedFileList && now - fileListCacheTime < FILE_LIST_CACHE_TTL) {
+      return cachedFileList;
     }
 
-    const files = scanDirectory(root);
-    files.forEach((filePath: string) => {
-      if (fs.existsSync(filePath)) {
+    const files: string[] = [];
+    const excludeDirs = new Set(['node_modules', 'dist', '.git', '.vscode', '.next', 'build']);
+
+    function scanDirectory(dir: string) {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            if (!excludeDirs.has(entry.name)) {
+              scanDirectory(fullPath);
+            }
+          } else if (
+            entry.isFile() &&
+            /\.(ts|tsx|js|jsx)$/.test(entry.name) &&
+            !entry.name.endsWith('.d.ts')
+          ) {
+            files.push(fullPath);
+          }
+        }
+      } catch (error) {
+        // 忽略无法访问的目录
+      }
+    }
+
+    scanDirectory(root);
+    cachedFileList = files;
+    fileListCacheTime = now;
+    return files;
+  }
+
+  // 扫描所有文件收集key映射（优化版）
+  function scanAllFiles() {
+    console.log('🔍 Starting to scan all files for $tAuto entries...');
+
+    const files = getAllScanFiles();
+    console.log(`📁 Found ${files.length} files to scan`);
+
+    const allKeyValuePairs: KeyValuePair[] = [];
+    let processedFiles = 0;
+
+    // 批量处理文件，减少I/O阻塞
+    for (const filePath of files) {
+      try {
         const stats = fs.statSync(filePath);
         const content = fs.readFileSync(filePath, 'utf-8');
         const keyValuePairs = parseFileWithCache(
@@ -352,32 +552,70 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
           stats.mtime.getTime(),
           stats.size
         );
+
+        if (keyValuePairs.length > 0) {
+          console.log(
+            `📄 ${path.relative(root, filePath)}: found ${keyValuePairs.length} $tAuto entries`
+          );
+          allKeyValuePairs.push(...keyValuePairs);
+        }
+
+        // 更新全局映射和重复检测
         keyValuePairs.forEach(({ key, value, file, line }) => {
           globalKeyMapping.set(value, key);
 
-          // 检测重复key
           if (duplicateKeys.has(key)) {
-            const existing = duplicateKeys.get(key)!;
-            existing.files.push({ file, line, value });
+            duplicateKeys.get(key)!.files.push({ file, line, value });
           } else {
-            duplicateKeys.set(key, {
-              key,
-              files: [{ file, line, value }],
-            });
+            duplicateKeys.set(key, { key, files: [{ file, line, value }] });
           }
         });
-      }
-    });
 
-    // 输出重复key警告
-    duplicateKeys.forEach(info => {
-      if (info.files.length > 1) {
-        console.warn(`\n⚠️  重复key检测: "${info.key}"`);
-        info.files.forEach(({ file, line, value }) => {
-          console.warn(`   - ${path.relative(root, file)}:${line} -> "${value}"`);
-        });
+        processedFiles++;
+      } catch (error) {
+        console.warn(`Failed to process ${filePath}:`, error);
       }
-    });
+    }
+
+    // 批量更新locale文件（使用队列机制优化性能）
+    if (allKeyValuePairs.length > 0) {
+      const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
+      queueLocaleUpdates(localeFilePath, allKeyValuePairs);
+      console.log(`📝 Queued ${allKeyValuePairs.length} entries for batch update`);
+    }
+
+    // 执行清理功能
+    if (opts.enableCleanup) {
+      const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
+      const currentKeys = new Set(allKeyValuePairs.map(pair => pair.key));
+      const deletedCount = cleanupUnusedKeys(localeFilePath, currentKeys, opts.cleanupNamespaces);
+
+      if (deletedCount > 0) {
+        console.log(`🧹 Cleanup completed: removed ${deletedCount} unused keys`);
+      } else {
+        console.log(`🧹 Cleanup completed: no unused keys found`);
+      }
+    }
+
+    console.log(
+      `✅ Scan completed: ${allKeyValuePairs.length} total entries from ${processedFiles} files`
+    );
+
+    // 输出重复key警告（仅显示真正重复的）
+    const duplicateCount = Array.from(duplicateKeys.values()).filter(
+      info => info.files.length > 1
+    ).length;
+    if (duplicateCount > 0) {
+      console.warn(`\n⚠️  Found ${duplicateCount} duplicate keys:`);
+      duplicateKeys.forEach(info => {
+        if (info.files.length > 1) {
+          console.warn(`   "${info.key}" appears in ${info.files.length} locations`);
+          info.files.forEach(({ file, line, value }) => {
+            console.warn(`     - ${path.relative(root, file)}:${line} -> "${value}"`);
+          });
+        }
+      });
+    }
   }
 
   // 解析路径，支持alias和相对路径
@@ -447,6 +685,28 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       // 在开发模式下，扫描所有文件并更新locale文件
       if (process.env.NODE_ENV === 'development') {
         this.addWatchFile(path.resolve(root, opts.localesDir));
+
+        // 添加对所有相关文件的监听
+        const addWatchFiles = (dir: string, context: any) => {
+          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+              if (!['node_modules', 'dist', '.git', '.vscode'].includes(entry.name)) {
+                addWatchFiles(fullPath, context);
+              }
+            } else if (
+              entry.isFile() &&
+              /\.(ts|tsx|js|jsx)$/.test(entry.name) &&
+              !entry.name.endsWith('.d.ts')
+            ) {
+              context.addWatchFile(fullPath);
+            }
+          }
+        };
+
+        addWatchFiles(root, this);
+
         // 初始扫描所有文件，收集key映射
         scanAllFiles();
       }
@@ -470,21 +730,26 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       // 解析文件中的t函数调用（使用缓存）
       const keyValuePairs = parseFileWithCache(file, content, stats.mtime.getTime(), stats.size);
 
+      // 重新扫描所有文件以确保全局key映射是最新的
+      console.log(`🔄 File changed: ${path.relative(root, file)}, rescanning all files...`);
+
+      // 清空当前的全局映射和重复key检测
+      globalKeyMapping.clear();
+      duplicateKeys.clear();
+
+      // 重新扫描所有文件（包含清理功能）
+      scanAllFiles();
+
       if (keyValuePairs.length > 0) {
-        // 更新全局key映射
-        keyValuePairs.forEach(({ key, value }) => {
-          globalKeyMapping.set(value, key);
-        });
-
-        // 添加到写入队列，减少I/O操作
-        const localeFilePath = path.resolve(root, opts.localesDir, `${opts.defaultLocale}.json`);
-        queueLocaleUpdates(localeFilePath, keyValuePairs);
-
-        // 通知客户端刷新
-        server.ws.send({
-          type: 'full-reload',
-        });
+        console.log(
+          `✅ Found ${keyValuePairs.length} $tAuto entries in ${path.relative(root, file)}`
+        );
       }
+
+      // 总是通知客户端刷新以更新key映射
+      server.ws.send({
+        type: 'full-reload',
+      });
     },
 
     transformIndexHtml(html) {
@@ -499,59 +764,23 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
   <script>
     window.__AUTO_I18N_PLUGIN__ = {
       keyMapping: ${JSON.stringify(keyMappingObject)},
-      addedKeys: new Set(), // 缓存已添加的key，避免重复请求
-      addKey: function(key, value) {
-        var keyValuePair = key + ':' + value;
-        if (this.addedKeys.has(keyValuePair)) {
-          return; // 已经添加过，跳过请求
-        }
-        
-        // 检查key是否已经存在于i18n实例中
-        var i18n = window.i18n || 
-                   (window.i18next && window.i18next.default) || 
-                   (window.i18next) ||
-                   (window.reactI18next && window.reactI18next.i18n);
-        
-        if (i18n && i18n.t) {
-          var existingTranslation = i18n.t(key, { defaultValue: null });
-          if (existingTranslation !== null && existingTranslation !== key) {
-            // key已存在且有翻译，添加到缓存但不发送请求
-            this.addedKeys.add(keyValuePair);
-            return;
-          }
-        }
-        
-        this.addedKeys.add(keyValuePair);
-
-      },
       getKey: function(value) {
         return this.keyMapping[value];
       },
       t: function(value, options) {
-        // 尝试多种方式获取i18n实例
+        // 获取i18n实例
         var i18n = window.i18n || 
                    (window.i18next && window.i18next.default) || 
                    (window.i18next) ||
                    (window.reactI18next && window.reactI18next.i18n);
         
-        // 如果还是找不到，尝试从全局变量中获取
-        if (!i18n && typeof window !== 'undefined') {
-          // 检查是否有其他可能的i18n实例
-          var possibleI18n = Object.keys(window).find(function(key) {
-            return window[key] && typeof window[key].t === 'function' && typeof window[key].language === 'string';
-          });
-          if (possibleI18n) {
-            i18n = window[possibleI18n];
-          }
-        }
-        
         if (!i18n || !i18n.t) {
-          console.warn('i18n instance not found, returning original value');
+          // 如果没有i18n实例，直接返回原始值
           return value;
         }
         
+        // 如果手动指定了key，直接使用
         if (options && options.key) {
-          this.addKey(options.key, value);
           var interpolationParams = {};
           if (options) {
             Object.keys(options).forEach(function(k) {
@@ -565,18 +794,18 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
           return translation === options.key ? value : translation;
         }
         
+        // 从映射中获取key
         var key = this.getKey(value);
         if (!key) {
-          console.warn('Key not found for value: ' + value + '. This might indicate the plugin has not scanned this file yet.');
+          // 如果找不到key，返回原始值
           return value;
         }
         
+        // 处理插值参数
         var interpolationParams = {};
         if (options) {
           Object.keys(options).forEach(function(k) {
-            if (k !== 'key') {
-              interpolationParams[k] = options[k];
-            }
+            interpolationParams[k] = options[k];
           });
         }
         
@@ -584,6 +813,11 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         var translation = i18n.t(key, Object.assign({ defaultValue: value }, hasInterpolation ? interpolationParams : {}));
         return translation === key ? value : translation;
       }
+    };
+    
+    // 提供全局的$tAuto函数
+    window.$tAuto = function(value, options) {
+      return window.__AUTO_I18N_PLUGIN__.t(value, options);
     };
   </script>`;
 

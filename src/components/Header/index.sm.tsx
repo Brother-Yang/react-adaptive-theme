@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layout, Avatar, Dropdown, Space, Button } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons';
-import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import { createUserMenuItems, handleUserMenuClick, type HeaderProps } from './shared';
@@ -18,10 +17,10 @@ const { Header: AntHeader } = Layout;
  * - 使用更紧凑的间距
  */
 const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { tAuto } = useAutoTranslation();
+  console.log('sm');
 
-  // 使用共享的用户菜单配置
-  const userMenuItems = createUserMenuItems(tAuto);
+  // 移动端使用共享的菜单项
+  const userMenuItems = createUserMenuItems($tAuto);
 
   return (
     <AntHeader className={`app-header mobile ${collapsed ? 'collapsed' : ''}`}>
@@ -34,7 +33,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           size='small'
         />
         {/* 移动端可以显示简化的标题 */}
-        <span className='mobile-title'>{tAuto('控制台')}</span>
+        <span className='mobile-title'>{$tAuto('控制台')}</span>
       </div>
 
       <div className='header-right'>
