@@ -147,8 +147,7 @@ src/
 ├── hooks/              # 自定义 Hooks
 │   ├── useBreakpoint.ts   # 断点检测 Hook
 │   ├── useResponsiveComponent.ts # 响应式组件 Hook
-│   ├── useTheme.ts        # 主题管理 Hook
-│   └── useAutoTranslation.ts # 自动翻译 Hook
+│   └── useTheme.ts        # 主题管理 Hook
 ├── config/             # 配置文件
 │   ├── theme.ts           # 主题配置
 │   └── i18n.ts            # 国际化配置
@@ -231,7 +230,7 @@ function ThemeButton() {
 - **编译时key生成**: 构建时预生成所有翻译key，运行时零开销
 - **智能key处理**: 自动生成key或手动指定key，两种方式都会添加到JSON文件
 - **智能key优化**: 英文长文本自动截取前30字符+12位hash，确保可读性和唯一性
-- **灵活翻译模式**: 支持 `tAuto("文本")` 自动生成key 和 `tAuto("文本", {key: "custom.key"})` 手动指定key
+- **灵活翻译模式**: 支持 `$tAuto("文本")` 自动生成key 和 `$tAuto("文本", {key: "custom.key"})` 手动指定key
 - **插值变量**: 完全兼容react-i18next的插值语法
 - **实时更新**: 开发时自动更新翻译文件
 - **高安全性**: 中文文本使用MD5 hash前12位，降低冲突概率
@@ -265,29 +264,36 @@ node scripts/generate-translations.js
 
 ### 基本使用
 
+系统通过 Vite 插件自动注入全局 `$tAuto` 函数，无需手动导入：
+
 ```typescript
-import { useAutoTranslation } from '../hooks/useAutoTranslation';
+import { useTranslation } from 'react-i18next';
 
 function MyComponent() {
-  const { tAuto, locale } = useAutoTranslation();
+  const { i18n } = useTranslation(); // 获取当前语言
   
   return (
     <div>
+      {/* 当前语言 */}
+      <p>当前语言: {i18n.language}</p>
+      
       {/* 自动生成key - 插件会自动为文本生成唯一key */}
-      <h1>{tAuto('欢迎使用系统')}</h1>
+      <h1>{$tAuto('欢迎使用系统')}</h1>
       
       {/* 手动指定key - 插件会将指定的key添加到JSON文件 */}
-      <p>{tAuto('系统运行正常', { key: 'system.status.ok' })}</p>
+      <p>{$tAuto('系统运行正常', { key: 'system.status.ok' })}</p>
       
       {/* 插值变量 */}
-      <p>{tAuto('欢迎 {{name}}', { name: '张三' })}</p>
+      <p>{$tAuto('欢迎 {{name}}', { name: '张三' })}</p>
       
       {/* 手动key + 插值 */}
-      <p>{tAuto('用户 {{user}} 在线', { key: 'user.online', user: '张三' })}</p>
+      <p>{$tAuto('用户 {{user}} 在线', { key: 'user.online', user: '张三' })}</p>
     </div>
   );
 }
 ```
+
+**注意**: `$tAuto` 函数由 Vite 插件自动注入，可以直接使用或通过 `window.$tAuto` 访问。
 
 详细使用说明请参考 [AUTO_I18N_GUIDE.md](./AUTO_I18N_GUIDE.md)
 
@@ -359,12 +365,12 @@ export default defineConfig({
 3. 根据需要创建 `index.{breakpoint}.tsx` 文件
 4. 创建对应的 `.less` 样式文件
 5. 确保组件支持主题切换
-6. 使用 `useAutoTranslation` hook 实现国际化
+6. 使用全局 `$tAuto` 函数实现国际化
 
 ### 国际化最佳实践
-1. **短文本使用自动key**: `tAuto('保存')` - 系统自动生成key
-2. **长文本使用手动key**: `tAuto('用户数据已成功保存', { key: 'user.save.success' })`
-3. **插值变量**: `tAuto('欢迎 {{name}}', { name: userName })`
+1. **短文本使用自动key**: `$tAuto('保存')` - 系统自动生成key
+2. **长文本使用手动key**: `$tAuto('用户数据已成功保存', { key: 'user.save.success' })`
+3. **插值变量**: `$tAuto('欢迎 {{name}}', { name: userName })`
 4. **避免动态文本**: 不要使用字符串拼接，使用插值变量代替
 
 ### 断点文件命名规范

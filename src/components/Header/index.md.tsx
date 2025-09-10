@@ -8,7 +8,6 @@ import {
   SettingOutlined,
   BellOutlined,
 } from '@ant-design/icons';
-import { useAutoTranslation } from '../../hooks/useAutoTranslation';
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
@@ -29,20 +28,21 @@ interface HeaderProps {
  * - 使用中等间距
  */
 const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
-  const { tAuto } = useAutoTranslation();
-
   console.log('md');
+
+  // 类型断言以解决TypeScript错误
+  const $tAuto = (window as any).$tAuto;
 
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: tAuto('个人中心'),
+      label: $tAuto('个人中心'),
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: tAuto('账户设置'),
+      label: $tAuto('账户设置'),
     },
     {
       type: 'divider',
@@ -50,7 +50,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: tAuto('退出登录'),
+      label: $tAuto('退出登录'),
       danger: true,
     },
   ];
@@ -83,10 +83,10 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           className='breadcrumb compact'
           items={[
             {
-              title: tAuto('首页'),
+              title: $tAuto('首页'),
             },
             {
-              title: tAuto('仪表盘'),
+              title: $tAuto('仪表盘'),
             },
           ]}
         />
@@ -109,7 +109,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           >
             <div className='user-info tablet'>
               <Avatar size='default' icon={<UserOutlined />} />
-              <span className='username compact'>{tAuto('管理员')}</span>
+              <span className='username compact'>{$tAuto('管理员')}</span>
             </div>
           </Dropdown>
         </Space>

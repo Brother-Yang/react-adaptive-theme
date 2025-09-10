@@ -27,7 +27,12 @@ declare global {
       mode: 'light' | 'dark' | 'auto';
       primaryColor?: string;
     };
+    // 自动国际化翻译函数
+    $tAuto: (text: string, options?: { key?: string; [key: string]: any }) => string;
   }
+
+  // 全局$tAuto函数声明
+  declare function $tAuto(text: string, options?: { key?: string; [key: string]: any }): string;
 }
 
 // CSS 模块类型定义

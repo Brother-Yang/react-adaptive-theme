@@ -377,9 +377,12 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         CallExpression(path: NodePath<CallExpression>) {
           const { node } = path;
 
-          // 检查是否是tAuto函数调用
+          // 检查是否是window.$tAuto函数调用
           if (
-            t.isIdentifier(node.callee, { name: 'tAuto' }) &&
+            (t.isIdentifier(node.callee, { name: '$tAuto' }) ||
+              (t.isMemberExpression(node.callee) &&
+                t.isIdentifier(node.callee.object, { name: 'window' }) &&
+                t.isIdentifier(node.callee.property, { name: '$tAuto' }))) &&
             node.arguments.length > 0 &&
             t.isStringLiteral(node.arguments[0])
           ) {
@@ -530,7 +533,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
 
   // 扫描所有文件收集key映射（优化版）
   function scanAllFiles() {
-    console.log('🔍 Starting to scan all files for tAuto entries...');
+    console.log('🔍 Starting to scan all files for $tAuto entries...');
 
     const files = getAllScanFiles();
     console.log(`📁 Found ${files.length} files to scan`);
@@ -552,7 +555,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
 
         if (keyValuePairs.length > 0) {
           console.log(
-            `📄 ${path.relative(root, filePath)}: found ${keyValuePairs.length} tAuto entries`
+            `📄 ${path.relative(root, filePath)}: found ${keyValuePairs.length} $tAuto entries`
           );
           allKeyValuePairs.push(...keyValuePairs);
         }
@@ -739,7 +742,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
 
       if (keyValuePairs.length > 0) {
         console.log(
-          `✅ Found ${keyValuePairs.length} tAuto entries in ${path.relative(root, file)}`
+          `✅ Found ${keyValuePairs.length} $tAuto entries in ${path.relative(root, file)}`
         );
       }
 
@@ -761,59 +764,23 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
   <script>
     window.__AUTO_I18N_PLUGIN__ = {
       keyMapping: ${JSON.stringify(keyMappingObject)},
-      addedKeys: new Set(), // 缓存已添加的key，避免重复请求
-      addKey: function(key, value) {
-        var keyValuePair = key + ':' + value;
-        if (this.addedKeys.has(keyValuePair)) {
-          return; // 已经添加过，跳过请求
-        }
-        
-        // 检查key是否已经存在于i18n实例中
-        var i18n = window.i18n || 
-                   (window.i18next && window.i18next.default) || 
-                   (window.i18next) ||
-                   (window.reactI18next && window.reactI18next.i18n);
-        
-        if (i18n && i18n.t) {
-          var existingTranslation = i18n.t(key, { defaultValue: null });
-          if (existingTranslation !== null && existingTranslation !== key) {
-            // key已存在且有翻译，添加到缓存但不发送请求
-            this.addedKeys.add(keyValuePair);
-            return;
-          }
-        }
-        
-        this.addedKeys.add(keyValuePair);
-
-      },
       getKey: function(value) {
         return this.keyMapping[value];
       },
       t: function(value, options) {
-        // 尝试多种方式获取i18n实例
+        // 获取i18n实例
         var i18n = window.i18n || 
                    (window.i18next && window.i18next.default) || 
                    (window.i18next) ||
                    (window.reactI18next && window.reactI18next.i18n);
         
-        // 如果还是找不到，尝试从全局变量中获取
-        if (!i18n && typeof window !== 'undefined') {
-          // 检查是否有其他可能的i18n实例
-          var possibleI18n = Object.keys(window).find(function(key) {
-            return window[key] && typeof window[key].t === 'function' && typeof window[key].language === 'string';
-          });
-          if (possibleI18n) {
-            i18n = window[possibleI18n];
-          }
-        }
-        
         if (!i18n || !i18n.t) {
-          console.warn('i18n instance not found, returning original value');
+          // 如果没有i18n实例，直接返回原始值
           return value;
         }
         
+        // 如果手动指定了key，直接使用
         if (options && options.key) {
-          this.addKey(options.key, value);
           var interpolationParams = {};
           if (options) {
             Object.keys(options).forEach(function(k) {
@@ -827,18 +794,18 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
           return translation === options.key ? value : translation;
         }
         
+        // 从映射中获取key
         var key = this.getKey(value);
         if (!key) {
-          console.warn('Key not found for value: ' + value + '. This might indicate the plugin has not scanned this file yet.');
+          // 如果找不到key，返回原始值
           return value;
         }
         
+        // 处理插值参数
         var interpolationParams = {};
         if (options) {
           Object.keys(options).forEach(function(k) {
-            if (k !== 'key') {
-              interpolationParams[k] = options[k];
-            }
+            interpolationParams[k] = options[k];
           });
         }
         
@@ -846,6 +813,11 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         var translation = i18n.t(key, Object.assign({ defaultValue: value }, hasInterpolation ? interpolationParams : {}));
         return translation === key ? value : translation;
       }
+    };
+    
+    // 提供全局的$tAuto函数
+    window.$tAuto = function(value, options) {
+      return window.__AUTO_I18N_PLUGIN__.t(value, options);
     };
   </script>`;
 

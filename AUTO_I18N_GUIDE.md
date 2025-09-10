@@ -23,13 +23,13 @@
 
 ```
 src/
-├── hooks/
-│   └── useAutoTranslation.ts    # 自动翻译hook
 ├── locales/
 │   ├── zh-CN.json               # 中文翻译文件
 │   └── en-US.json               # 英文翻译文件
 ├── config/
 │   └── i18n.ts                  # i18next配置文件
+├── types/
+│   └── global.d.ts              # 全局类型定义（包含$tAuto函数声明）
 └── components/
     └── TestTranslation/         # 使用示例
 plugins/
@@ -72,19 +72,27 @@ export default defineConfig({
 
 ## API 使用
 
-### useAutoTranslation Hook
+### 全局 $tAuto 函数
+
+系统通过 Vite 插件自动注入全局 `$tAuto` 函数，无需手动导入：
 
 ```typescript
-import { useAutoTranslation } from '../hooks/useAutoTranslation';
+// 直接使用全局函数，无需导入
+const text = $tAuto('欢迎使用系统');
 
-const { tAuto, locale, i18n } = useAutoTranslation();
+// 或者通过 window 对象访问
+const text = window.$tAuto('欢迎使用系统');
 ```
 
-#### 返回值
+#### 函数签名
 
-- `tAuto`: 自动翻译函数，支持自动生成key和手动指定key
-- `locale`: 当前语言
-- `i18n`: react-i18next实例
+```typescript
+$tAuto(text: string, options?: { key?: string; [key: string]: any }): string
+```
+
+- `text`: 要翻译的文本内容
+- `options.key`: 可选的手动指定key
+- `options`: 其他参数（如插值变量）
 
 ## 基本使用
 
@@ -92,28 +100,28 @@ const { tAuto, locale, i18n } = useAutoTranslation();
 
 ```typescript
 // 中文文本 - 生成hash key
-tAuto('欢迎使用自动国际化系统')  // 生成: auto.123456789
+$tAuto('欢迎使用自动国际化系统')  // 生成: auto.123456789
 
 // 英文文本 - 生成驼峰key
-tAuto('Hello World')  // 生成: auto.HelloWorld
-tAuto('This is a test')  // 生成: auto.ThisIsATest
+$tAuto('Hello World')  // 生成: auto.HelloWorld
+$tAuto('This is a test')  // 生成: auto.ThisIsATest
 ```
 
 ### 2. 手动指定key
 
 ```typescript
 // 使用自定义key - 插件会将手动key添加到JSON文件
-tAuto('用户登录成功', { key: 'user.login.success' })
-tAuto('Welcome back', { key: 'user.welcome' })
-tAuto('测试自动国际化', { key: 'testAutoLocal' })
+$tAuto('用户登录成功', { key: 'user.login.success' })
+$tAuto('Welcome back', { key: 'user.welcome' })
+$tAuto('测试自动国际化', { key: 'tes$tAutoLocal' })
 ```
 
 ### 3. 直接使用已存在的key
 
 ```typescript
 // 对于已经存在于翻译文件中的key，可以直接使用手动key方式
-tAuto('确认', { key: 'common.confirm' })
-tAuto('取消', { key: 'common.cancel' })
+$tAuto('确认', { key: 'common.confirm' })
+$tAuto('取消', { key: 'common.cancel' })
 
 ## 插值变量
 
@@ -123,11 +131,11 @@ tAuto('取消', { key: 'common.cancel' })
 
 ```typescript
 // 基本插值
-tAuto('欢迎 {{name}}', { name: '张三' })
+$tAuto('欢迎 {{name}}', { name: '张三' })
 // 输出: 欢迎 张三
 
 // 多个变量
-tAuto('欢迎 {{name}}，今天是 {{date}}', { 
+$tAuto('欢迎 {{name}}，今天是 {{date}}', { 
   name: '张三', 
   date: '2024年1月15日' 
 })
@@ -137,10 +145,10 @@ tAuto('欢迎 {{name}}，今天是 {{date}}', {
 ### 数字插值
 
 ```typescript
-tAuto('您有 {{count}} 条未读消息', { count: 5 })
+$tAuto('您有 {{count}} 条未读消息', { count: 5 })
 // 输出: 您有 5 条未读消息
 
-tAuto('Hello {{name}}, you have {{count}} new messages', { 
+$tAuto('Hello {{name}}, you have {{count}} new messages', { 
   name: 'John', 
   count: 3 
 })
@@ -150,7 +158,7 @@ tAuto('Hello {{name}}, you have {{count}} new messages', {
 ### 手动key + 插值
 
 ```typescript
-tAuto('用户 {{username}} 登录成功', { 
+$tAuto('用户 {{username}} 登录成功', { 
   key: 'user.login.success', 
   username: '李四' 
 })
@@ -165,7 +173,7 @@ tAuto('用户 {{username}} 登录成功', {
 - `boolean`: 布尔值
 
 ```typescript
-tAuto('状态: {{status}}, 数量: {{count}}, 启用: {{enabled}}', {
+$tAuto('状态: {{status}}, 数量: {{count}}, 启用: {{enabled}}', {
   status: '正常',
   count: 100,
   enabled: true
@@ -176,37 +184,37 @@ tAuto('状态: {{status}}, 数量: {{count}}, 启用: {{enabled}}', {
 
 ```typescript
 import React from 'react';
-import { useAutoTranslation } from '../hooks/useAutoTranslation';
+import { useTranslation } from 'react-i18next';
 
 const MyComponent: React.FC = () => {
-  const { tAuto, locale } = useAutoTranslation();
+  const { i18n } = useTranslation(); // 获取当前语言
   const userName = '张三';
   const messageCount = 5;
 
   return (
     <div>
       {/* 当前语言 */}
-      <p>{tAuto('当前语言')}: {locale}</p>
+      <p>{$tAuto('当前语言')}: {i18n.language}</p>
       
       {/* 自动生成key */}
-      <h1>{tAuto('欢迎使用系统')}</h1>
+      <h1>{$tAuto('欢迎使用系统')}</h1>
       
       {/* 手动指定key */}
-      <p>{tAuto('系统运行正常', { key: 'system.status.ok' })}</p>
+      <p>{$tAuto('系统运行正常', { key: 'system.status.ok' })}</p>
       
       {/* 插值变量 */}
-      <p>{tAuto('欢迎 {{name}}', { name: userName })}</p>
-      <p>{tAuto('您有 {{count}} 条消息', { count: messageCount })}</p>
+      <p>{$tAuto('欢迎 {{name}}', { name: userName })}</p>
+      <p>{$tAuto('您有 {{count}} 条消息', { count: messageCount })}</p>
       
       {/* 手动key + 插值 */}
-      <p>{tAuto('用户 {{user}} 在线', { 
+      <p>{$tAuto('用户 {{user}} 在线', { 
         key: 'user.online.status', 
         user: userName 
       })}</p>
       
       {/* 使用手动key方式访问已存在的翻译 */}
-      <button>{tAuto('保存', { key: 'common.save' })}</button>
-      <button>{tAuto('取消', { key: 'common.cancel' })}</button>
+      <button>{$tAuto('保存', { key: 'common.save' })}</button>
+      <button>{$tAuto('取消', { key: 'common.cancel' })}</button>
     </div>
   );
 };
@@ -231,7 +239,7 @@ const MyComponent: React.FC = () => {
 - 插件会将手动指定的key和对应的文本值添加到JSON翻译文件
 - 支持嵌套结构：`user.login.success`
 - 优先级：手动key > 自动生成key
-- 示例：`tAuto('你好', {key: 'greeting.hello'})` 会在JSON中创建 `"greeting": {"hello": "你好"}`
+- 示例：`$tAuto('你好', {key: 'greeting.hello'})` 会在JSON中创建 `"greeting": {"hello": "你好"}`
 
 ## 翻译文件结构
 
@@ -295,37 +303,37 @@ const MyComponent: React.FC = () => {
 
 ```typescript
 // ✅ 推荐：使用有意义的手动key
-tAuto('用户登录', { key: 'user.login' })
-tAuto('保存成功', { key: 'message.save.success' })
+$tAuto('用户登录', { key: 'user.login' })
+$tAuto('保存成功', { key: 'message.save.success' })
 
 // ❌ 避免：无意义的key名称
-tAuto('用户登录', { key: 'a.b.c' })
+$tAuto('用户登录', { key: 'a.b.c' })
 ```
 
 ### 2. 插值变量
 
 ```typescript
 // ✅ 推荐：清晰的变量名
-tAuto('欢迎 {{userName}}，您有 {{messageCount}} 条消息', {
+$tAuto('欢迎 {{userName}}，您有 {{messageCount}} 条消息', {
   userName: '张三',
   messageCount: 5
 })
 
 // ❌ 避免：模糊的变量名
-tAuto('欢迎 {{a}}，您有 {{b}} 条消息', { a: '张三', b: 5 })
+$tAuto('欢迎 {{a}}，您有 {{b}} 条消息', { a: '张三', b: 5 })
 ```
 
 ### 3. 文本组织
 
 ```typescript
 // ✅ 推荐：按功能模块组织
-tAuto('登录', { key: 'auth.login' })
-tAuto('注册', { key: 'auth.register' })
-tAuto('用户信息', { key: 'profile.info' })
+$tAuto('登录', { key: 'auth.login' })
+$tAuto('注册', { key: 'auth.register' })
+$tAuto('用户信息', { key: 'profile.info' })
 
 // ✅ 推荐：通用文本使用common前缀
-tAuto('确认', { key: 'common.confirm' })
-tAuto('取消', { key: 'common.cancel' })
+$tAuto('确认', { key: 'common.confirm' })
+$tAuto('取消', { key: 'common.cancel' })
 ```
 
 ## 系统架构
@@ -351,7 +359,7 @@ tAuto('取消', { key: 'common.cancel' })
 
 #### 1. 构建时扫描与key生成
 - **AST解析**：使用 `@babel/parser` 和 `@babel/traverse` 精确解析源码
-- **函数调用识别**：自动识别 `tAuto()` 函数调用
+- **函数调用识别**：自动识别 `$tAuto()` 函数调用
 - **智能key生成**：
   - 中文文本：MD5 hash前12位（如：`f19cc4345b6f`）
   - 英文文本：驼峰命名转换（如：`HelloWorld`）
@@ -403,7 +411,7 @@ tAuto('取消', { key: 'common.cancel' })
 3. 检查浏览器控制台是否有错误
 
 ### Key未自动生成
-1. 确认使用的是 `tAuto` 函数
+1. 确认使用的是 `$tAuto` 函数
 2. 检查开发服务器是否正常运行
 3. 查看终端是否有插件错误信息
 
@@ -502,39 +510,39 @@ autoI18n({
 ### 1. 合理使用自动key
 ```typescript
 // ✅ 推荐：短文本使用自动key
-tAuto('保存')
-tAuto('取消')
+$tAuto('保存')
+$tAuto('取消')
 
 // ✅ 推荐：长文本或重要文本使用手动key
-tAuto('用户数据已成功保存到服务器', { key: 'user.data.save.success' })
+$tAuto('用户数据已成功保存到服务器', { key: 'user.data.save.success' })
 ```
 
 ### 2. 避免动态文本
 ```typescript
 // ❌ 避免：动态拼接的文本无法在构建时识别
 const dynamicText = `欢迎 ${userName}`
-tAuto(dynamicText) // 无法预生成key
+$tAuto(dynamicText) // 无法预生成key
 
 // ✅ 推荐：使用插值变量
-tAuto('欢迎 {{name}}', { name: userName })
+$tAuto('欢迎 {{name}}', { name: userName })
 ```
 
 ### 3. 模块化组织
 ```typescript
 // ✅ 推荐：按模块组织key
-tAuto('登录', { key: 'auth.login' })
-tAuto('注册', { key: 'auth.register' })
-tAuto('忘记密码', { key: 'auth.forgot.password' })
+$tAuto('登录', { key: 'auth.login' })
+$tAuto('注册', { key: 'auth.register' })
+$tAuto('忘记密码', { key: 'auth.forgot.password' })
 ```
 
 ### 4. 清理策略
 ```typescript
 // ✅ 推荐：重要的手动key使用独立命名空间
-tAuto('系统配置', { key: 'system.config' })  // 不会被自动清理
-tAuto('临时测试', { key: 'temp.test' })      // 可配置为清理目标
+$tAuto('系统配置', { key: 'system.config' })  // 不会被自动清理
+$tAuto('临时测试', { key: 'temp.test' })      // 可配置为清理目标
 
 // ✅ 推荐：测试代码使用专门的命名空间
-tAuto('测试文本', { key: 'test.sample' })    // 便于统一清理
+$tAuto('测试文本', { key: 'test.sample' })    // 便于统一清理
 ```
 
 ## 更新日志
@@ -553,7 +561,7 @@ tAuto('测试文本', { key: 'test.sample' })    // 便于统一清理
   - 🛡️ **错误容错**: 增强异常处理和系统稳定性
   - 📊 **性能监控**: 添加详细的性能指标和日志输出
 - **v3.0.0**: 
-  - 🔄 **架构重构**: 完全移除 `tWithKey` 函数，统一使用 `tAuto` 函数
+  - 🔄 **架构重构**: 完全移除 `tWithKey` 函数，统一使用 `$tAuto` 函数
   - 🚀 **客户端注入**: 实现完整的客户端key映射注入机制
   - 🎯 **智能检测**: 支持多种i18n实例挂载方式的自动检测
   - 💾 **缓存优化**: 添加客户端key缓存，避免重复请求

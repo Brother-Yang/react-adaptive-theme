@@ -1,14 +1,13 @@
-import React from 'react'
-import { Switch, Tooltip } from 'antd'
-import { SunOutlined, MoonOutlined } from '@ant-design/icons'
-import { useAutoTranslation } from '../../hooks/useAutoTranslation'
-import { useTheme } from '../../hooks/useTheme'
-import './index.less'
+import React from 'react';
+import { Switch, Tooltip } from 'antd';
+import { SunOutlined, MoonOutlined } from '@ant-design/icons';
+import { useTheme } from '../../hooks/useTheme';
+import './index.less';
 
 interface ThemeToggleProps {
-  size?: 'small' | 'default'
-  showLabel?: boolean
-  className?: string
+  size?: 'small' | 'default';
+  showLabel?: boolean;
+  className?: string;
 }
 
 /**
@@ -19,35 +18,33 @@ interface ThemeToggleProps {
  * - 完整的工具提示
  * - 适中的布局间距
  */
-const ThemeToggleMd: React.FC<ThemeToggleProps> = ({ 
-  size = 'default', 
+const ThemeToggleMd: React.FC<ThemeToggleProps> = ({
+  size = 'default',
   showLabel = false,
-  className = ''
+  className = '',
 }) => {
-  const { toggleTheme, isDark } = useTheme()
-  const { tAuto } = useAutoTranslation()
-
-  const tooltipTitle = isDark ? tAuto('切换到浅色主题') : tAuto('切换到深色主题')
+  const { toggleTheme, isDark } = useTheme();
+  const tooltipTitle = isDark ? window.$tAuto('切换到浅色主题') : window.$tAuto('切换到深色主题');
 
   return (
     <div className={`theme-toggle tablet ${className}`}>
       {showLabel && (
-        <span className="theme-toggle-label tablet">
-          {isDark ? tAuto('深色') : tAuto('浅色')}
+        <span className='theme-toggle-label tablet'>
+          {isDark ? window.$tAuto('深色') : window.$tAuto('浅色')}
         </span>
       )}
-      <Tooltip title={tooltipTitle} placement="bottom">
+      <Tooltip title={tooltipTitle} placement='bottom'>
         <Switch
           size={size}
           checked={isDark}
           onChange={toggleTheme}
           checkedChildren={<MoonOutlined />}
           unCheckedChildren={<SunOutlined />}
-          className="theme-toggle-switch tablet"
+          className='theme-toggle-switch tablet'
         />
       </Tooltip>
     </div>
-  )
-}
+  );
+};
 
-export default ThemeToggleMd
+export default ThemeToggleMd;
