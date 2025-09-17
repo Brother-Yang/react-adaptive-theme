@@ -54,9 +54,6 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
   const breakpoint = useBreakpoint();
   const [showDetailInfo, setShowDetailInfo] = React.useState(showDetails);
 
-  // 类型断言以解决TypeScript错误
-  const $tAuto = (window as any).$tAuto;
-
   const handleClick = () => {
     if (clickable) {
       setShowDetailInfo(!showDetailInfo);
