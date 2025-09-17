@@ -30,9 +30,6 @@ interface HeaderProps {
 const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   console.log('md');
 
-  // 类型断言以解决TypeScript错误
-  const $tAuto = (window as any).$tAuto;
-
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',

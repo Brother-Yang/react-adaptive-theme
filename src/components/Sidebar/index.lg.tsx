@@ -66,9 +66,6 @@ const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
   const [selectedKeys, setSelectedKeys] = useState(['1']);
   const [openKeys, setOpenKeys] = useState(['sub1']);
 
-  // 类型断言以解决TypeScript错误
-  const $tAuto = (window as any).$tAuto;
-
   // 根据当前语言生成菜单项
   const items = createMenuItems($tAuto);
 
