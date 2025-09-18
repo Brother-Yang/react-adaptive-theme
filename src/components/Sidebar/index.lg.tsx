@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, type MenuProps } from 'antd';
-import {
-  DashboardOutlined,
-  UserOutlined,
-  SettingOutlined,
-  FileTextOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
+import { DashboardOutlined } from '@ant-design/icons';
 
 import './index.less';
 
