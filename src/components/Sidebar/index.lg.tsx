@@ -29,23 +29,6 @@ function getItem(
 // 生成菜单项的函数
 const createMenuItems = ($tAuto: (key: string) => string): MenuItem[] => [
   getItem($tAuto('仪表盘'), '1', <DashboardOutlined />),
-  getItem($tAuto('用户管理'), 'sub1', <UserOutlined />, [
-    getItem($tAuto('用户列表'), '2'),
-    getItem($tAuto('角色管理'), '3'),
-    getItem($tAuto('权限设置'), '4'),
-  ]),
-  getItem($tAuto('内容管理'), 'sub2', <FileTextOutlined />, [
-    getItem($tAuto('文章管理'), '5'),
-    getItem($tAuto('分类管理'), '6'),
-  ]),
-  getItem($tAuto('团队协作'), 'sub3', <TeamOutlined />, [
-    getItem($tAuto('项目管理'), '7'),
-    getItem($tAuto('任务分配'), '8'),
-  ]),
-  getItem($tAuto('系统设置'), 'sub4', <SettingOutlined />, [
-    getItem($tAuto('基础设置'), '9'),
-    getItem($tAuto('安全设置'), '10'),
-  ]),
 ];
 
 interface SidebarProps {
