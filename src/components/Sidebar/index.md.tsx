@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, type MenuProps } from 'antd';
-import { DashboardOutlined, UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined } from '@ant-design/icons';
 import './index.less';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -38,14 +38,7 @@ const SidebarMd: React.FC<SidebarProps> = ({ collapsed = false }) => {
   const [selectedKeys, setSelectedKeys] = useState(['1']);
 
   // 根据当前语言生成菜单项
-  const items: MenuItem[] = [
-    getItem($tAuto('仪表盘'), '1', <DashboardOutlined />),
-    getItem($tAuto('用户管理'), 'sub1', <UserOutlined />, [
-      getItem($tAuto('用户列表'), '2'),
-      getItem($tAuto('角色管理'), '3'),
-      getItem($tAuto('权限设置'), '4'),
-    ]),
-  ];
+  const items: MenuItem[] = [getItem($tAuto('仪表盘'), '1', <DashboardOutlined />)];
 
   const handleMenuClick: MenuProps['onClick'] = e => {
     setSelectedKeys([e.key]);
