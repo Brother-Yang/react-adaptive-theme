@@ -12,7 +12,7 @@ export type AutoTranslationFunction = (text: string, options?: { key?: string })
  * @param $tAuto 自动翻译函数
  * @returns 菜单项配置
  */
-export const createUserMenuItems = ($tAuto: AutoTranslationFunction): MenuProps['items'] => [
+export const createUserMenuItems = (): MenuProps['items'] => [
   {
     key: 'profile',
     icon: React.createElement(UserOutlined),

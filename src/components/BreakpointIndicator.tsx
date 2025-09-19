@@ -22,7 +22,7 @@ const BREAKPOINT_ICONS: Record<BreakpointType, string> = {
 };
 
 // 获取断点名称的函数
-const getBreakpointName = (breakpoint: BreakpointType, $tAuto: (key: string) => string): string => {
+const getBreakpointName = (breakpoint: BreakpointType): string => {
   const nameMap: Record<BreakpointType, string> = {
     sm: $tAuto('移动设备'),
     md: $tAuto('平板设备'),
@@ -68,7 +68,7 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
     >
       <Tag color={BREAKPOINT_COLORS[breakpoint.current]} className='breakpoint-tag'>
         <span className='breakpoint-icon'>{BREAKPOINT_ICONS[breakpoint.current]}</span>
-        <span className='breakpoint-name'>{getBreakpointName(breakpoint.current, $tAuto)}</span>
+        <span className='breakpoint-name'>{getBreakpointName(breakpoint.current)}</span>
       </Tag>
 
       {showDetailInfo && (
@@ -79,7 +79,7 @@ export const BreakpointIndicator: React.FC<BreakpointIndicatorProps> = ({
           </div>
           <div className='detail-item'>
             <span className='detail-label'>{$tAuto('设备类型')}:</span>
-            <span className='detail-value'>{getBreakpointName(breakpoint.current, $tAuto)}</span>
+            <span className='detail-value'>{getBreakpointName(breakpoint.current)}</span>
           </div>
           <div className='detail-item'>
             <span className='detail-label'>{$tAuto('屏幕宽度')}:</span>

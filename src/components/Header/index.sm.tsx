@@ -20,7 +20,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
   console.log('sm');
 
   // 移动端使用共享的菜单项
-  const userMenuItems = createUserMenuItems($tAuto);
+  const userMenuItems = createUserMenuItems();
 
   return (
     <AntHeader className={`app-header mobile ${collapsed ? 'collapsed' : ''}`}>
