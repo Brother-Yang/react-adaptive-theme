@@ -21,9 +21,7 @@ function getItem(
 }
 
 // 生成菜单项的函数
-const createMenuItems = ($tAuto: (key: string) => string): MenuItem[] => [
-  getItem($tAuto('仪表盘'), '1', <DashboardOutlined />),
-];
+const createMenuItems = (): MenuItem[] => [getItem($tAuto('仪表盘'), '1', <DashboardOutlined />)];
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -44,7 +42,7 @@ const SidebarLg: React.FC<SidebarProps> = ({ collapsed = false }) => {
   const [openKeys, setOpenKeys] = useState(['sub1']);
 
   // 根据当前语言生成菜单项
-  const items = createMenuItems($tAuto);
+  const items = createMenuItems();
 
   const handleMenuClick: MenuProps['onClick'] = e => {
     setSelectedKeys([e.key]);

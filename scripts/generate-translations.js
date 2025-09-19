@@ -11,7 +11,7 @@ import crypto from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const targetLanguages = ['en-US'];
+const targetLanguages = ['en-US', 'pt-PT'];
 
 // 性能优化配置
 const PERFORMANCE_CONFIG = {
@@ -23,9 +23,13 @@ const PERFORMANCE_CONFIG = {
   apiDelay: 100, // API调用间隔(ms)
 };
 
-// 翻译缓存
-const translationCache = new Map();
-const cacheFilePath = path.join(__dirname, 'scripts/.translation-cache.json');
+// 翻译缓存 - 为每种语言维护独立的缓存
+const translationCaches = new Map(); // 语言 -> Map(cacheKey -> translation)
+
+// 获取特定语言的缓存文件路径
+function getCacheFilePath(targetLang) {
+  return path.join(__dirname, `scripts/.translation-cache-${targetLang}.json`);
+}
 
 // 并发控制
 const limit = pLimit(PERFORMANCE_CONFIG.concurrency);
@@ -45,36 +49,46 @@ const LANGUAGE_MAP = {
 };
 
 // 缓存管理功能
-function loadCache() {
+function loadCache(targetLang) {
   if (!PERFORMANCE_CONFIG.cacheEnabled) return;
 
   try {
+    const cacheFilePath = getCacheFilePath(targetLang);
     if (fs.existsSync(cacheFilePath)) {
       const cacheData = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+      const cache = new Map();
       Object.entries(cacheData).forEach(([key, value]) => {
-        translationCache.set(key, value);
+        cache.set(key, value);
       });
-      console.log(`📦 已加载缓存，共 ${translationCache.size} 条记录`);
+      translationCaches.set(targetLang, cache);
+      console.log(`📦 已加载 ${targetLang} 缓存，共 ${cache.size} 条记录`);
+    } else {
+      translationCaches.set(targetLang, new Map());
     }
   } catch (error) {
-    console.warn('⚠️  缓存加载失败:', error.message);
+    console.warn(`⚠️  ${targetLang} 缓存加载失败:`, error.message);
+    translationCaches.set(targetLang, new Map());
   }
 }
 
-function saveCache() {
-  if (!PERFORMANCE_CONFIG.cacheEnabled || translationCache.size === 0) return;
+function saveCache(targetLang) {
+  if (!PERFORMANCE_CONFIG.cacheEnabled) return;
+
+  const cache = translationCaches.get(targetLang);
+  if (!cache || cache.size === 0) return;
 
   try {
+    const cacheFilePath = getCacheFilePath(targetLang);
     const cacheDir = path.dirname(cacheFilePath);
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
 
-    const cacheData = Object.fromEntries(translationCache);
+    const cacheData = Object.fromEntries(cache);
     fs.writeFileSync(cacheFilePath, JSON.stringify(cacheData, null, 2), 'utf-8');
-    console.log(`💾 缓存已保存，共 ${translationCache.size} 条记录`);
+    console.log(`💾 ${targetLang} 缓存已保存，共 ${cache.size} 条记录`);
   } catch (error) {
-    console.warn('⚠️  缓存保存失败:', error.message);
+    console.warn(`⚠️  ${targetLang} 缓存保存失败:`, error.message);
   }
 }
 
@@ -86,9 +100,16 @@ function getCacheKey(text, sourceLang, targetLang) {
 async function translateSingle(text, sourceLang, targetLang, attempt = 1) {
   const cacheKey = getCacheKey(text, sourceLang, targetLang);
 
+  // 确保目标语言的缓存已初始化
+  if (!translationCaches.has(targetLang)) {
+    loadCache(targetLang);
+  }
+
+  const cache = translationCaches.get(targetLang);
+
   // 检查缓存
-  if (translationCache.has(cacheKey)) {
-    return translationCache.get(cacheKey);
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey);
   }
 
   try {
@@ -99,7 +120,7 @@ async function translateSingle(text, sourceLang, targetLang, attempt = 1) {
     });
 
     // 保存到缓存
-    translationCache.set(cacheKey, translated.text);
+    cache.set(cacheKey, translated.text);
     return translated.text;
   } catch (error) {
     if (attempt < PERFORMANCE_CONFIG.retryAttempts) {
@@ -381,9 +402,6 @@ async function generateTranslations(targetLanguages) {
       `⚙️  性能配置: 并发数=${PERFORMANCE_CONFIG.concurrency}, 批量大小=${PERFORMANCE_CONFIG.batchSize}`
     );
 
-    // 加载缓存
-    loadCache();
-
     // 获取默认语言
     const defaultLang = getDefaultLanguage();
     console.log(`📖 默认语言: ${defaultLang}`);
@@ -408,6 +426,9 @@ async function generateTranslations(targetLanguages) {
       }
 
       console.log(`\n🌍 开始处理: ${targetLang}`);
+
+      // 加载该语言的缓存
+      loadCache(targetLang);
 
       // 检查是否需要更新
       const updateInfo = needsUpdate(defaultTranslations, targetLang);
@@ -436,19 +457,26 @@ async function generateTranslations(targetLanguages) {
       }
 
       saveTranslation(targetLang, translatedContent);
+      
+      // 保存该语言的缓存
+      saveCache(targetLang);
+      
       console.log(`✅ ${targetLang} 翻译完成`);
     }
 
-    // 保存缓存
-    saveCache();
+    // 保存所有缓存
+    console.log('\n💾 保存所有缓存...');
+    for (const targetLang of targetLanguages) {
+      if (translationCaches.has(targetLang)) {
+        saveCache(targetLang);
+      }
+    }
 
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`\n🎉 所有翻译文件生成完成！耗时: ${duration}s`);
-    console.log(`📊 缓存统计: ${translationCache.size} 条记录`);
+    const endTime = Date.now();
+    const duration = ((endTime - startTime) / 1000).toFixed(2);
+    console.log(`\n🎉 翻译完成！总耗时: ${duration}秒`);
   } catch (error) {
-    console.error('❌ 生成翻译文件时出错:', error);
-    // 确保保存缓存
-    saveCache();
+    console.error('❌ 翻译过程中发生错误:', error);
     process.exit(1);
   }
 }
