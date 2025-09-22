@@ -11,7 +11,7 @@ import crypto from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const targetLanguages = ['en-US', 'pt-PT'];
+const targetLanguages = ['en-US'];
 
 // 性能优化配置
 const PERFORMANCE_CONFIG = {
@@ -457,10 +457,10 @@ async function generateTranslations(targetLanguages) {
       }
 
       saveTranslation(targetLang, translatedContent);
-      
+
       // 保存该语言的缓存
       saveCache(targetLang);
-      
+
       console.log(`✅ ${targetLang} 翻译完成`);
     }
 
