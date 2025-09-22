@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type PropsWithChildren } from 'react';
 import { ConfigProvider } from 'antd';
 import type { Locale } from 'antd/es/locale';
 import zhCN from 'antd/locale/zh_CN';
@@ -6,7 +6,6 @@ import enUS from 'antd/locale/en_US';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/hooks/useTheme';
 import { themeConfigs } from '@/config/theme';
-import App from '@/App';
 
 // 使用对象映射根据当前语言设置选择Antd的locale
 const localeMap: Record<string, Locale> = {
@@ -14,7 +13,7 @@ const localeMap: Record<string, Locale> = {
   'en-US': enUS,
 };
 
-const SystemConfigProvider: React.FC = () => {
+const SystemConfigProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { themeMode } = useTheme();
   const { i18n } = useTranslation();
   const currentTheme = themeConfigs[themeMode];
@@ -23,7 +22,7 @@ const SystemConfigProvider: React.FC = () => {
 
   return (
     <ConfigProvider locale={antdLocale} theme={currentTheme}>
-      <App />
+      {children}
     </ConfigProvider>
   );
 };

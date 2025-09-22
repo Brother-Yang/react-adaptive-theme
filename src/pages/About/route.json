@@ -1,0 +1,10 @@
+{
+  "path": "/about",
+  "name": "About",
+  "component": "./index.tsx",
+  "autoRoute": true,
+  "meta": {
+    "title": "关于我们",
+    "icon": "info"
+  }
+}
