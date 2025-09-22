@@ -126,6 +126,63 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
     return routes;
   }
 
+  function validateRouteUniqueness(routes: RouteWithPageName[]): void {
+    const allRoutes = collectAllRoutes(routes);
+    const pathMap = new Map<string, string[]>();
+    const nameMap = new Map<string, string[]>();
+
+    // 收集所有路径和名称
+    allRoutes.forEach(route => {
+      const routeSource = `${route._fullPath}/route.json`;
+      
+      // 检查路径唯一性
+      if (!pathMap.has(route.path)) {
+        pathMap.set(route.path, []);
+      }
+      pathMap.get(route.path)!.push(routeSource);
+
+      // 检查名称唯一性
+      if (!nameMap.has(route.name)) {
+        nameMap.set(route.name, []);
+      }
+      nameMap.get(route.name)!.push(routeSource);
+    });
+
+    // 检查路径冲突
+    const pathConflicts: string[] = [];
+    pathMap.forEach((sources, path) => {
+      if (sources.length > 1) {
+        pathConflicts.push(`路径 "${path}" 在以下文件中重复定义:\n  ${sources.join('\n  ')}`);
+      }
+    });
+
+    // 检查名称冲突
+    const nameConflicts: string[] = [];
+    nameMap.forEach((sources, name) => {
+      if (sources.length > 1) {
+        nameConflicts.push(`名称 "${name}" 在以下文件中重复定义:\n  ${sources.join('\n  ')}`);
+      }
+    });
+
+    // 如果有冲突，抛出错误
+    if (pathConflicts.length > 0 || nameConflicts.length > 0) {
+      const errorMessage = [
+        '🚫 路由配置冲突检测到以下问题:',
+        '',
+        ...pathConflicts,
+        pathConflicts.length > 0 && nameConflicts.length > 0 ? '' : null,
+        ...nameConflicts,
+        '',
+        '💡 解决方案:',
+        '1. 确保每个 route.json 中的 "path" 值在全局范围内唯一',
+        '2. 确保每个 route.json 中的 "name" 值在全局范围内唯一',
+        '3. 对于嵌套路由，子路由的 path 会与父路由组合，请注意避免冲突'
+      ].filter(item => item !== null).join('\n');
+      
+      throw new Error(errorMessage);
+    }
+  }
+
   function generateRoutes() {
     try {
       const pagesPath = path.resolve(root, pagesDir);
@@ -140,6 +197,9 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
       // 递归扫描页面目录
       const scannedRoutes = scanPagesDirectory(pagesPath, '');
       routes.push(...scannedRoutes);
+
+      // 验证路由唯一性
+      validateRouteUniqueness(routes);
 
       // 生成路由文件内容
       const routeFileContent = generateRouteFileContent(routes);
@@ -157,6 +217,7 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
       console.log(`✅ 自动生成路由配置完成，共 ${routes.length} 个路由`);
     } catch (error) {
       console.error('生成自动路由失败:', error);
+      throw error; // 重新抛出错误，确保构建过程停止
     }
   }
 
