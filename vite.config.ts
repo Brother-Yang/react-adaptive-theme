@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 // import reactResponsivePlugin from './plugins/vite-plugin-react-responsive'
 import { autoI18nPlugin } from './plugins/vite-plugin-auto-i18n'
+import autoRoutePlugin from './plugins/vite-plugin-auto-route'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -24,6 +25,11 @@ export default defineConfig({
       defaultLocale: 'zh-CN',
       include: ['src/**/*.{ts,tsx,js,jsx}'],
       exclude: ['node_modules/**', 'dist/**', '**/*.d.ts']
+    }),
+    autoRoutePlugin({
+      pagesDir: 'src/pages',
+      outputFile: 'src/router/auto-routes.ts',
+      routeConfigName: 'route.json'
     }),
   ],
   resolve: {

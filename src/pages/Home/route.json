@@ -1,0 +1,10 @@
+{
+  "path": "/",
+  "name": "Home",
+  "component": "./index.tsx",
+  "autoRoute": true,
+  "meta": {
+    "title": "首页",
+    "icon": "home"
+  }
+}

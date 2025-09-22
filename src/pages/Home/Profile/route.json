@@ -1,0 +1,10 @@
+{
+  "path": "profile",
+  "name": "Profile",
+  "component": "./index.tsx",
+  "autoRoute": true,
+  "meta": {
+    "title": "用户资料",
+    "icon": "user"
+  }
+}

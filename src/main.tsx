@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SystemConfigProvider from '@/components/System/SystemConfigProvider';
+import AppRouter from './router';
 import './config/i18n'; // 初始化i18n配置
 import './index.less';
 import { performanceMonitor } from './utils/performance.ts';
@@ -15,7 +16,9 @@ if (import.meta.env.DEV) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      <SystemConfigProvider />
+      <SystemConfigProvider>
+        <AppRouter />
+      </SystemConfigProvider>
     </ThemeProvider>
   </StrictMode>
 );
