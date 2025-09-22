@@ -86,12 +86,27 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
 
           // 只处理开启自动路由的配置
           if (routeConfig.autoRoute) {
+            // 检查组件文件是否存在
+            const componentFilePath = path.resolve(
+              pageDir,
+              routeConfig.component.replace('./', '')
+            );
+            if (!fs.existsSync(componentFilePath)) {
+              throw new Error(`🚫 路由配置错误: 组件文件不存在
+              
+路由文件: ${routeFile}
+组件路径: ${routeConfig.component}
+实际路径: ${componentFilePath}
+
+💡 解决方案:
+1. 检查 route.json 中的 "component" 路径是否正确
+2. 确保组件文件确实存在于指定位置
+3. 常见的组件文件名: index.tsx, index.jsx`);
+            }
+
             // 构建组件导入路径
             const componentPath = path
-              .relative(
-                path.dirname(path.resolve(root, outputFile)),
-                path.resolve(pageDir, routeConfig.component.replace('./', ''))
-              )
+              .relative(path.dirname(path.resolve(root, outputFile)), componentFilePath)
               .replace(/\\/g, '/');
 
             // 构建完整路径
@@ -112,6 +127,7 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
           }
         } catch (error) {
           console.warn(`解析路由配置文件失败: ${routeFile}`, error);
+          throw error;
         }
       } else {
         // 如果没有route.json文件，仍然递归扫描子目录
@@ -134,7 +150,7 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
     // 收集所有路径和名称
     allRoutes.forEach(route => {
       const routeSource = `${route._fullPath}/route.json`;
-      
+
       // 检查路径唯一性
       if (!pathMap.has(route.path)) {
         pathMap.set(route.path, []);
@@ -176,9 +192,11 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
         '💡 解决方案:',
         '1. 确保每个 route.json 中的 "path" 值在全局范围内唯一',
         '2. 确保每个 route.json 中的 "name" 值在全局范围内唯一',
-        '3. 对于嵌套路由，子路由的 path 会与父路由组合，请注意避免冲突'
-      ].filter(item => item !== null).join('\n');
-      
+        '3. 对于嵌套路由，子路由的 path 会与父路由组合，请注意避免冲突',
+      ]
+        .filter(item => item !== null)
+        .join('\n');
+
       throw new Error(errorMessage);
     }
   }
