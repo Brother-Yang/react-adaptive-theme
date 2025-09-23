@@ -89,7 +89,7 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
             // 检查组件文件是否存在
             const componentFilePath = path.resolve(
               pageDir,
-              routeConfig.component.replace('./', '')
+              routeConfig.component.replace('./', ''),
             );
             if (!fs.existsSync(componentFilePath)) {
               throw new Error(`🚫 路由配置错误: 组件文件不存在
@@ -133,7 +133,7 @@ export default function autoRoutePlugin(options: AutoRouteOptions = {}): Plugin 
         // 如果没有route.json文件，仍然递归扫描子目录
         const childRoutes = scanPagesDirectory(
           pageDir,
-          parentPath ? `${parentPath}/${pageName}` : pageName
+          parentPath ? `${parentPath}/${pageName}` : pageName,
         );
         routes.push(...childRoutes);
       }

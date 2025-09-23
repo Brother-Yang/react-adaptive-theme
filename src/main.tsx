@@ -20,5 +20,5 @@ createRoot(document.getElementById('root')!).render(
         <AppRouter />
       </SystemConfigProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

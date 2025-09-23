@@ -213,7 +213,7 @@ class PerformanceMonitor {
       if (metrics.memoryUsage) {
         console.log(
           'Memory Usage:',
-          `${(metrics.memoryUsage.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`
+          `${(metrics.memoryUsage.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
         );
       }
 

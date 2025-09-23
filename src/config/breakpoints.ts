@@ -8,11 +8,11 @@ export type BreakpointType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 // 断点数值配置（像素值）
 export const BREAKPOINTS = {
-  sm: 576,   // Small devices (landscape phones, 576px and up)
-  md: 768,   // Medium devices (tablets, 768px and up)
-  lg: 992,   // Large devices (desktops, 992px and up)
-  xl: 1200,  // Extra large devices (large desktops, 1200px and up)
-  xxl: 1400  // Extra extra large devices (larger desktops, 1400px and up)
+  sm: 576, // Small devices (landscape phones, 576px and up)
+  md: 768, // Medium devices (tablets, 768px and up)
+  lg: 992, // Large devices (desktops, 992px and up)
+  xl: 1200, // Extra large devices (large desktops, 1200px and up)
+  xxl: 1400, // Extra extra large devices (larger desktops, 1400px and up)
 } as const;
 
 // 断点范围配置（用于媒体查询）
@@ -21,7 +21,7 @@ export const BREAKPOINT_RANGES = {
   md: { min: BREAKPOINTS.md, max: BREAKPOINTS.lg - 1 },
   lg: { min: BREAKPOINTS.lg, max: BREAKPOINTS.xl - 1 },
   xl: { min: BREAKPOINTS.xl, max: BREAKPOINTS.xxl - 1 },
-  xxl: { min: BREAKPOINTS.xxl, max: Infinity }
+  xxl: { min: BREAKPOINTS.xxl, max: Infinity },
 } as const;
 
 // 断点优先级顺序（从大到小，用于回退机制）
@@ -33,7 +33,7 @@ export const BREAKPOINT_FALLBACK_ORDER: Record<BreakpointType, BreakpointType[]>
   md: ['sm', 'lg', 'xl', 'xxl'],
   lg: ['md', 'xl', 'sm', 'xxl'],
   xl: ['lg', 'xxl', 'md', 'sm'],
-  xxl: ['xl', 'lg', 'md', 'sm']
+  xxl: ['xl', 'lg', 'md', 'sm'],
 } as const;
 
 // 设备类型别名（向后兼容）
@@ -43,7 +43,7 @@ export const DEVICE_ALIASES = {
   desktop: ['lg', 'xl', 'xxl'] as const,
   // 旧版本兼容
   pad: ['md'] as const,
-  pc: ['lg', 'xl', 'xxl'] as const
+  pc: ['lg', 'xl', 'xxl'] as const,
 } as const;
 
 // 组件后缀映射（用于文件命名）
@@ -52,18 +52,21 @@ export const COMPONENT_SUFFIX_MAP: Record<BreakpointType, string> = {
   md: 'md',
   lg: 'lg',
   xl: 'xl',
-  xxl: 'xxl'
+  xxl: 'xxl',
 } as const;
 
 // 媒体查询生成器
-export const createMediaQuery = (breakpoint: BreakpointType, type: 'min' | 'max' | 'only' = 'min'): string => {
+export const createMediaQuery = (
+  breakpoint: BreakpointType,
+  type: 'min' | 'max' | 'only' = 'min',
+): string => {
   const range = BREAKPOINT_RANGES[breakpoint];
-  
+
   switch (type) {
     case 'min':
       return `@media (min-width: ${range.min}px)`;
     case 'max':
-      return range.max === Infinity 
+      return range.max === Infinity
         ? `@media (min-width: ${range.min}px)`
         : `@media (max-width: ${range.max}px)`;
     case 'only':
@@ -125,13 +128,13 @@ export const getNextBreakpointDown = (breakpoint: BreakpointType): BreakpointTyp
 export const DEFAULT_BREAKPOINT_CONFIG = {
   breakpoints: BREAKPOINTS,
   defaultBreakpoint: 'lg' as BreakpointType,
-  fallbackOrder: BREAKPOINT_FALLBACK_ORDER
+  fallbackOrder: BREAKPOINT_FALLBACK_ORDER,
 } as const;
 
 // 类型导出
 export type DeviceType = keyof typeof DEVICE_ALIASES;
 export type MediaQueryType = 'min' | 'max' | 'only';
-export type BreakpointRange = typeof BREAKPOINT_RANGES[BreakpointType];
+export type BreakpointRange = (typeof BREAKPOINT_RANGES)[BreakpointType];
 
 // 常用断点组合
 export const COMMON_BREAKPOINT_GROUPS = {
@@ -139,5 +142,5 @@ export const COMMON_BREAKPOINT_GROUPS = {
   tablet: ['md'] as BreakpointType[],
   desktop: ['lg', 'xl', 'xxl'] as BreakpointType[],
   small: ['sm', 'md'] as BreakpointType[],
-  large: ['lg', 'xl', 'xxl'] as BreakpointType[]
+  large: ['lg', 'xl', 'xxl'] as BreakpointType[],
 } as const;
