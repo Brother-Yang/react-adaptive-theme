@@ -1,8 +1,8 @@
 import React from 'react';
 import { useResponsiveComponent } from '../../hooks/useResponsiveComponent';
-import HeaderSm from './index.sm';
-import HeaderMd from './index.md';
-import HeaderLg from './index.lg';
+import ThemeToggleSm from './index.sm';
+import ThemeToggleMd from './index.md';
+import ThemeToggleLg from './index.lg';
 import './index.less';
 
 interface ThemeToggleProps {
@@ -18,15 +18,15 @@ interface ThemeToggleProps {
  * - md: HeaderMd (平板端)
  * - lg, xl: HeaderLg (桌面端)
  */
-const AppHeader: React.FC<ThemeToggleProps> = props => {
-  const ResponsiveHeader = useResponsiveComponent({
-    default: HeaderLg, // 默认使用桌面端组件
-    sm: HeaderSm,
-    md: HeaderMd,
-    lg: HeaderLg,
+const ThemeToggle: React.FC<ThemeToggleProps> = props => {
+  const ResponsiveThemeToggle = useResponsiveComponent({
+    default: ThemeToggleLg, // 默认使用桌面端组件
+    sm: ThemeToggleSm,
+    md: ThemeToggleMd,
+    lg: ThemeToggleLg,
   });
 
-  return <ResponsiveHeader {...props} />;
+  return <ResponsiveThemeToggle {...props} />;
 };
 
-export default AppHeader;
+export default ThemeToggle;
