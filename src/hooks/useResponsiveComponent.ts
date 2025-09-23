@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useBreakpoint, type BreakpointType } from './useBreakpoint';
 import { COMPONENT_SUFFIX_MAP, BREAKPOINT_FALLBACK_ORDER } from '../config/breakpoints';
 
@@ -39,12 +38,11 @@ export interface ResponsiveComponentMap<T = any> {
  */
 export function useResponsiveComponent<T>(componentMap: ResponsiveComponentMap<T>): T {
   const { current } = useBreakpoint();
-  const { i18n } = useTranslation();
 
   return useMemo(() => {
     // 按优先级查找组件：当前断点 -> 默认组件
     return componentMap[current] || componentMap.default;
-  }, [current, componentMap, i18n.language]);
+  }, [current, componentMap]);
 }
 
 /**
@@ -116,7 +114,6 @@ export function createResponsiveComponent<
  */
 export function useSmartResponsiveComponent<T>(componentMap: ResponsiveComponentMap<T>): T {
   const { current } = useBreakpoint();
-  const { i18n } = useTranslation();
 
   return useMemo(() => {
     // 首先尝试当前断点
@@ -134,5 +131,5 @@ export function useSmartResponsiveComponent<T>(componentMap: ResponsiveComponent
 
     // 最后使用默认组件
     return componentMap.default;
-  }, [current, componentMap, i18n.language]);
+  }, [current, componentMap]);
 }
