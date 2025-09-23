@@ -1,8 +1,8 @@
-# React Responsive Theme App
+# React Adaptive Theme
 
-一个基于 React + TypeScript + Ant Design 的现代化响应式主题应用，支持智能断点切换、组件级响应式设计和暗色/亮色主题无缝切换。
+一个现代化的 React 应用模板，集成了响应式设计、主题切换、自动国际化、智能路由等功能。
 
-## ✨ 功能特性
+## ✨ 核心特性
 
 - 🎨 **主题切换**: 支持亮色/暗色主题无缝切换，主题状态持久化存储
 - 📱 **智能响应式**: 基于五级断点 (sm/md/lg/xl/xxl) 的组件级响应式设计
@@ -20,6 +20,24 @@
 - 🎛️ **侧边栏**: 可折叠的侧边栏导航，移动端自动切换为抽屉模式
 - 🎪 **组件展示**: 丰富的 Ant Design 组件使用示例
 - 🚀 **React 19**: 支持最新的 React 19.1.1 版本
+
+## 📚 文档导航
+
+### 🎨 主题系统
+- [**主题实现文档**](./docs/theme/THEME_IMPLEMENTATION.md) - 主题切换系统的完整实现指南
+
+### 📱 响应式设计
+- [**响应式插件文档**](./docs/responsive/PLUGIN_DOCUMENTATION.md) - Vite React Responsive Plugin 技术文档
+
+### 🌍 国际化系统
+- [**自动国际化指南**](./docs/i18n/AUTO_I18N_GUIDE.md) - 编译时key生成的国际化系统
+- [**翻译脚本指南**](./docs/i18n/TRANSLATION_SCRIPT_GUIDE.md) - 高性能自动翻译脚本使用说明
+
+### 🚀 路由系统
+- [**嵌套路由指南**](./docs/routing/NESTED_ROUTES_GUIDE.md) - 自动路由插件和嵌套路由使用方法
+
+### 🚀 快速开始
+- [**快速开始指南**](./docs/QUICK_START.md) - 新用户快速上手指南
 
 ## 🛠️ 技术栈
 
