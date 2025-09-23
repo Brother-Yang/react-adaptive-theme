@@ -25,13 +25,13 @@ const ThemeToggleLg: React.FC<ThemeToggleProps> = ({
   className = '',
 }) => {
   const { toggleTheme, isDark } = useTheme();
-  const tooltipTitle = isDark ? window.$tAuto('切换到浅色主题') : window.$tAuto('切换到深色主题');
+  const tooltipTitle = isDark ? $tAuto('切换到浅色主题') : $tAuto('切换到深色主题');
 
   return (
     <div className={`theme-toggle desktop ${className}`}>
       {showLabel && (
         <span className='theme-toggle-label desktop'>
-          {isDark ? window.$tAuto('深色模式') : window.$tAuto('浅色模式')}
+          {isDark ? $tAuto('深色模式') : $tAuto('浅色模式')}
         </span>
       )}
       <Tooltip title={tooltipTitle} placement='bottom'>

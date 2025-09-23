@@ -20,7 +20,7 @@ interface ThemeToggleProps {
  */
 const ThemeToggleSm: React.FC<ThemeToggleProps> = ({ size = 'small', className = '' }) => {
   const { toggleTheme, isDark } = useTheme();
-  const tooltipTitle = isDark ? window.$tAuto('切换到浅色主题') : window.$tAuto('切换到深色主题');
+  const tooltipTitle = isDark ? $tAuto('切换到浅色主题') : $tAuto('切换到深色主题');
 
   return (
     <div className={`theme-toggle mobile ${className}`}>
