@@ -2,6 +2,7 @@
 import React from 'react';
 
 import About from '../pages/About';
+import GridLayoutDemo from '../pages/GridLayoutDemo';
 import Home from '../pages/Home';
 import Profile from '../pages/Home/Profile';
 
@@ -14,6 +15,17 @@ export const autoRoutes = [
       meta: {
           "title": "关于我们",
           "icon": "info"
+      }
+    }
+  },
+  {
+    path: '/grid-layout-demo',
+    element: React.createElement(GridLayoutDemo),
+    handle: {
+      name: 'GridLayoutDemo',
+      meta: {
+          "title": "布局组件示例",
+          "icon": "AppstoreOutlined"
       }
     }
   },
