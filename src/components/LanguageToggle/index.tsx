@@ -38,7 +38,7 @@ const LanguageToggle: React.FC = () => {
         type='text'
         icon={<GlobalOutlined />}
         className='language-toggle'
-        title={window.$tAuto('切换语言')}
+        title={$tAuto('切换语言')}
       >
         <span className='current-language'>{currentLanguage.nativeName}</span>
       </Button>

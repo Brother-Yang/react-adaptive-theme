@@ -49,7 +49,7 @@ const getBreakpointType = getCurrentBreakpoint;
 function createBreakpointInfo(
   current: BreakpointType,
   width: number,
-  height: number
+  height: number,
 ): BreakpointInfo {
   return {
     current,

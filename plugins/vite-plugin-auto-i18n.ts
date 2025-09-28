@@ -38,7 +38,7 @@ interface FileCache {
 
 interface DuplicateKeyInfo {
   key: string;
-  files: Array<{ file: string; line: number; value: string }>;
+  files: { file: string; line: number; value: string }[];
 }
 
 const DEFAULT_OPTIONS: Required<AutoI18nOptions> = {
@@ -81,7 +81,7 @@ function generateKey(value: string): string {
 // 使用 Radash 的 assign 函数进行深度合并，保留已有值
 function deepMerge(
   target: Record<string, unknown>,
-  source: Record<string, unknown>
+  source: Record<string, unknown>,
 ): Record<string, unknown> {
   if (!source || !isObject(source)) return target;
   if (!target || !isObject(target)) return source;
@@ -89,7 +89,7 @@ function deepMerge(
   // 创建自定义合并逻辑，只在目标值不存在或为空时才覆盖
   const customMerge = (
     targetObj: Record<string, unknown>,
-    sourceObj: Record<string, unknown>
+    sourceObj: Record<string, unknown>,
   ): Record<string, unknown> => {
     const result = { ...targetObj };
 
@@ -106,7 +106,7 @@ function deepMerge(
         ) {
           result[key] = customMerge(
             targetValue as Record<string, unknown>,
-            sourceValue as Record<string, unknown>
+            sourceValue as Record<string, unknown>,
           );
         } else {
           // 只有当目标值不存在或为空时才覆盖
@@ -255,7 +255,7 @@ const ObjectUtils = {
 function cleanupUnusedKeys(
   localeFilePath: string,
   currentKeys: Set<string>,
-  cleanupNamespaces: string[]
+  cleanupNamespaces: string[],
 ): number {
   if (!fs.existsSync(localeFilePath)) {
     return 0;
@@ -277,7 +277,7 @@ function cleanupUnusedKeys(
   let deletedCount = 0;
   allLocaleKeys.forEach(key => {
     const belongsToCleanupNamespace = cleanupNamespaces.some(namespace =>
-      key.startsWith(`${namespace}.`)
+      key.startsWith(`${namespace}.`),
     );
 
     if (belongsToCleanupNamespace && !currentKeys.has(key)) {
@@ -321,7 +321,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
 
     // 批量执行所有待写入的操作
     const writePromises = Array.from(pendingKeyValuePairs.entries()).map(
-      ([localeFilePath, keyValuePairs]) => updateLocaleFile(localeFilePath, keyValuePairs)
+      ([localeFilePath, keyValuePairs]) => updateLocaleFile(localeFilePath, keyValuePairs),
     );
 
     // 清理缓存
@@ -391,7 +391,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
             if (node.arguments.length > 1 && t.isObjectExpression(node.arguments[1])) {
               const options = node.arguments[1];
               const keyProperty = options.properties.find(
-                prop => t.isObjectProperty(prop) && t.isIdentifier(prop.key, { name: 'key' })
+                prop => t.isObjectProperty(prop) && t.isIdentifier(prop.key, { name: 'key' }),
               );
               if (
                 keyProperty &&
@@ -429,7 +429,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
     filePath: string,
     content: string,
     mtime: number,
-    size: number
+    size: number,
   ): KeyValuePair[] {
     const hash = getContentHash(content, mtime, size);
 
@@ -522,6 +522,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
         }
       } catch (error) {
         // 忽略无法访问的目录
+        console.log('🔍 Failed to scan directory:', error);
       }
     }
 
@@ -550,12 +551,12 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
           filePath,
           content,
           stats.mtime.getTime(),
-          stats.size
+          stats.size,
         );
 
         if (keyValuePairs.length > 0) {
           console.log(
-            `📄 ${path.relative(root, filePath)}: found ${keyValuePairs.length} $tAuto entries`
+            `📄 ${path.relative(root, filePath)}: found ${keyValuePairs.length} $tAuto entries`,
           );
           allKeyValuePairs.push(...keyValuePairs);
         }
@@ -593,17 +594,17 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
       if (deletedCount > 0) {
         console.log(`🧹 Cleanup completed: removed ${deletedCount} unused keys`);
       } else {
-        console.log(`🧹 Cleanup completed: no unused keys found`);
+        console.log('🧹 Cleanup completed: no unused keys found');
       }
     }
 
     console.log(
-      `✅ Scan completed: ${allKeyValuePairs.length} total entries from ${processedFiles} files`
+      `✅ Scan completed: ${allKeyValuePairs.length} total entries from ${processedFiles} files`,
     );
 
     // 输出重复key警告（仅显示真正重复的）
     const duplicateCount = Array.from(duplicateKeys.values()).filter(
-      info => info.files.length > 1
+      info => info.files.length > 1,
     ).length;
     if (duplicateCount > 0) {
       console.warn(`\n⚠️  Found ${duplicateCount} duplicate keys:`);
@@ -742,7 +743,7 @@ export function autoI18nPlugin(options: AutoI18nOptions = {}): Plugin {
 
       if (keyValuePairs.length > 0) {
         console.log(
-          `✅ Found ${keyValuePairs.length} $tAuto entries in ${path.relative(root, file)}`
+          `✅ Found ${keyValuePairs.length} $tAuto entries in ${path.relative(root, file)}`,
         );
       }
 

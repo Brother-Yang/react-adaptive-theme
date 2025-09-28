@@ -1,27 +1,27 @@
-import { theme } from 'antd'
-import type { ThemeConfig } from 'antd'
+import { theme } from 'antd';
+import type { ThemeConfig } from 'antd';
 
 // 导出Ant Design主题算法
-export const { defaultAlgorithm, darkAlgorithm } = theme
+export const { defaultAlgorithm, darkAlgorithm } = theme;
 
 // 扩展主题配置类型，添加base属性
 export interface ExtendedThemeConfig extends ThemeConfig {
   base?: {
-    colorPrimary?: string
-    colorSuccess?: string
-    colorWarning?: string
-    colorError?: string
-    colorText?: string
-    colorTextSecondary?: string
-    borderColorBase?: string
-    backgroundColorBase?: string
-    componentBackground?: string
-    tableHeaderBg?: string
-    cardShadow?: string
-    tableRowHoverBg?: string
-    hoverBg?: string
-    boxShadow?: string
-  }
+    colorPrimary?: string;
+    colorSuccess?: string;
+    colorWarning?: string;
+    colorError?: string;
+    colorText?: string;
+    colorTextSecondary?: string;
+    borderColorBase?: string;
+    backgroundColorBase?: string;
+    componentBackground?: string;
+    tableHeaderBg?: string;
+    cardShadow?: string;
+    tableRowHoverBg?: string;
+    hoverBg?: string;
+    boxShadow?: string;
+  };
 }
 
 // 亮色主题配置
@@ -63,7 +63,7 @@ export const lightTheme: ExtendedThemeConfig = {
     hoverBg: 'rgba(0, 0, 0, 0.04)',
     boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
   },
-}
+};
 
 // 暗色主题配置
 export const darkTheme: ExtendedThemeConfig = {
@@ -104,32 +104,32 @@ export const darkTheme: ExtendedThemeConfig = {
     hoverBg: 'rgba(255, 255, 255, 0.08)',
     boxShadow: '0 1px 4px rgba(0, 0, 0, 0.2)',
   },
-}
+};
 
 // 应用base属性到CSS变量的函数
 export const applyBaseTheme = (theme: ExtendedThemeConfig) => {
-  if (!theme.base) return
-  
-  const root = document.documentElement
-  const base = theme.base
-  
+  if (!theme.base) return;
+
+  const root = document.documentElement;
+  const base = theme.base;
+
   // 遍历base对象的所有属性并设置对应的CSS变量
   Object.entries(base).forEach(([key, value]) => {
     if (value) {
-      const cssVarName = `--base-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`
-      root.style.setProperty(cssVarName, value)
+      const cssVarName = `--base-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+      root.style.setProperty(cssVarName, value);
     }
-  })
-}
+  });
+};
 
 // 主题配置映射
 export const themeConfigs = {
   light: lightTheme,
   dark: darkTheme,
-} as const
+} as const;
 
 // 本地存储键名
-export const THEME_STORAGE_KEY = 'theme-mode'
+export const THEME_STORAGE_KEY = 'theme-mode';
 
 // 主题类型
-export type ThemeMode = keyof typeof themeConfigs
+export type ThemeMode = keyof typeof themeConfigs;

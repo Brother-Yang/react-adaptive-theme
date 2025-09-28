@@ -6,15 +6,18 @@ import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 
 // 修复 traverse 导入问题
-const traverseDefault = typeof traverse === 'function' ? traverse : (traverse as unknown as { default: typeof traverse }).default;
+const traverseDefault =
+  typeof traverse === 'function'
+    ? traverse
+    : (traverse as unknown as { default: typeof traverse }).default;
 
 // 默认断点配置
 const defaultBreakpoints: Record<string, number> = {
-  sm: 576,   // Small devices - 对应插件 sm
-  md: 768,   // Medium devices - 对应插件 md
-  lg: 992,   // Large devices - 对应插件 lg
-  xl: 1200,  // Extra large devices - 对应插件 xl
-  xxl: 1400  // Extra extra large devices - 对应插件 xxl
+  sm: 576, // Small devices - 对应插件 sm
+  md: 768, // Medium devices - 对应插件 md
+  lg: 992, // Large devices - 对应插件 lg
+  xl: 1200, // Extra large devices - 对应插件 xl
+  xxl: 1400, // Extra extra large devices - 对应插件 xxl
 };
 
 // 插件配置接口
@@ -40,14 +43,21 @@ function createMatcher(patterns?: string | RegExp | (string | RegExp)[]) {
 }
 
 // 生成动态导入代码
-function generateDynamicImport(componentPath: string, breakpoints: Record<string, number>, defaultBreakpoint: string, existingBreakpoints: string[]) {
+function generateDynamicImport(
+  componentPath: string,
+  breakpoints: Record<string, number>,
+  defaultBreakpoint: string,
+  existingBreakpoints: string[],
+) {
   // 只为存在的断点文件生成导入
-  const importMap = existingBreakpoints.map(bp => {
-    // 使用小写断点名称匹配小写文件名格式
-    const lowercaseBp = bp.toLowerCase();
-    return `${lowercaseBp}: () => import('${componentPath}.${lowercaseBp}')`;
-  }).join(',\n    ');
-  
+  const importMap = existingBreakpoints
+    .map(bp => {
+      // 使用小写断点名称匹配小写文件名格式
+      const lowercaseBp = bp.toLowerCase();
+      return `${lowercaseBp}: () => import('${componentPath}.${lowercaseBp}')`;
+    })
+    .join(',\n    ');
+
   // 生成动态组件代码
   return `
 import React, { useMemo, Suspense } from 'react';
@@ -125,7 +135,7 @@ function getExistingBreakpoints(id: string, breakpoints: Record<string, number>)
   const breakpointKeys = Object.keys(breakpoints);
   const dir = dirname(id);
   const existingBreakpoints: string[] = [];
-  
+
   // 检查每个断点文件是否存在
   for (const bp of breakpointKeys) {
     const lowercaseBp = bp.toLowerCase();
@@ -135,11 +145,9 @@ function getExistingBreakpoints(id: string, breakpoints: Record<string, number>)
       existingBreakpoints.push(bp);
     }
   }
-  
+
   return existingBreakpoints;
 }
-
-
 
 // 主插件函数
 export default function reactResponsivePlugin(options: ReactResponsivePluginOptions = {}): Plugin {
@@ -147,43 +155,43 @@ export default function reactResponsivePlugin(options: ReactResponsivePluginOpti
     breakpoints = defaultBreakpoints,
     defaultBreakpoint = 'lg',
     include = /\/components\/.*\/index\.(tsx?|jsx?)$/,
-    exclude
+    exclude,
   } = options;
-  
+
   const shouldInclude = createMatcher(include);
   const shouldExclude = createMatcher(exclude);
-  
+
   return {
     name: 'vite-plugin-react-responsive',
     enforce: 'pre',
-    
+
     transform(code: string, id: string) {
       // 过滤文件
       if (!shouldInclude(id) || shouldExclude(id)) {
         return null;
       }
-      
+
       // 检查存在的断点文件
-         const existingBreakpoints = getExistingBreakpoints(id, breakpoints);
-         if (existingBreakpoints.length === 0) {
-           return null;
-         }
-      
+      const existingBreakpoints = getExistingBreakpoints(id, breakpoints);
+      if (existingBreakpoints.length === 0) {
+        return null;
+      }
+
       try {
         // 解析代码
         const ast = parse(code, {
           sourceType: 'module',
-          plugins: ['typescript', 'jsx']
+          plugins: ['typescript', 'jsx'],
         });
-        
+
         let hasDefaultExport = false;
         let shouldTransform = false;
-        
+
         // 遍历AST查找默认导出
-         traverseDefault(ast, {
+        traverseDefault(ast, {
           ExportDefaultDeclaration(path) {
             hasDefaultExport = true;
-            
+
             // 检查是否为React组件
             const declaration = path.node.declaration;
             if (
@@ -195,67 +203,77 @@ export default function reactResponsivePlugin(options: ReactResponsivePluginOpti
               shouldTransform = true;
             }
           },
-          
+
           // 检查是否有React导入
           ImportDeclaration(path) {
             if (path.node.source.value === 'react') {
               shouldTransform = true;
             }
-          }
+          },
         });
-        
+
         // 如果不需要转换，返回原代码
         if (!hasDefaultExport || !shouldTransform) {
           return null;
         }
-        
+
         // 生成相对路径，直接使用./index作为基础路径
-         const relativePath = './index';
-        
+        const relativePath = './index';
+
         // 生成新的代码
-        const newCode = generateDynamicImport(relativePath, breakpoints, defaultBreakpoint, existingBreakpoints);
-        
+        const newCode = generateDynamicImport(
+          relativePath,
+          breakpoints,
+          defaultBreakpoint,
+          existingBreakpoints,
+        );
+
         return {
           code: newCode,
-          map: null
+          map: null,
         };
-        
       } catch (error) {
         // console.warn(`[vite-plugin-react-responsive] Failed to transform ${id}:`, error);
         return null;
       }
     },
-    
+
     // 配置解析
-     configResolved(config) {
-       // 确保别名配置正确
-       if (!config.resolve.alias) {
-         config.resolve.alias = [];
-       }
-       
-       // 添加@别名如果不存在
-       const aliasArray = Array.isArray(config.resolve.alias) ? config.resolve.alias : [];
-       const hasAtAlias = aliasArray.some(alias => alias.find === '@');
-       if (!hasAtAlias) {
-         aliasArray.push({ find: '@', replacement: config.root + '/src' });
-       }
-     },
-    
+    configResolved(config) {
+      // 确保别名配置正确
+      if (!config.resolve.alias) {
+        config.resolve.alias = [];
+      }
+
+      // 添加@别名如果不存在
+      const aliasArray = Array.isArray(config.resolve.alias) ? config.resolve.alias : [];
+      const hasAtAlias = aliasArray.some(alias => alias.find === '@');
+      if (!hasAtAlias) {
+        aliasArray.push({ find: '@', replacement: config.root + '/src' });
+      }
+    },
+
     // 开发服务器配置
     configureServer(server) {
       server.middlewares.use('/responsive-debug', (req: any, res: any, next: () => void) => {
         if (req.url === '/responsive-debug') {
           res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify({
-            breakpoints,
-            defaultBreakpoint,
-            plugin: 'vite-plugin-react-responsive'
-          }, null, 2));
+          res.end(
+            JSON.stringify(
+              {
+                breakpoints,
+                defaultBreakpoint,
+                plugin: 'vite-plugin-react-responsive',
+              },
+              null,
+              2,
+            ),
+          );
         } else {
           next();
         }
       });
-    }
+    },
   };
 }
 
