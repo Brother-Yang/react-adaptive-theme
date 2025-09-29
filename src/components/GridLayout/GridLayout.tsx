@@ -107,11 +107,10 @@ const GridLayoutLabel: React.FC<GridLayoutLabelProps> = ({
     labelStyle.minWidth = typeof finalWidth === 'number' ? `${finalWidth}px` : finalWidth;
   }
 
-  const labelClassName = `grid-layout__label ${className}`.trim();
+  const labelClassName = `grid-layout__label ${required ? 'required' : ''} ${className}`.trim();
 
   return (
     <div className={labelClassName} style={labelStyle}>
-      {required && <span className='grid-layout__required'>*</span>}
       {children}
     </div>
   );
