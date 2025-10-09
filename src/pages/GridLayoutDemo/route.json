@@ -1,0 +1,10 @@
+{
+  "path": "/grid-layout-demo",
+  "name": "GridLayoutDemo",
+  "component": "./index.tsx",
+  "autoRoute": true,
+  "meta": {
+    "title": "布局组件示例",
+    "icon": "AppstoreOutlined"
+  }
+}
