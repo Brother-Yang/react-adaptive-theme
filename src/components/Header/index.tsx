@@ -21,13 +21,12 @@ interface HeaderProps {
  */
 const AppHeader: React.FC<HeaderProps> = props => {
   const ResponsiveHeader = useResponsiveComponent({
-    default: HeaderLg, // 默认使用桌面端组件
     sm: HeaderSm,
     md: HeaderMd,
     lg: HeaderLg,
     xl: HeaderXl,
     xxl: HeaderXXl,
-  });
+  }, 'lg');
 
   return <ResponsiveHeader {...props} />;
 };

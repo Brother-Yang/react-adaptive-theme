@@ -9,7 +9,6 @@ export interface ResponsiveComponentMap<T = any> {
   lg?: T;
   xl?: T;
   xxl?: T;
-  default: T; // 默认组件（必需）
 }
 
 /**
@@ -17,6 +16,7 @@ export interface ResponsiveComponentMap<T = any> {
  * 根据当前断点自动选择合适的组件变体
  *
  * @param componentMap 响应式组件映射对象
+ * @param defaultKey 默认使用的断点key，当当前断点没有对应组件时使用
  * @returns 当前断点对应的组件
  *
  * @example
@@ -29,20 +29,23 @@ export interface ResponsiveComponentMap<T = any> {
  *   const Component = useResponsiveComponent({
  *     sm: HeaderSm,
  *     md: HeaderMd,
- *     default: Header
- *   });
+ *     lg: Header
+ *   }, 'lg');
  *
  *   return <Component />;
  * };
  * ```
  */
-export function useResponsiveComponent<T>(componentMap: ResponsiveComponentMap<T>): T {
+export function useResponsiveComponent<T>(
+  componentMap: ResponsiveComponentMap<T>,
+  defaultKey: keyof ResponsiveComponentMap<T>,
+): T {
   const { current } = useBreakpoint();
 
   return useMemo(() => {
-    // 按优先级查找组件：当前断点 -> 默认组件
-    return componentMap[current] || componentMap.default;
-  }, [current, componentMap]);
+    // 按优先级查找组件：当前断点 -> 默认断点组件
+    return componentMap[current] || componentMap[defaultKey]!;
+  }, [current, componentMap, defaultKey]);
 }
 
 /**
@@ -98,9 +101,12 @@ export function getResponsiveComponentName(baseName: string, breakpoint: Breakpo
  */
 export function createResponsiveComponent<
   P extends Record<string, unknown> = Record<string, unknown>,
->(componentMap: ResponsiveComponentMap<React.ComponentType<P>>): React.ComponentType<P> {
+>(
+  componentMap: ResponsiveComponentMap<React.ComponentType<P>>,
+  defaultKey: keyof ResponsiveComponentMap<React.ComponentType<P>>,
+): React.ComponentType<P> {
   return function ResponsiveComponent(props: P) {
-    const Component = useResponsiveComponent(componentMap);
+    const Component = useResponsiveComponent(componentMap, defaultKey);
     return React.createElement(Component, props);
   };
 }
@@ -110,9 +116,13 @@ export function createResponsiveComponent<
  * 支持回退逻辑，当目标断点组件不存在时自动选择最接近的替代组件
  *
  * @param componentMap 响应式组件映射对象
+ * @param defaultKey 默认使用的断点key
  * @returns 当前断点对应的组件（含回退逻辑）
  */
-export function useSmartResponsiveComponent<T>(componentMap: ResponsiveComponentMap<T>): T {
+export function useSmartResponsiveComponent<T>(
+  componentMap: ResponsiveComponentMap<T>,
+  defaultKey: keyof ResponsiveComponentMap<T>,
+): T {
   const { current } = useBreakpoint();
 
   return useMemo(() => {
@@ -130,6 +140,6 @@ export function useSmartResponsiveComponent<T>(componentMap: ResponsiveComponent
     }
 
     // 最后使用默认组件
-    return componentMap.default;
-  }, [current, componentMap]);
+    return componentMap[defaultKey]!;
+  }, [current, componentMap, defaultKey]);
 }

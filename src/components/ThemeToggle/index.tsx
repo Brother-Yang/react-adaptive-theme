@@ -20,11 +20,10 @@ interface ThemeToggleProps {
  */
 const ThemeToggle: React.FC<ThemeToggleProps> = props => {
   const ResponsiveThemeToggle = useResponsiveComponent({
-    default: ThemeToggleLg, // 默认使用桌面端组件
     sm: ThemeToggleSm,
     md: ThemeToggleMd,
     lg: ThemeToggleLg,
-  });
+  }, 'lg');
 
   return <ResponsiveThemeToggle {...props} />;
 };
