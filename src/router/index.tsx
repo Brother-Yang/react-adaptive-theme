@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, type RouteObject } from 'react-router-dom';
 import App from '../App';
 import autoRoutes from './auto-routes';
 import React, { useEffect, useState, type PropsWithChildren } from 'react';
@@ -25,17 +25,24 @@ const LanguageBoundary: React.FC<PropsWithChildren> = ({ children }) => {
 };
 
 // 递归转换路由配置，支持嵌套路由
-const convertRoute = (route: any): any => {
-  const converted: any = {
+const convertRoute = (route: RouteObject): RouteObject => {
+  if (route.path === '/' && (!route.children || route.children.length === 0)) {
+    // 对于根路径且无子路由的情况，创建index路由
+    const converted: RouteObject = {
+      index: true,
+      element: route.element,
+    };
+    return converted;
+  }
+
+  const converted: RouteObject = {
     element: route.element,
   };
 
-  if (route.path === '/' && (!route.children || route.children.length === 0)) {
-    converted.index = true;
-  } else {
-    converted.path = (route.path || '').startsWith('/')
-      ? (route.path || '').slice(1)
-      : route.path || '';
+  if (route.path) {
+    converted.path = route.path.startsWith('/')
+      ? route.path.slice(1)
+      : route.path;
   }
 
   // 处理子路由
