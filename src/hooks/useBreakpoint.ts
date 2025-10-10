@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useDeferredValue } from 'react';
 import {
   type BreakpointType,
   BREAKPOINTS,
@@ -84,6 +84,9 @@ export function useBreakpoint(): BreakpointInfo {
     return createBreakpointInfo(current, width, height);
   });
 
+  // 使用 useDeferredValue 延迟非紧急的断点更新，减少重渲染
+  const deferredBreakpointInfo = useDeferredValue(breakpointInfo);
+
   useEffect(() => {
     // 防抖处理
     let timeoutId: NodeJS.Timeout;
@@ -109,7 +112,7 @@ export function useBreakpoint(): BreakpointInfo {
     };
   }, []);
 
-  return breakpointInfo;
+  return deferredBreakpointInfo;
 }
 
 /**

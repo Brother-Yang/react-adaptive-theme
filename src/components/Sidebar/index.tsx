@@ -19,11 +19,10 @@ interface SidebarProps {
  */
 const Sidebar: React.FC<SidebarProps> = props => {
   const ResponsiveSidebar = useResponsiveComponent({
-    default: SidebarLg, // 默认使用桌面端组件
     sm: SidebarSm,
     md: SidebarMd,
     lg: SidebarLg,
-  });
+  }, 'lg');
 
   return <ResponsiveSidebar {...props} />;
 };

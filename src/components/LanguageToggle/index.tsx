@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useTransition } from 'react';
 import { Button, Dropdown, type MenuProps } from 'antd';
-import { GlobalOutlined } from '@ant-design/icons';
+import { GlobalOutlined, LoadingOutlined } from '@ant-design/icons';
 import { supportedLanguages } from '../../config/i18n';
 import './index.less';
 import { useTranslation } from 'react-i18next';
@@ -11,13 +11,17 @@ import { useTranslation } from 'react-i18next';
  */
 const LanguageToggle: React.FC = () => {
   const { i18n } = useTranslation();
+  const [isPending, startTransition] = useTransition();
+  
   // 获取当前语言信息
   const currentLanguage =
     supportedLanguages.find(lang => lang.code === i18n.language) || supportedLanguages[0];
 
-  // 切换语言
+  // 切换语言 - 使用 useTransition 避免界面卡顿
   const changeLanguage = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+    startTransition(() => {
+      i18n.changeLanguage(languageCode);
+    });
   };
 
   // 生成下拉菜单项
@@ -36,9 +40,10 @@ const LanguageToggle: React.FC = () => {
     <Dropdown menu={{ items: menuItems }} placement='bottomRight' trigger={['click']} arrow>
       <Button
         type='text'
-        icon={<GlobalOutlined />}
+        icon={isPending ? <LoadingOutlined /> : <GlobalOutlined />}
         className='language-toggle'
         title={$tAuto('切换语言')}
+        loading={isPending}
       >
         <span className='current-language'>{currentLanguage.nativeName}</span>
       </Button>
