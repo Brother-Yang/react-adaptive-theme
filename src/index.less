@@ -4,7 +4,8 @@
 // Less 变量定义（兼容性）
 @primary-color: #1890ff;
 @primary-hover-color: #40a9ff;
-@font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+@font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+  'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 @line-height-base: 1.5;
 @font-weight-base: 400;
 @transition-duration: 0.3s;
@@ -34,6 +35,7 @@ body {
 #root {
   width: 100%;
   min-height: 100vh;
+  view-transition-name: theme-switch;
 }
 
 // 链接样式
@@ -41,7 +43,7 @@ a {
   color: @primary-color;
   text-decoration: none;
   transition: color @transition-duration;
-  
+
   &:hover {
     color: @primary-hover-color;
   }
@@ -69,7 +71,7 @@ a {
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: var(--border-radius-sm);
-  
+
   &:hover {
     background: var(--text-color-secondary);
   }

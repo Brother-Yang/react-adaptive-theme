@@ -1,10 +1,11 @@
 import { createContext } from 'react';
 import { type ThemeMode } from '../config/theme';
+import React from 'react';
 
 // 主题上下文类型
 export interface ThemeContextType {
   themeMode: ThemeMode;
-  toggleTheme: () => void;
+  toggleTheme: (event?: React.MouseEvent) => void;
   isDark: boolean;
   isPending?: boolean; // 添加可选的pending状态
 }
