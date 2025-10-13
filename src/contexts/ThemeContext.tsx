@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useTransition, useOptimistic } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useTransition,
+  useOptimistic,
+  startTransition as startTransitionReact,
+} from 'react';
 import type { ReactNode } from 'react';
 import { THEME_STORAGE_KEY, type ThemeMode, themeConfigs, applyBaseTheme } from '../config/theme';
 import { ThemeContext, type ThemeContextType } from './ThemeContextDefinition';
@@ -145,7 +151,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
    */
   const executeThemeUpdate = (newTheme: ThemeMode) => {
     // 立即更新乐观状态，提供即时视觉反馈
-    setOptimisticTheme(newTheme);
+    startTransitionReact(() => {
+      setOptimisticTheme(newTheme);
+    });
 
     // 在 transition 中执行实际的状态更新
     startTransition(() => {
