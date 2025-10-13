@@ -22,13 +22,22 @@ const ThemeToggleSm: React.FC<ThemeToggleProps> = ({ size = 'small', className =
   const { toggleTheme, isDark } = useTheme();
   const tooltipTitle = isDark ? $tAuto('切换到浅色主题') : $tAuto('切换到深色主题');
 
+  const handleClick = (_checked: boolean, event: React.MouseEvent | React.KeyboardEvent) => {
+    // 只有鼠标点击事件才触发动画
+    if (event.type === 'click' && 'clientX' in event) {
+      toggleTheme(event);
+    } else {
+      toggleTheme();
+    }
+  };
+
   return (
     <div className={`theme-toggle mobile ${className}`}>
       <Tooltip title={tooltipTitle} placement='bottom'>
         <Switch
           size={size}
           checked={isDark}
-          onChange={toggleTheme}
+          onChange={handleClick}
           checkedChildren={<MoonOutlined />}
           unCheckedChildren={<SunOutlined />}
           className='theme-toggle-switch mobile'
