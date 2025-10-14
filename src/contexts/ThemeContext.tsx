@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useTransition, useOptimistic } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useTransition,
+} from 'react';
 import type { ReactNode } from 'react';
 import { THEME_STORAGE_KEY, type ThemeMode, themeConfigs, applyBaseTheme } from '../config/theme';
 import { ThemeContext, type ThemeContextType } from './ThemeContextDefinition';
@@ -128,12 +132,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialTheme);
   const [isPending, startTransition] = useTransition();
 
-  // 使用 useOptimistic 来提供即时的视觉反馈
-  const [optimisticTheme, setOptimisticTheme] = useOptimistic(
-    themeMode,
-    (_currentTheme: ThemeMode, newTheme: ThemeMode) => newTheme,
-  );
-
   // 在组件初始化时注入 View Transition 样式
   useEffect(() => {
     injectViewTransitionStyles();
@@ -141,13 +139,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   /**
    * 执行主题更新的核心逻辑
-   * 包含乐观更新和实际状态更新
    */
   const executeThemeUpdate = (newTheme: ThemeMode) => {
-    // 立即更新乐观状态，提供即时视觉反馈
-    setOptimisticTheme(newTheme);
-
-    // 在 transition 中执行实际的状态更新
+    // 在 transition 中执行状态更新
     startTransition(() => {
       setThemeMode(newTheme);
       localStorage.setItem(THEME_STORAGE_KEY, newTheme);
@@ -284,18 +278,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // 应用主题变化 - 使用乐观主题进行即时更新
+  // 应用主题变化
   useEffect(() => {
     // 设置主题类名到 document.documentElement
-    setupThemeClass(optimisticTheme === 'dark');
+    setupThemeClass(themeMode === 'dark');
     // 应用基础主题CSS变量
-    applyBaseTheme(themeConfigs[optimisticTheme]);
-  }, [optimisticTheme]);
+    applyBaseTheme(themeConfigs[themeMode]);
+  }, [themeMode]);
 
   const contextValue: ThemeContextType = {
-    themeMode: optimisticTheme, // 使用乐观主题提供即时反馈
+    themeMode, // 使用正常的 state
     toggleTheme,
-    isDark: optimisticTheme === 'dark',
+    isDark: themeMode === 'dark',
     isPending, // 提供加载状态给组件使用
   };
 
