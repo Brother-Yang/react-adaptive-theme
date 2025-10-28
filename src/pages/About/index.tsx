@@ -23,24 +23,46 @@ const About = () => {
 
         <Col xs={24} lg={12}>
           <Card title={$tAuto('项目特性')}>
-            <Timeline>
-              <Timeline.Item dot={<CheckCircleOutlined style={{ color: '#52c41a' }} />}>
-                <Title level={4}>{$tAuto('响应式设计')}</Title>
-                <Paragraph>{$tAuto('支持多种屏幕尺寸，自适应布局')}</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item dot={<CheckCircleOutlined style={{ color: '#52c41a' }} />}>
-                <Title level={4}>{$tAuto('主题切换')}</Title>
-                <Paragraph>{$tAuto('支持明暗主题切换，用户体验优秀')}</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item dot={<CheckCircleOutlined style={{ color: '#52c41a' }} />}>
-                <Title level={4}>{$tAuto('国际化')}</Title>
-                <Paragraph>{$tAuto('多语言支持，自动翻译功能')}</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item dot={<RocketOutlined style={{ color: '#1890ff' }} />}>
-                <Title level={4}>{$tAuto('现代技术栈')}</Title>
-                <Paragraph>{$tAuto('基于React 19、Vite、TypeScript构建')}</Paragraph>
-              </Timeline.Item>
-            </Timeline>
+            <Timeline
+              items={[
+                {
+                  dot: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                  children: (
+                    <>
+                      <Title level={4}>{$tAuto('响应式设计')}</Title>
+                      <Paragraph>{$tAuto('支持多种屏幕尺寸，自适应布局')}</Paragraph>
+                    </>
+                  ),
+                },
+                {
+                  dot: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                  children: (
+                    <>
+                      <Title level={4}>{$tAuto('主题切换')}</Title>
+                      <Paragraph>{$tAuto('支持明暗主题切换，用户体验优秀')}</Paragraph>
+                    </>
+                  ),
+                },
+                {
+                  dot: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
+                  children: (
+                    <>
+                      <Title level={4}>{$tAuto('国际化')}</Title>
+                      <Paragraph>{$tAuto('多语言支持，自动翻译功能')}</Paragraph>
+                    </>
+                  ),
+                },
+                {
+                  dot: <RocketOutlined style={{ color: '#1890ff' }} />,
+                  children: (
+                    <>
+                      <Title level={4}>{$tAuto('现代技术栈')}</Title>
+                      <Paragraph>{$tAuto('基于React 19、Vite、TypeScript构建')}</Paragraph>
+                    </>
+                  ),
+                },
+              ]}
+            />
           </Card>
         </Col>
 
