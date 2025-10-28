@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Tooltip } from 'antd';
+import { Switch, Tooltip, ColorPicker } from 'antd';
 import { SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { useTheme } from '../../hooks/useTheme';
 import './index.less';
@@ -23,7 +23,7 @@ const ThemeToggleMd: React.FC<ThemeToggleProps> = ({
   showLabel = false,
   className = '',
 }) => {
-  const { toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark, primaryColor, setPrimaryColor } = useTheme();
   const tooltipTitle = isDark ? $tAuto('切换到浅色主题') : $tAuto('切换到深色主题');
 
   const handleClick = (_checked: boolean, event: React.MouseEvent | React.KeyboardEvent) => {
@@ -52,6 +52,12 @@ const ThemeToggleMd: React.FC<ThemeToggleProps> = ({
           className='theme-toggle-switch tablet'
         />
       </Tooltip>
+      <ColorPicker
+        value={primaryColor || undefined}
+        onChange={c => setPrimaryColor(c.toHexString())}
+        size='small'
+        className='theme-color-picker tablet'
+      />
     </div>
   );
 };

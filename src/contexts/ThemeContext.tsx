@@ -127,10 +127,24 @@ const getInitialTheme = (): ThemeMode => {
   return 'light';
 };
 
+// 主色存储键
+const PRIMARY_COLOR_STORAGE_KEY = 'theme-primary-color';
+
+// 获取初始主色（仅主色），若不存在则使用主题默认值
+const getInitialPrimaryColor = (): string | null => {
+  try {
+    const stored = localStorage.getItem(PRIMARY_COLOR_STORAGE_KEY);
+    return stored && typeof stored === 'string' ? stored : null;
+  } catch {
+    return null;
+  }
+};
+
 // 主题提供者组件
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialTheme);
   const [isPending, startTransition] = useTransition();
+  const [primaryColor, setPrimaryColorState] = useState<string | null>(getInitialPrimaryColor);
 
   // 在组件初始化时注入 View Transition 样式
   useEffect(() => {
@@ -286,11 +300,47 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     applyBaseTheme(themeConfigs[themeMode]);
   }, [themeMode]);
 
+  // 当主色或主题模式变化时，更新主色相关的 CSS 变量（覆盖基础主题）
+  useEffect(() => {
+    const root = document.documentElement;
+    const fallbackPrimary =
+      themeConfigs[themeMode].base?.colorPrimary || themeConfigs[themeMode].token?.colorPrimary;
+    const nextPrimary = primaryColor || fallbackPrimary || '#1890ff';
+    root.style.setProperty('--base-color-primary', nextPrimary);
+  }, [primaryColor, themeMode]);
+
+  const setPrimaryColor: ThemeContextType['setPrimaryColor'] = (color, opts = {}) => {
+    const { persist = true } = opts;
+    
+    // 立即更新CSS变量，避免闪动
+    const root = document.documentElement;
+    const fallbackPrimary =
+      themeConfigs[themeMode].base?.colorPrimary || themeConfigs[themeMode].token?.colorPrimary;
+    const nextPrimary = color || fallbackPrimary || '#1890ff';
+    root.style.setProperty('--base-color-primary', nextPrimary);
+    
+    // 只有在需要持久化时才更新状态和localStorage
+    if (persist) {
+      setPrimaryColorState(color);
+      try {
+        if (color) {
+          localStorage.setItem(PRIMARY_COLOR_STORAGE_KEY, color);
+        } else {
+          localStorage.removeItem(PRIMARY_COLOR_STORAGE_KEY);
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+  };
+
   const contextValue: ThemeContextType = {
     themeMode, // 使用正常的 state
     toggleTheme,
     isDark: themeMode === 'dark',
     isPending, // 提供加载状态给组件使用
+    primaryColor,
+    setPrimaryColor,
   };
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;

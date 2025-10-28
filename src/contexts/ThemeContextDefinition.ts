@@ -8,6 +8,9 @@ export interface ThemeContextType {
   toggleTheme: (event?: React.MouseEvent) => void;
   isDark: boolean;
   isPending?: boolean; // 添加可选的pending状态
+  // 自定义主题色（仅主色）
+  primaryColor?: string | null;
+  setPrimaryColor: (color: string | null, opts?: { persist?: boolean }) => void;
 }
 
 // 创建主题上下文
