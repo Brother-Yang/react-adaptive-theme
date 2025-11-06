@@ -53,28 +53,35 @@ const DEFAULT_OPTIONS: Required<AutoI18nOptions> = {
 
 // 生成key的函数
 function generateKey(value: string): string {
-  // 检查是否包含中文字符
+  // 检查是否包含中文字符（中文统一走哈希，降低冲突并保持稳定）
   const hasChinese = /[\u4e00-\u9fff]/.test(value);
 
   if (hasChinese) {
-    // 中文文本：使用MD5 hash避免冲突，增加到12位提高安全性
     const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
-    return `auto.${hash.substring(0, 12)}`; // 取前12位，进一步降低冲突概率
+    return `auto.${hash.substring(0, 12)}`;
   } else {
-    // 英文文本：转换为驼峰格式，保持在一个层级
-    let camelCase = value
-      .replace(/[^a-zA-Z0-9\s]/g, '') // 移除特殊字符，保留大小写
-      .split(/\s+/) // 按空格分割
-      .filter(word => word.length > 0) // 过滤空字符串
-      .join(''); // 直接连接，不转换驼峰
+    // 英文文本：提取词并生成 PascalCase，统一大小写，追加短哈希降低碰撞
+    const words = value.match(/[A-Za-z0-9]+/g) || [];
+    let pascal = words
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join('');
 
-    // 如果驼峰命名超过30个字符，截取前30个字符并添加12位hash
-    if (camelCase.length > 30) {
-      const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
-      camelCase = camelCase.substring(0, 30) + hash.substring(0, 12);
+    const md5 = crypto.createHash('md5').update(value, 'utf8').digest('hex');
+    const shortHash = md5.substring(0, 8);
+
+    // 若清洗后为空，直接回退到哈希（12位）
+    if (pascal.length === 0) {
+      return `auto.${md5.substring(0, 12)}`;
     }
 
-    return `auto.${camelCase.charAt(0).toUpperCase() + camelCase.slice(1)}`;
+    // 键主体长度约束：限制为30字符，保持单层级且仅字母数字
+    const MAX_BODY_LENGTH = 30;
+    if (pascal.length > MAX_BODY_LENGTH) {
+      pascal = pascal.substring(0, MAX_BODY_LENGTH);
+    }
+
+    // 始终追加短哈希片段，显著降低英文键碰撞
+    return `auto.${pascal}${shortHash}`;
   }
 }
 
