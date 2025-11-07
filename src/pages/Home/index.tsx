@@ -1,6 +1,7 @@
 import { Card, Typography, Row, Col, Button } from 'antd';
 import { HomeOutlined, RocketOutlined, StarOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, Outlet } from 'react-router-dom';
+import LazyImage from '@/components/LazyImage';
 
 const { Title, Paragraph } = Typography;
 
@@ -52,6 +53,24 @@ const Home = () => {
               <Paragraph>{$tAuto('多语言支持，自动翻译')}</Paragraph>
               <Button>{$tAuto('切换语言')}</Button>
             </div>
+          </Card>
+        </Col>
+
+        {/* LazyImage 演示 */}
+        <Col span={24}>
+          <Card title={$tAuto('图片懒加载演示')}>
+            <Row gutter={[16, 16]}>
+              {[1015, 1025, 1035, 1045, 1055, 1065, 1075].map(id => (
+                <Col xs={24} md={12} lg={8} key={id}>
+                  <LazyImage
+                    src={`https://picsum.photos/id/${id}/800/450`}
+                    aspectRatio='16/9'
+                    rounded
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+              ))}
+            </Row>
           </Card>
         </Col>
 
