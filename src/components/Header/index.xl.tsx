@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Breadcrumb, Avatar, Dropdown, Space, Button, type MenuProps } from 'antd';
+import { Layout, Avatar, Dropdown, Space, Button, type MenuProps } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -9,6 +9,7 @@ import {
   BellOutlined,
 } from '@ant-design/icons';
 import ThemeToggle from '../ThemeToggle';
+import Breadcrumbs from '../Breadcrumbs';
 import LanguageToggle from '../LanguageToggle';
 import './index.less';
 
@@ -74,21 +75,8 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           onClick={onToggle}
           className='trigger'
         />
-        {/* 桌面端显示完整面包屑 */}
-        <Breadcrumb
-          className='breadcrumb full'
-          items={[
-            {
-              title: $tAuto('首页'),
-            },
-            {
-              title: $tAuto('工作台'),
-            },
-            {
-              title: $tAuto('仪表盘'),
-            },
-          ]}
-        />
+        {/* 桌面端显示动态面包屑 */}
+        <Breadcrumbs className='breadcrumb full' />
       </div>
 
       <div className='header-right'>

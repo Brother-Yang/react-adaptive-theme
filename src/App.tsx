@@ -4,6 +4,7 @@ import { Card, Layout, Menu } from 'antd';
 import { HomeOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 import Sidebar from './components/Sidebar';
+import RouterProgressBar from './components/RouterProgressBar';
 import AppHeader from './components/Header';
 import BreakpointIndicator from './components/BreakpointIndicator';
 import TestTranslation from './components/TestTranslation';
@@ -45,6 +46,7 @@ function App() {
 
   return (
     <Layout className='app'>
+      <RouterProgressBar />
       <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
       <Layout className={`main-layout ${collapsed ? 'collapsed' : ''} ${breakpoint.current}`}>
         <AppHeader collapsed={collapsed} onToggle={toggleCollapsed} />
