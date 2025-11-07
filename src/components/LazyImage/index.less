@@ -1,0 +1,65 @@
+.lazy-image {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  background: var(--base-color-bg-container, #fff);
+  border: 1px solid var(--base-color-border, #f0f0f0);
+
+  &.rounded {
+    border-radius: 8px;
+  }
+
+  // 图片容器（支持 AntD Image）
+  .lazy-image-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.visible {
+      opacity: 1;
+    }
+
+    // 使 AntD Image 填满容器
+    .ant-image,
+    .ant-image-img {
+      width: 100%;
+      height: 100%;
+    }
+
+    &.fit-cover .ant-image-img {
+      object-fit: cover;
+    }
+    &.fit-contain .ant-image-img {
+      object-fit: contain;
+    }
+  }
+
+  .lazy-image-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(24, 144, 255, 0.05), rgba(24, 144, 255, 0.02));
+    transition: opacity 0.2s ease;
+    opacity: 1;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
