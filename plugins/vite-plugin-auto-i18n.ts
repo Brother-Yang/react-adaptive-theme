@@ -60,28 +60,25 @@ function generateKey(value: string): string {
     const hash = crypto.createHash('md5').update(value, 'utf8').digest('hex');
     return `auto.${hash.substring(0, 12)}`;
   } else {
-    // 英文文本：提取词并生成 PascalCase，统一大小写，追加短哈希降低碰撞
+    // 英文文本：提取词并保留原始大小写，去除分隔符；追加短哈希降低碰撞
     const words = value.match(/[A-Za-z0-9]+/g) || [];
-    let pascal = words
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join('');
+    let keyBody = words.join('');
 
     const md5 = crypto.createHash('md5').update(value, 'utf8').digest('hex');
     const shortHash = md5.substring(0, 8);
 
     // 若清洗后为空，直接回退到哈希（12位）
-    if (pascal.length === 0) {
+    if (keyBody.length === 0) {
       return `auto.${md5.substring(0, 12)}`;
     }
 
     // 键主体长度约束：限制为30字符，保持单层级且仅字母数字
     const MAX_BODY_LENGTH = 30;
-    if (pascal.length > MAX_BODY_LENGTH) {
-      pascal = pascal.substring(0, MAX_BODY_LENGTH);
+    if (keyBody.length > MAX_BODY_LENGTH) {
+      keyBody = keyBody.substring(0, MAX_BODY_LENGTH);
     }
 
-    // 始终追加短哈希片段，显著降低英文键碰撞
-    return `auto.${pascal}${shortHash}`;
+    return `auto.${keyBody}${shortHash}`;
   }
 }
 
