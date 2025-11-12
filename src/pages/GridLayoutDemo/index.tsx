@@ -10,7 +10,11 @@ const LayoutDemo: React.FC = () => {
   // 基础示例数据
   const basicItems: GridLayoutItem[] = [
     {
-      label: <Label width={80} required>姓名</Label>,
+      label: (
+        <Label width={80} required>
+          姓名
+        </Label>
+      ),
       value: <Value>张三</Value>,
     },
     {
@@ -35,11 +39,19 @@ const LayoutDemo: React.FC = () => {
     },
     {
       label: <Label width={80}>状态</Label>,
-      value: <Value><Tag color='green'>进行中</Tag></Value>,
+      value: (
+        <Value>
+          <Tag color='green'>进行中</Tag>
+        </Value>
+      ),
     },
     {
       label: <Label width={100}>项目描述</Label>,
-      value: <Value span={3}>这是一个基于 React + TypeScript + Vite 的自适应主题系统，支持多种断点响应式设计。</Value>,
+      value: (
+        <Value span={3}>
+          这是一个基于 React + TypeScript + Vite 的自适应主题系统，支持多种断点响应式设计。
+        </Value>
+      ),
     },
   ];
 
@@ -50,9 +62,13 @@ const LayoutDemo: React.FC = () => {
       value: (
         <Value>
           <Space>
-            <Button type='primary' size='small'>编辑</Button>
+            <Button type='primary' size='small'>
+              编辑
+            </Button>
             <Button size='small'>查看</Button>
-            <Button danger size='small'>删除</Button>
+            <Button danger size='small'>
+              删除
+            </Button>
           </Space>
         </Value>
       ),
@@ -109,18 +125,46 @@ const LayoutDemo: React.FC = () => {
         <GridLayout
           items={[
             {
-              label: <Label width={80}>上对齐<br/>标签</Label>,
-              value: <Value>这是一个很长的内容，会换行显示，用来测试上对齐的效果。当Label和Value的高度不一致时，可以看到Label会与Value的顶部对齐。</Value>,
+              label: (
+                <Label width={80}>
+                  上对齐
+                  <br />
+                  标签
+                </Label>
+              ),
+              value: (
+                <Value>
+                  这是一个很长的内容，会换行显示，用来测试上对齐的效果。当Label和Value的高度不一致时，可以看到Label会与Value的顶部对齐。
+                </Value>
+              ),
               alignItems: 'flex-start',
             },
             {
-              label: <Label width={80}>居中<br/>对齐<br/>标签</Label>,
+              label: (
+                <Label width={80}>
+                  居中
+                  <br />
+                  对齐
+                  <br />
+                  标签
+                </Label>
+              ),
               value: <Value>居中对齐示例内容</Value>,
               alignItems: 'center',
             },
             {
-              label: <Label width={80}>下对齐<br/>标签</Label>,
-              value: <Value>这也是一个很长的内容，会换行显示，用来测试下对齐的效果。可以看到Label会与Value的底部对齐，形成明显的对比效果。</Value>,
+              label: (
+                <Label width={80}>
+                  下对齐
+                  <br />
+                  标签
+                </Label>
+              ),
+              value: (
+                <Value>
+                  这也是一个很长的内容，会换行显示，用来测试下对齐的效果。可以看到Label会与Value的底部对齐，形成明显的对比效果。
+                </Value>
+              ),
               alignItems: 'flex-end',
             },
           ]}
@@ -132,7 +176,7 @@ const LayoutDemo: React.FC = () => {
       <div className='layout-demo__section'>
         <h2>统一宽度设置</h2>
         <p>通过 labelWidth 和 valueWidth 属性统一设置宽度</p>
-        
+
         <h3>统一Label宽度</h3>
         <GridLayout
           items={[
@@ -162,7 +206,10 @@ const LayoutDemo: React.FC = () => {
         <GridLayout
           items={[
             { label: <Label>标题</Label>, value: <Value>使用统一宽度</Value> },
-            { label: <Label width={120}>特殊标题</Label>, value: <Value width={250}>覆盖统一宽度</Value> },
+            {
+              label: <Label width={120}>特殊标题</Label>,
+              value: <Value width={250}>覆盖统一宽度</Value>,
+            },
             { label: <Label>描述</Label>, value: <Value>又回到统一宽度</Value> },
           ]}
           columns={1}

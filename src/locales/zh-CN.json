@@ -17,7 +17,6 @@
     "749ba571353b": "个人资料",
     "95b351c86267": "编辑",
     "44efd179aa7e": "退出登录",
-    "3fa8b34a2744": "仪表盘",
     "47781b8a72bc": "欢迎",
     "409120b562ea": "个人中心",
     "e611214297b8": "账户设置",
@@ -25,6 +24,7 @@
     "b5c377069938": "控制台",
     "181f1ab4e4a6": "系统管理员",
     "f19cc4345b6f": "切换语言",
+    "3fa8b34a2744": "仪表盘",
     "e512b4eed9a7": "管理系统",
     "877a58ea5920": "后台管理",
     "0ecf2343085f": "测试翻译功能",
@@ -45,10 +45,10 @@
     "1d339711a271": "您有 {{count}} 条未读消息",
     "47d8c7176079": "英文示例",
     "HelloWorldb10a8db1": "Hello World",
-    "ThisIsAnEnglishTextExample2a2537dd": "This is an English text example",
-    "ThisIsAnEnglishTextExamplebebf328b": "this is an English text example",
-    "ThisIsAnExampleOfEnglishCharac75677106": "This is an example of English characters being too long",
-    "HelloNameYouHaveCountNewMessagb46ef6c7": "Hello {{name}}, you have {{count}} new messages",
+    "ThisisanEnglishtextexample2a2537dd": "This is an English text example",
+    "thisisanEnglishtextexamplebebf328b": "this is an English text example",
+    "ThisisanexampleofEnglishcharac75677106": "This is an example of English characters being too long",
+    "Hellonameyouhavecountnewmessagb46ef6c7": "Hello {{name}}, you have {{count}} new messages",
     "ff4fce81b636": "切换到浅色主题",
     "c7163389115c": "切换到深色主题",
     "18d1485cc24c": "深色模式",
@@ -80,9 +80,9 @@
     "5b48dbb8dc71": "查看详情",
     "5fb12d28c4ad": "国际化支持",
     "61bbb895ddd0": "多语言支持，自动翻译",
+    "7ddd758681a5": "图片懒加载演示",
     "8d1e870e33a2": "嵌套路由示例",
-    "9df74e853cb9": "体验多层嵌套路由功能",
-    "7ddd758681a5": "图片懒加载演示"
+    "9df74e853cb9": "体验多层嵌套路由功能"
   },
   "test": {
     "manual": {
