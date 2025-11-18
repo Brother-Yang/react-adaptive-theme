@@ -8,7 +8,13 @@ import autoRoutePlugin from './plugins/vite-plugin-auto-route'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react(
+      {
+        babel: {
+          plugins: ['babel-plugin-react-compiler'],
+        },
+      }
+    ),
     // reactResponsivePlugin({
     //   breakpoints: {
     //     sm: 576,
