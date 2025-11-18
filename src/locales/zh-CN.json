@@ -79,10 +79,13 @@
     "7ddd758681a5": "图片懒加载演示",
     "8d1e870e33a2": "嵌套路由示例",
     "9df74e853cb9": "体验多层嵌套路由功能",
-    "ThisisanEnglishtextexample2a2537dd": "This is an English text example",
-    "thisisanEnglishtextexamplebebf328b": "this is an English text example",
-    "ThisisanexampleofEnglishcharac75677106": "This is an example of English characters being too long",
-    "Hellonameyouhavecountnewmessagb46ef6c7": "Hello {{name}}, you have {{count}} new messages"
+    "81fc3e21a76b": "这是静态AI对话框，模型接入后可替换应答",
+    "5aee94b882f1": "静态应答",
+    "65b2dc42f9ff": "已清空对话",
+    "318e1bb043b6": "AI 助手",
+    "1535fcfa4cb8": "发送",
+    "288f0c404c4e": "清空",
+    "158035957ab0": "输入内容，Shift+Enter 换行"
   },
   "test": {
     "manual": {

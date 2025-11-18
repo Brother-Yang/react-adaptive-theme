@@ -4,6 +4,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/
 import ThemeToggle from '../ThemeToggle';
 import LanguageToggle from '../LanguageToggle';
 import { createUserMenuItems, handleUserMenuClick, type HeaderProps } from './shared';
+import AIChat from '../AIChat';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -40,6 +41,7 @@ const HeaderSm: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
         <Space size='small'>
           <ThemeToggle />
           <LanguageToggle />
+          <AIChat />
 
           <Dropdown
             menu={{
