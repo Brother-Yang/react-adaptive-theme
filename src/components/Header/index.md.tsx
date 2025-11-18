@@ -11,6 +11,7 @@ import {
 import ThemeToggle from '../ThemeToggle';
 import Breadcrumbs from '../Breadcrumbs';
 import LanguageToggle from '../LanguageToggle';
+import AIChat from '../AIChat';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -86,6 +87,7 @@ const HeaderMd: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
           <LanguageToggle />
 
           <Button type='text' icon={<BellOutlined />} className='notification-btn' />
+          <AIChat />
 
           <Dropdown
             menu={{

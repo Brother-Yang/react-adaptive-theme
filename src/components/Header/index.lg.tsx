@@ -11,6 +11,7 @@ import {
 import ThemeToggle from '../ThemeToggle';
 import Breadcrumbs from '../Breadcrumbs';
 import LanguageToggle from '../LanguageToggle';
+import AIChat from '../AIChat';
 import './index.less';
 
 const { Header: AntHeader } = Layout;
@@ -88,6 +89,7 @@ const HeaderLg: React.FC<HeaderProps> = ({ collapsed, onToggle }) => {
 
           {/* 桌面端可以显示更多功能按钮 */}
           <Button type='text' icon={<BellOutlined />} className='notification-btn' />
+          <AIChat />
 
           <Dropdown
             menu={{
