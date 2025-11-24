@@ -12,10 +12,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
-    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@google/genai": "^1.30.0",
     "@vitalets/google-translate-api": "^9.2.1",
-    "antd": "^5.27.1",
+    "antd": "^6.0.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "google-translate-api-x": "^10.7.2",
     "i18next": "^25.4.2",

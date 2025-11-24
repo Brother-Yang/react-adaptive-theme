@@ -70,7 +70,7 @@ const AIChat = () => {
       <Drawer
         title={$tAuto('AI 助手')}
         placement='right'
-        width={420}
+        // width={420}
         onClose={() => setOpen(false)}
         open={open}
         className='ai-chat-drawer'

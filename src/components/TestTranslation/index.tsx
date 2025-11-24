@@ -9,7 +9,7 @@ const TestTranslation: React.FC = () => {
   const { i18n } = useTranslation();
   return (
     <Card title={$tAuto('测试翻译功能')} style={{ margin: '20px' }}>
-      <Space direction='vertical' size='large' style={{ width: '100%' }}>
+      <Space vertical size='large' style={{ width: '100%' }}>
         <div>
           <Title level={4}>
             {$tAuto('当前语言')}: {i18n.language}
