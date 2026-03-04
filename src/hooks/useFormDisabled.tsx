@@ -39,11 +39,7 @@ export const useFormDisabled = (form: FormInstance, options: UseFormDisabledOpti
       // 2️⃣ dynamicRules 最高优先级
       const dynamic = dynamicRules[field];
       if (dynamic) {
-        const result = dynamic.rule(allValues);
-
-        if (result === true) return true; // 强制禁用
-        if (result === false) return false; // ⭐ 强制启用
-        // undefined → 继续走基础规则
+        return dynamic.rule(allValues);
       }
 
       // 3️⃣ 白名单模式
